@@ -1,25 +1,62 @@
 PODS:
-  - GoogleMaps (2.2.0):
-    - GoogleMaps/Maps (= 2.2.0)
-  - GoogleMaps/Base (2.2.0)
-  - GoogleMaps/Maps (2.2.0):
+  - AWSCognito (2.4.7):
+    - AWSCore (= 2.4.7)
+  - AWSCognitoIdentityProvider (2.4.7):
+    - AWSCore (= 2.4.7)
+  - AWSCore (2.4.7)
+  - AWSLambda (2.4.7):
+    - AWSCore (= 2.4.7)
+  - AWSS3 (2.4.7):
+    - AWSCore (= 2.4.7)
+  - Bolts (1.8.4):
+    - Bolts/AppLinks (= 1.8.4)
+    - Bolts/Tasks (= 1.8.4)
+  - Bolts/AppLinks (1.8.4):
+    - Bolts/Tasks
+  - Bolts/Tasks (1.8.4)
+  - FBSDKCoreKit (4.26.0):
+    - Bolts (~> 1.7)
+  - FBSDKLoginKit (4.26.0):
+    - FBSDKCoreKit
+  - FBSDKShareKit (4.26.0):
+    - FBSDKCoreKit
+  - GoogleMaps (2.4.0):
+    - GoogleMaps/Maps (= 2.4.0)
+  - GoogleMaps/Base (2.4.0)
+  - GoogleMaps/Maps (2.4.0):
     - GoogleMaps/Base
-  - GooglePlacePicker (2.2.0):
-    - GoogleMaps (= 2.2.0)
-    - GooglePlaces (= 2.2.0)
-  - GooglePlaces (2.2.0):
-    - GoogleMaps/Base (= 2.2.0)
+  - GooglePlacePicker (2.4.0):
+    - GoogleMaps (= 2.4.0)
+    - GooglePlaces (= 2.4.0)
+  - GooglePlaces (2.4.0):
+    - GoogleMaps/Base (= 2.4.0)
 
 DEPENDENCIES:
+  - AWSCognito (= 2.4.7)
+  - AWSCognitoIdentityProvider
+  - AWSLambda (= 2.4.7)
+  - AWSS3 (= 2.4.7)
+  - FBSDKCoreKit
+  - FBSDKLoginKit
+  - FBSDKShareKit
   - GoogleMaps
   - GooglePlacePicker
   - GooglePlaces
 
 SPEC CHECKSUMS:
-  GoogleMaps: 104c418d61ab8a05dff06ed0784c25ea9d37da45
-  GooglePlacePicker: 345b1aabd42c9d6d9bf2369c1bae1234d903e764
-  GooglePlaces: bca867d5e9da15384c794b945e4226848bc6e9d9
+  AWSCognito: 6aa404f15d1eb2b4b51f45322a409257b3248e79
+  AWSCognitoIdentityProvider: 2afc07e3e7b89738921845d7fe3369246a4358b9
+  AWSCore: 9a729a3c0050a51ece3547d546c327acdac7838a
+  AWSLambda: 10800dea35f48dc51164730b1c3d6b1a92a17487
+  AWSS3: 0f3c8ed11e04cd78cf86ed396c06330ab142db7a
+  Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
+  FBSDKCoreKit: c8b8582311ec11b145451d8b9717dc6cc2ae5a76
+  FBSDKLoginKit: f3f03b94c21eb834af243c0a881d48641f47ca60
+  FBSDKShareKit: 320712d8293fde6392872c91eb80ef0da5d73cc3
+  GoogleMaps: 8436ab5d1c25e36915b2f7416d0c8e3fa2e76c61
+  GooglePlacePicker: 755f10343d71280c7b016823e73fbae9625dfa8a
+  GooglePlaces: aafe5990fa7951e98e078761bbdaaf236d7e0c65
 
-PODFILE CHECKSUM: ffba60f6b33b6adab63ec10c686e5378d7b4292d
+PODFILE CHECKSUM: ad3e23be54b856e65e375ae46d1b670a6043ac9a
 
 COCOAPODS: 1.0.1

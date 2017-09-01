@@ -6,28 +6,62 @@
 //  Copyright © 2017 tangojlabs. All rights reserved.
 //
 
-import UIKit
+import AWSCore
+import AWSCognito
 import CoreData
+import FBSDKCoreKit
 import GoogleMaps
+import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate
 {
     var window: UIWindow?
-
+    let navController = UINavigationController()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool
     {
+        print("didFinishLaunchingWithOptions")
         // Google Maps Prep
         GMSServices.provideAPIKey(Constants.Settings.gKey)
 //        GMSPlacesClient.provideAPIKey(Constants.Settings.gKey)
         
-        // Prepare the root View Controller and make visible
-        let mapViewController = MapViewController()
+        // AWS Cognito Prep
+        let configuration = AWSServiceConfiguration(region: Constants.Strings.awsRegion, credentialsProvider: Constants.credentialsProvider)
+        AWSServiceManager.default().defaultServiceConfiguration = configuration
         
-        self.window = UIWindow(frame: UIScreen.main.bounds)
-        self.window!.rootViewController = mapViewController
-        self.window!.makeKeyAndVisible()
+        // FacebookSDK Prep
+        FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
+        
+        UIApplication.shared.isStatusBarHidden = false
+        UIApplication.shared.statusBarStyle = Constants.Settings.statusBarStyle
+        
+        // Check to see if the facebook user id is already in the FBSDK
+        if let facebookToken = FBSDKAccessToken.current()
+        {
+            print(facebookToken)
+            // Prepare the root View Controller and make visible
+            let mapViewController = MapViewController()
+            self.navController.pushViewController(mapViewController, animated: false)
+            self.navController.navigationBar.barTintColor = Constants.Colors.colorOrangeOpaque
+            
+            self.window = UIWindow(frame: UIScreen.main.bounds)
+            self.window!.rootViewController = self.navController
+            self.window!.makeKeyAndVisible()
+        }
+        else
+        {
+            print("AD - NOT LOGGED IN")
+            // Prepare the root View Controller and make visible
+            let loginViewController = LoginViewController()
+//            let mapViewController = MapViewController()
+            self.navController.pushViewController(loginViewController, animated: false)
+            self.navController.navigationBar.barTintColor = Constants.Colors.colorOrangeOpaque
+            
+            self.window = UIWindow(frame: UIScreen.main.bounds)
+            self.window!.rootViewController = self.navController
+            self.window!.makeKeyAndVisible()
+        }
         
         return true
     }
@@ -52,6 +86,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate
     func applicationDidBecomeActive(_ application: UIApplication)
     {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        
+        // For the FacebookSDK
+        FBSDKAppEvents.activateApp()
     }
 
     func applicationWillTerminate(_ application: UIApplication)
@@ -59,6 +96,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
         self.saveContext()
+    }
+    
+    // For the FacebookSDK
+    func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool
+    {
+        return FBSDKApplicationDelegate.sharedInstance().application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
     }
 
     // MARK: - Core Data stack

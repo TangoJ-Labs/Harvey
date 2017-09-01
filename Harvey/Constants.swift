@@ -6,12 +6,48 @@
 //  Copyright © 2017 tangojlabs. All rights reserved.
 //
 
-//import AWSCore
+import AWSCore
 import GoogleMaps
 import UIKit
 
 struct Constants
 {
+    static var credentialsProvider = AWSCognitoCredentialsProvider(regionType: Constants.Strings.awsRegion, identityPoolId: Constants.Strings.awsCognitoIdentityPoolID)
+    
+    enum SpotStatus: Int
+    {
+        case waiting = 0
+        case fulfilled = 1
+    }
+    
+    enum randomIdType: String
+    {
+        case random_spot_id = "random_spot_id"
+        case random_media_id = "random_media_id"
+    }
+    
+    enum ContentType: Int
+    {
+        case text = 0
+        case image = 1
+        case video = 2
+    }
+    func contentType(_ contentTypeInt: Int) -> Constants.ContentType
+    {
+        // Evaluate the contentType Integer received and convert it to the appropriate ContentType
+        switch contentTypeInt
+        {
+        case 0:
+            return Constants.ContentType.text
+        case 1:
+            return Constants.ContentType.image
+        case 2:
+            return Constants.ContentType.video
+        default:
+            return Constants.ContentType.text
+        }
+    }
+    
     struct Colors
     {
         static let standardBackground = UIColor.white
@@ -21,22 +57,82 @@ struct Constants
         static let standardBackgroundGrayUltraLight = UIColor(red: 242/255, green: 242/255, blue: 242/255, alpha: 1.0) //#F2F2F2
         static let standardBackgroundGrayUltraLightTransparent = UIColor(red: 242/255, green: 242/255, blue: 242/255, alpha: 0.3) //#F2F2F2
         
+        static let colorOrange = UIColor(red: 235/255, green: 109/255, blue: 36/255, alpha: 0.4) //#EB6D24
+        static let colorOrangeOpaque = UIColor(red: 235/255, green: 109/255, blue: 36/255, alpha: 1.0) //#EB6D24
+        static let colorYellow = UIColor(red: 249/255, green: 160/255, blue: 30/255, alpha: 0.4) //#F9A01E
+        static let colorYellowOpaque = UIColor(red: 249/255, green: 160/255, blue: 30/255, alpha: 1.0) //#F9A01E
+        static let colorBlue = UIColor(red: 68/255, green: 169/255, blue: 223/255, alpha: 0.4) //#44A9DF
+        static let colorBlueOpaque = UIColor(red: 68/255, green: 169/255, blue: 223/255, alpha: 1.0) //#44A9DF
+        
         static let colorStatusBar = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1.0) //#FFF
 //        static let colorStatusBarLight = UIColor(red: 187/255, green: 172/255, blue: 210/255, alpha: 1.0) //#BBACD2
         static let colorTopBar = UIColor(red: 138/255, green: 112/255, blue: 178/255, alpha: 1.0) //#8A70B2
         static let colorBorderGrayLight = UIColor(red: 204/255, green: 204/255, blue: 204/255, alpha: 1.0) //#CCC
         
         static let colorTextNavBar = UIColor.white
+        static let colorTextLight = UIColor.white
+        static let colorTextDark = UIColor(red: 38/255, green: 38/255, blue: 38/255, alpha: 1.0) //#262626
         static let colorGrayLight = UIColor(red: 204/255, green: 204/255, blue: 204/255, alpha: 1.0) //#CCC
         static let colorGrayDark = UIColor(red: 38/255, green: 38/255, blue: 38/255, alpha: 1.0) //#262626
         
         static let colorFacebookDarkBlue = UIColor(red: 59/255, green: 89/255, blue: 152/255, alpha: 1.0) //#3B5998
+        
+        static let recordButtonEdgeColor = UIColor(red: 96.0/255, green: 137.0/255, blue: 41.0/255, alpha: 1.0).cgColor //#608929
+        static let recordButtonBorderColor = UIColor(red: 96.0/255, green: 137.0/255, blue: 41.0/255, alpha: 1.0).cgColor //#608929
+        static let recordButtonColor = UIColor(red: 140.0/255, green: 197.0/255, blue: 63.0/255, alpha: 1.0) //#8CC53F
+        static let recordButtonEdgeColorRecord = UIColor(red: 179/255, green: 0/255, blue: 0/255, alpha: 1.0).cgColor //# alpha: 0.3
+        static let recordButtonBorderColorRecord = UIColor(red: 255/255, green: 0/255, blue: 0/255, alpha: 1.0).cgColor //# alpha: 1.0
+        static let recordButtonColorRecord = UIColor(red: 255/255, green: 0/255, blue: 0/255, alpha: 1.0) //# alpha: 0.5
+        
+        static let colorCameraImageCellBackground = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 0.3) //#FFF
+        
+        static let spotInvisible = UIColor.clear
+        static let spotGrayLight = UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.2) //#000000
+        static let spotGray = UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.4) //#000000
+        static let spotGrayOpaque = UIColor(red: 154/255, green: 154/255, blue: 154/255, alpha: 1.0) //#999999
+        static let spotYellowLight = UIColor(red: 252/255, green: 178/255, blue: 73/255, alpha: 0.2) //#FCB249
+        static let spotYellow = UIColor(red: 252/255, green: 178/255, blue: 73/255, alpha: 0.4) //#FCB249
+        static let spotYellowMinorTransparent = UIColor(red: 252/255, green: 178/255, blue: 73/255, alpha: 0.7) //#FCB249
+        static let spotYellowOpaque = UIColor(red: 252/255, green: 178/255, blue: 73/255, alpha: 1.0) //#FCB249
+        static let spotYellowDark = UIColor(red: 201/255, green: 118/255, blue: 3/255, alpha: 1.0) //#C97603
+    }
+    
+    struct Data
+    {
+        static var badgeNumber = 0
+        static var attemptedLogin: Bool = false
+        static var serverTries: Int = 0 // Used to prevent looping through failed requests
+        static var serverLastRefresh: TimeInterval = Date().timeIntervalSince1970 // Used to prevent looping through failed requests in a short period of time
+        static var lastCredentials: TimeInterval = Date().timeIntervalSince1970
+        static var stillSendingSpot: Bool = false
+        
+        static var allSpot = [Spot]()
+        static var allSpotRequest = [SpotRequest]()
+        static var allHydro = [DataHydro]()
+        
+        static var spotCircles = [GMSCircle]()
+        static var spotMarkers = [GMSMarker]()
+        static var spotRequestMarkers = [GMSMarker]()
+        static var hydroMarkers = [GMSMarker]()
+        
+        static var currentUser = User()
+    }
+    
+    struct Dim
+    {
+        static let cameraViewImageSize: CGFloat = 50
+        static let cameraViewImageCellSize: CGFloat = 60
+        
+        static let spotRadius: Double = 50 // in meters - see radius in Spot
+        static let dotRadius: CGFloat = 5
     }
     
     struct Settings
     {
         static let gKey = "AIzaSyBKa1WknlP96r0whyI6lFkLuJcPr97un5w"
         static let mapStyleUrl = URL(string: "mapbox://styles/tangojlabs/ciqwaddsl0005b7m0xwctftow")
+        static let maxServerTries: Int = 5
+        static let maxServerTryRefreshTime: Double = 5000 // in milliseconds
         
         static let mapViewDefaultLat: CLLocationDegrees = 29.758624
         static let mapViewDefaultLong: CLLocationDegrees = -95.366795
@@ -44,7 +140,49 @@ struct Constants
         static let mapViewAngledZoom: Float = 16
         static let mapViewAngledDegrees: Double = 60.0
         
+        static let mapMarkerSpot: Int32 = 1
+        static let mapMarkerSpotRequest: Int32 = 2
+        static let mapMarkerHydro: Int32 = 3
+        
+        static var menuMapTrafficToggle: Bool = true
+        static var menuMapHydroToggle: Bool = true
+        static var menuMapSpotToggle: Bool = true
+        
 //        static var locationManagerSetting: LocationManagerSettingType = Constants.LocationManagerSettingType.significant
-        static var statusBarStyle: UIStatusBarStyle = UIStatusBarStyle.default
+        static var statusBarStyle: UIStatusBarStyle = UIStatusBarStyle.lightContent
+    }
+    
+    struct Strings
+    {
+        static let awsRegion = AWSRegionType.usEast1
+        static let awsCognitoIdentityPoolID = "us-east-1:e831ff1a-257a-4363-abe0-ca6ef52a3c0d"
+        
+        static let S3BucketMedia = "harvey-media"
+        
+        static let fontDefault = "Helvetica-Light"
+        static let fontDefaultLight = "Helvetica-UltraLight"
+        static let fontDefaultThick = "Helvetica"
+        static let fontAlt = "HelveticaNeue-Light"
+        static let fontAltLight = "HelveticaNeue-UltraLight"
+        static let fontAltThink = "HelveticaNeue"
+        
+        static let spotTableViewCellReuseIdentifier = "spotTableViewCell"
+        
+        static let imageHarvey = "Harvey.png"
+        static let iconAccountGray = "icon_account_gray.png"
+        static let iconAccountWhite = "icon_account_white.png"
+        static let iconCamera = "icon_camera.png"
+        static let iconCheckOrange = "icon_check_orange.png"
+        static let iconCloseOrange = "icon_close_orange.png"
+        static let iconCheckYellow = "icon_check_yellow.png"
+        static let iconCloseYellow = "icon_close_yellow.png"
+        static let iconLocation = "icon_location.png"
+        static let iconMenu = "icon_menu.png"
+        static let iconProfile = "icon_profile.png"
+        static let iconSearch = "icon_search.png"
+        static let iconTraffic = "icon_traffic.png"
+        static let markerIconCamera = "marker_icon_camera_yellow.png"
+        static let markerIconCameraTemp = "marker_icon_camera_temp_yellow.png"
+        static let markerIconGauge = "marker_icon_gauge_blue_opaque.png"
     }
 }

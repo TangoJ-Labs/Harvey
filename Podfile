@@ -8,19 +8,19 @@ target 'Harvey' do
   # Pods for Harvey
   source 'https://github.com/CocoaPods/Specs.git'
 
-  # pod 'AWSCognito', '2.4.7'
-  # pod 'AWSCognitoIdentityProvider'
+  pod 'AWSCognito', '2.4.7'
+  pod 'AWSCognitoIdentityProvider'
   # pod 'AWSDynamoDB'
-  # pod 'AWSLambda', '2.4.7'
+  pod 'AWSLambda', '2.4.7'
   # pod 'AWSMobileAnalytics'
-  # pod 'AWSS3', '2.4.7'
+  pod 'AWSS3', '2.4.7'
 
   pod 'GoogleMaps'
   pod 'GooglePlaces'
   pod 'GooglePlacePicker'
 
-  #pod 'FBSDKCoreKit'
-  #pod 'FBSDKLoginKit'
-  #pod 'FBSDKShareKit'
+  pod 'FBSDKCoreKit'
+  pod 'FBSDKLoginKit'
+  pod 'FBSDKShareKit'
 
 end
