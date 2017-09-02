@@ -148,31 +148,46 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
             formatter.pmSymbol = "pm"
             
             // Set the date age label.  If the age is less than 24 hours, just show it in hours.  Otherwise, show the number of days and hours.
-            var stringDate = String(dateAgeHrs / Int(24)) + " days" //+ String(dateAgeHrs % 24) + " hrs"
+            var stringDate = String(dateAgeHrs / Int(24)) + "\ndays" //+ String(dateAgeHrs % 24) + " hrs"
             if dateAgeHrs < 24
             {
-                stringDate = String(dateAgeHrs) + " hrs"
+                stringDate = String(dateAgeHrs) + "\nhrs"
             }
             else if dateAgeHrs < 48
             {
-                stringDate = "1 day"
+                stringDate = "1\nday"
             }
             else if dateAgeHrs < 120
             {
-                formatter.dateFormat = "E, H:mma"
+                formatter.dateFormat = "E\n H:mma" //"E, H:mma"
                 stringDate = formatter.string(from: datetime as Date)
             }
             else
             {
-                formatter.dateFormat = "E, MMM d" // "E, MMM d, H:mma"
+                formatter.dateFormat = "E\n MMM d" // "E, MMM d"   "E, MMM d, H:mma"
                 stringDate = formatter.string(from: datetime as Date)
             }
             // LEAVE SPACES AT BEG AND END OF THE STRING (TO ADD PADDING)
             cell.datetimeLabel.text = stringDate
-            cell.datetimeLabel.sizeToFit()
-            let oldLabelSize = cell.datetimeLabel.frame.size
-            cell.datetimeLabel.frame = CGRect(x: cell.cellImageView.frame.width - (oldLabelSize.width + 15), y: cell.cellImageView.frame.height - 35, width: oldLabelSize.width + 10, height: oldLabelSize.height)
+//            cell.datetimeLabel.sizeToFit()
+//            let oldLabelSize = cell.datetimeLabel.frame.size
+//            cell.datetimeLabel.frame = CGRect(x: cell.cellImageView.frame.width - (oldLabelSize.width + 15), y: cell.cellImageView.frame.height - 35, width: oldLabelSize.width + 10, height: oldLabelSize.height)
         }
+        
+//        // Add FB Share stuff
+//        if let image = cellSpotContent.image
+//        {
+//            let photo : FBSDKSharePhoto = FBSDKSharePhoto()
+//            photo.image = image
+//            photo.isUserGenerated = true
+//            let fbShareContent : FBSDKSharePhotoContent = FBSDKSharePhotoContent()
+//            fbShareContent.photos = [photo]
+//            
+//            let shareButton = FBSDKShareButton()
+//            shareButton.center = cell.cellContainer.center
+//            shareButton.shareContent = fbShareContent
+//            cell.cellContainer.addSubview(shareButton)
+//        }
         
         // Start animating the activity indicator
         cell.mediaActivityIndicator.startAnimating()
@@ -227,7 +242,7 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                 if let tappedCell = self.spotContentTableView.cellForRow(at: tappedIndexPath) as? SpotTableViewCell
                 {
                     let cellTapLocation = gesture.location(in: tappedCell)
-                    if tappedCell.shareButton.frame.contains(cellTapLocation)
+                    if tappedCell.shareButtonView.frame.contains(cellTapLocation)
                     {
                         if let image = spotContent[tappedIndexPath.row].image
                         {
@@ -236,7 +251,7 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                             photo.isUserGenerated = true
                             let fbShareContent : FBSDKSharePhotoContent = FBSDKSharePhotoContent()
                             fbShareContent.photos = [photo]
-                            
+
                             let shareDialog = FBSDKShareDialog()
                             shareDialog.shareContent = fbShareContent
                             shareDialog.mode = .native
