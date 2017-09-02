@@ -15,7 +15,7 @@ import UIKit
 
 protocol CameraViewControllerDelegate
 {
-    func refreshMapData()
+    func reloadMapData()
 }
 
 class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, MKMapViewDelegate, AWSRequestDelegate
@@ -329,8 +329,18 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             if mapViewContainer.frame.contains(touch.location(in: viewContainer))
             {
 //                print("CVC - TOUCHED MAP")
-                mapViewContainer.backgroundColor = Constants.Colors.recordButtonColorRecord
-                captureImage()
+                // Ensure that the user's current location is accessible - if not, don't take a picture
+                if mapView.userLocation.coordinate.latitude != 0.0 || mapView.userLocation.coordinate.longitude != 0.0
+                {
+                    mapViewContainer.backgroundColor = Constants.Colors.recordButtonColorRecord
+                    captureImage()
+                }
+                else
+                {
+                    // Inform the user that their location has not been acquired
+                    let alert = UtilityFunctions().createAlertOkView("Unknown Location", message: "I'm sorry, your location cannot be determined.  Please wait until the map shows your current location.")
+                    alert.show()
+                }
             }
             else if exitCameraTapView.frame.contains(touch.location(in: viewContainer))
             {
@@ -837,9 +847,14 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                                         let contentID = spot.spotID + "-" + String(imageCount + 1)
                                         let userCoords = self.mapView.userLocation.coordinate
                                         
+                                        // Record the location for the spotContent
                                         let spotContent = SpotContent(contentID: contentID, spotID: spot.spotID, datetime: Date(), type: Constants.ContentType.image, lat: userCoords.latitude, lng: userCoords.longitude)
                                         spotContent.image = image
                                         spot.spotContent.append(spotContent)
+                                        
+                                        // Update the spot location
+                                        self.spot!.lat = userCoords.latitude
+                                        self.spot!.lng = userCoords.longitude
                                         
 //                                    print("CVC - NEW IMAGE ORIENTATION: \(image.imageOrientation.rawValue)")
                                         self.refreshImageRing()
@@ -993,7 +1008,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                         // Notify the parent view that the AWS Put completed
                         if let parentVC = self.cameraDelegate
                         {
-                            parentVC.refreshMapData()
+                            parentVC.reloadMapData()
                         }
                         
                         // Stop the activity indicator and shoow the send image

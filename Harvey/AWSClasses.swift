@@ -933,6 +933,8 @@ class AWSGetMediaImage : AWSRequestObject
                             // Assign the image to the Preview Image View
                             if FileManager().fileExists(atPath: downloadingFilePath)
                             {
+                                self.spotContent.imageFilePath = downloadingFilePath
+                                
                                 let imageData = try? Data(contentsOf: URL(fileURLWithPath: downloadingFilePath))
                                 
                                 // Save the image to the local UIImage

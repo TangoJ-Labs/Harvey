@@ -105,7 +105,7 @@ class AboutViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
-        let cellCount = 2
+        let cellCount = 1
         
         return cellCount
     }
@@ -136,8 +136,8 @@ class AboutViewController: UIViewController, UITableViewDataSource, UITableViewD
         {
         case 0:
             cellText = "NOAA:\n\nHydrological Stream Data provided by the National Oceanic and Atmospheric Administration's National Weather Service - see water.weather.gov for more information"
-        case 1:
-            cellText = "SHELTER / RESOURCES:\n\nHouston shelter information provided by..."
+//        case 1:
+//            cellText = "SHELTER / RESOURCES:\n\nHouston shelter information provided by..."
         default:
             print("AVC-DEFAULT: CELL NOT CONSIDERED")
         }

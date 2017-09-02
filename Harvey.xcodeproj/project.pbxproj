@@ -90,6 +90,18 @@
 		B8D05F4F1F58865600D3CFAF /* SpotTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D05F4E1F58865600D3CFAF /* SpotTableViewController.swift */; };
 		B8D05F511F5887D400D3CFAF /* SpotTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D05F501F5887D400D3CFAF /* SpotTableViewCell.swift */; };
 		B8D97E1A1F56A166006D9782 /* DataHydro.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D97E191F56A166006D9782 /* DataHydro.swift */; };
+		B8DDEB131F5AD2EE00F0A623 /* HoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB121F5AD2EE00F0A623 /* HoleView.swift */; };
+		B8DDEB171F5ADE5400F0A623 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB161F5ADE5400F0A623 /* DataController.swift */; };
+		B8DDEB1A1F5ADE8300F0A623 /* CoreDataFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB191F5ADE8300F0A623 /* CoreDataFunctions.swift */; };
+		B8DDEB231F5AE21000F0A623 /* TutorialView+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB1B1F5AE21000F0A623 /* TutorialView+CoreDataClass.swift */; };
+		B8DDEB241F5AE21000F0A623 /* TutorialView+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB1C1F5AE21000F0A623 /* TutorialView+CoreDataProperties.swift */; };
+		B8DDEB271F5AE21000F0A623 /* LogError+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB1F1F5AE21000F0A623 /* LogError+CoreDataClass.swift */; };
+		B8DDEB281F5AE21000F0A623 /* LogError+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB201F5AE21000F0A623 /* LogError+CoreDataProperties.swift */; };
+		B8DDEB291F5AE21000F0A623 /* LogUserflow+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB211F5AE21000F0A623 /* LogUserflow+CoreDataClass.swift */; };
+		B8DDEB2A1F5AE21000F0A623 /* LogUserflow+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB221F5AE21000F0A623 /* LogUserflow+CoreDataProperties.swift */; };
+		B8DDEB341F5AF40900F0A623 /* MapSetting+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB321F5AF40900F0A623 /* MapSetting+CoreDataClass.swift */; };
+		B8DDEB351F5AF40900F0A623 /* MapSetting+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB331F5AF40900F0A623 /* MapSetting+CoreDataProperties.swift */; };
+		B8DDEB371F5B1D0300F0A623 /* icon_share_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = B8DDEB361F5B1D0200F0A623 /* icon_share_arrow.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -111,7 +123,7 @@
 		B87421761F54BD4F00E0981A /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		B874217C1F54BD4F00E0981A /* Harvey.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Harvey.xcdatamodel; sourceTree = "<group>"; };
 		B874217E1F54BD4F00E0981A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Harvey/Assets.xcassets; sourceTree = "<group>"; };
-		B87421831F54BD4F00E0981A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B87421831F54BD4F00E0981A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = Harvey/Info.plist; sourceTree = "<group>"; };
 		B87421891F54CD2600E0981A /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		B895C5441F590018002D369E /* FB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FB.png; sourceTree = "<group>"; };
 		B895C5451F590018002D369E /* icon_menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_menu.png; sourceTree = "<group>"; };
@@ -140,7 +152,7 @@
 		B895C5B81F5917CD002D369E /* icon_traffic.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_traffic.png; sourceTree = "<group>"; };
 		B895C5D41F593C2B002D369E /* Harvey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Harvey.png; sourceTree = "<group>"; };
 		B895C5D81F59D04E002D369E /* PROFILE_DEFAULT.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PROFILE_DEFAULT.png; sourceTree = "<group>"; };
-		B895C5DA1F59E378002D369E /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		B895C5DA1F59E378002D369E /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Harvey/Images.xcassets; sourceTree = "<group>"; };
 		B895C5DC1F59E53F002D369E /* AboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
 		B895C5DE1F59FEAF002D369E /* marker_icon_camera_yellow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = marker_icon_camera_yellow.png; sourceTree = "<group>"; };
 		B895C5DF1F59FEB0002D369E /* marker_icon_camera_yellow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "marker_icon_camera_yellow@2x.png"; sourceTree = "<group>"; };
@@ -180,6 +192,21 @@
 		B8D05F4E1F58865600D3CFAF /* SpotTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotTableViewController.swift; sourceTree = "<group>"; };
 		B8D05F501F5887D400D3CFAF /* SpotTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotTableViewCell.swift; sourceTree = "<group>"; };
 		B8D97E191F56A166006D9782 /* DataHydro.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataHydro.swift; sourceTree = "<group>"; };
+		B8DDEB121F5AD2EE00F0A623 /* HoleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoleView.swift; sourceTree = "<group>"; };
+		B8DDEB161F5ADE5400F0A623 /* DataController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
+		B8DDEB191F5ADE8300F0A623 /* CoreDataFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataFunctions.swift; sourceTree = "<group>"; };
+		B8DDEB1B1F5AE21000F0A623 /* TutorialView+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TutorialView+CoreDataClass.swift"; sourceTree = "<group>"; };
+		B8DDEB1C1F5AE21000F0A623 /* TutorialView+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TutorialView+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B8DDEB1F1F5AE21000F0A623 /* LogError+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LogError+CoreDataClass.swift"; sourceTree = "<group>"; };
+		B8DDEB201F5AE21000F0A623 /* LogError+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LogError+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B8DDEB211F5AE21000F0A623 /* LogUserflow+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LogUserflow+CoreDataClass.swift"; sourceTree = "<group>"; };
+		B8DDEB221F5AE21000F0A623 /* LogUserflow+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LogUserflow+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B8DDEB2B1F5AE2DF00F0A623 /* Harvey 1.1.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Harvey 1.1.0.xcdatamodel"; sourceTree = "<group>"; };
+		B8DDEB2C1F5AF01100F0A623 /* Harvey_DataModel_1.1.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Harvey_DataModel_1.1.0.xcdatamodel; sourceTree = "<group>"; };
+		B8DDEB311F5AF3F100F0A623 /* Harvey_DataModel_1.1.1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Harvey_DataModel_1.1.1.xcdatamodel; sourceTree = "<group>"; };
+		B8DDEB321F5AF40900F0A623 /* MapSetting+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MapSetting+CoreDataClass.swift"; sourceTree = "<group>"; };
+		B8DDEB331F5AF40900F0A623 /* MapSetting+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MapSetting+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B8DDEB361F5B1D0200F0A623 /* icon_share_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_share_arrow.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -227,11 +254,13 @@
 			isa = PBXGroup;
 			children = (
 				B895C5371F58F0C2002D369E /* Assets */,
+				B8DDEB151F5ADE2F00F0A623 /* CoreData */,
 				05EF8ADE065E708F74C76C8B /* Frameworks */,
 				B87421731F54BD4F00E0981A /* Harvey */,
 				B2428763C9953D9EAB769196 /* Pods */,
 				B87421721F54BD4F00E0981A /* Products */,
 				B825BE0A1F551F5F00C12722 /* Resources */,
+				B8DDEB141F5ADC1D00F0A623 /* Settings */,
 			);
 			sourceTree = "<group>";
 		};
@@ -246,7 +275,6 @@
 		B87421731F54BD4F00E0981A /* Harvey */ = {
 			isa = PBXGroup;
 			children = (
-				B87421831F54BD4F00E0981A /* Info.plist */,
 				B895C5DC1F59E53F002D369E /* AboutViewController.swift */,
 				B87421741F54BD4F00E0981A /* AppDelegate.swift */,
 				B825BE0F1F559C3400C12722 /* AWSClasses.swift */,
@@ -255,6 +283,7 @@
 				B825BE171F55F55800C12722 /* CustomIdentityProvider.swift */,
 				B8D97E191F56A166006D9782 /* DataHydro.swift */,
 				B825BE151F55A48E00C12722 /* Extensions.swift */,
+				B8DDEB121F5AD2EE00F0A623 /* HoleView.swift */,
 				B825BE191F55FBFC00C12722 /* LoginViewController.swift */,
 				B87421761F54BD4F00E0981A /* MapViewController.swift */,
 				B832412A1F573366008709B4 /* Spot.swift */,
@@ -264,8 +293,6 @@
 				B8D05F4E1F58865600D3CFAF /* SpotTableViewController.swift */,
 				B825BE111F559F2700C12722 /* User.swift */,
 				B825BE0D1F55221700C12722 /* UtilityFunctions.swift */,
-				B874217B1F54BD4F00E0981A /* Harvey.xcdatamodeld */,
-				B895C5DA1F59E378002D369E /* Images.xcassets */,
 			);
 			path = Harvey;
 			sourceTree = "<group>";
@@ -308,6 +335,7 @@
 				B895C5AE1F5917CD002D369E /* icon_profile@2x.png */,
 				B895C5AF1F5917CD002D369E /* icon_profile@3x.png */,
 				B895C55C1F59004F002D369E /* icon_search.png */,
+				B8DDEB361F5B1D0200F0A623 /* icon_share_arrow.png */,
 				B895C5B81F5917CD002D369E /* icon_traffic.png */,
 				B895C5B01F5917CD002D369E /* icon_traffic@2x.png */,
 				B895C5B11F5917CD002D369E /* icon_traffic@3x.png */,
@@ -331,8 +359,35 @@
 				B895C5EF1F5A0666002D369E /* marker_icon_gauge_blue@3x.png */,
 				B895C5D81F59D04E002D369E /* PROFILE_DEFAULT.png */,
 				B874217E1F54BD4F00E0981A /* Assets.xcassets */,
+				B895C5DA1F59E378002D369E /* Images.xcassets */,
 			);
 			name = Assets;
+			sourceTree = "<group>";
+		};
+		B8DDEB141F5ADC1D00F0A623 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				B874217B1F54BD4F00E0981A /* Harvey.xcdatamodeld */,
+				B87421831F54BD4F00E0981A /* Info.plist */,
+			);
+			name = Settings;
+			sourceTree = "<group>";
+		};
+		B8DDEB151F5ADE2F00F0A623 /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				B8DDEB191F5ADE8300F0A623 /* CoreDataFunctions.swift */,
+				B8DDEB161F5ADE5400F0A623 /* DataController.swift */,
+				B8DDEB1F1F5AE21000F0A623 /* LogError+CoreDataClass.swift */,
+				B8DDEB201F5AE21000F0A623 /* LogError+CoreDataProperties.swift */,
+				B8DDEB211F5AE21000F0A623 /* LogUserflow+CoreDataClass.swift */,
+				B8DDEB221F5AE21000F0A623 /* LogUserflow+CoreDataProperties.swift */,
+				B8DDEB321F5AF40900F0A623 /* MapSetting+CoreDataClass.swift */,
+				B8DDEB331F5AF40900F0A623 /* MapSetting+CoreDataProperties.swift */,
+				B8DDEB1B1F5AE21000F0A623 /* TutorialView+CoreDataClass.swift */,
+				B8DDEB1C1F5AE21000F0A623 /* TutorialView+CoreDataProperties.swift */,
+			);
+			name = CoreData;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -401,6 +456,7 @@
 				B895C60F1F5A068E002D369E /* icon_close_orange@2x.png in Resources */,
 				B895C6121F5A068E002D369E /* marker_icon_camera_temp_orange@2x.png in Resources */,
 				B895C5551F590018002D369E /* icon_account_white.png in Resources */,
+				B8DDEB371F5B1D0300F0A623 /* icon_share_arrow.png in Resources */,
 				B895C54E1F590018002D369E /* FB.png in Resources */,
 				B895C6111F5A068E002D369E /* marker_icon_camera_temp_orange.png in Resources */,
 				B895C5DB1F59E378002D369E /* Images.xcassets in Resources */,
@@ -522,20 +578,31 @@
 			files = (
 				B87421771F54BD4F00E0981A /* MapViewController.swift in Sources */,
 				B825BE161F55A48E00C12722 /* Extensions.swift in Sources */,
+				B8DDEB241F5AE21000F0A623 /* TutorialView+CoreDataProperties.swift in Sources */,
 				B8D05F511F5887D400D3CFAF /* SpotTableViewCell.swift in Sources */,
 				B8D97E1A1F56A166006D9782 /* DataHydro.swift in Sources */,
 				B87421751F54BD4F00E0981A /* AppDelegate.swift in Sources */,
+				B8DDEB351F5AF40900F0A623 /* MapSetting+CoreDataProperties.swift in Sources */,
+				B8DDEB171F5ADE5400F0A623 /* DataController.swift in Sources */,
+				B8DDEB271F5AE21000F0A623 /* LogError+CoreDataClass.swift in Sources */,
 				B825BE181F55F55800C12722 /* CustomIdentityProvider.swift in Sources */,
 				B8D05F4F1F58865600D3CFAF /* SpotTableViewController.swift in Sources */,
+				B8DDEB231F5AE21000F0A623 /* TutorialView+CoreDataClass.swift in Sources */,
+				B8DDEB291F5AE21000F0A623 /* LogUserflow+CoreDataClass.swift in Sources */,
+				B8DDEB131F5AD2EE00F0A623 /* HoleView.swift in Sources */,
 				B874217D1F54BD4F00E0981A /* Harvey.xcdatamodeld in Sources */,
 				B825BE0E1F55221700C12722 /* UtilityFunctions.swift in Sources */,
 				B8D05F451F57998400D3CFAF /* SpotRequest.swift in Sources */,
 				B825BE101F559C3400C12722 /* AWSClasses.swift in Sources */,
+				B8DDEB341F5AF40900F0A623 /* MapSetting+CoreDataClass.swift in Sources */,
+				B8DDEB281F5AE21000F0A623 /* LogError+CoreDataProperties.swift in Sources */,
 				B825BE141F55A20400C12722 /* CameraViewController.swift in Sources */,
 				B895C5DD1F59E53F002D369E /* AboutViewController.swift in Sources */,
 				B874218A1F54CD2600E0981A /* Constants.swift in Sources */,
+				B8DDEB2A1F5AE21000F0A623 /* LogUserflow+CoreDataProperties.swift in Sources */,
 				B832412B1F573366008709B4 /* Spot.swift in Sources */,
 				B825BE121F559F2700C12722 /* User.swift in Sources */,
+				B8DDEB1A1F5ADE8300F0A623 /* CoreDataFunctions.swift in Sources */,
 				B825BE1A1F55FBFC00C12722 /* LoginViewController.swift in Sources */,
 				B832412D1F5733DA008709B4 /* SpotContent.swift in Sources */,
 			);
@@ -696,10 +763,14 @@
 		B874217B1F54BD4F00E0981A /* Harvey.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				B8DDEB311F5AF3F100F0A623 /* Harvey_DataModel_1.1.1.xcdatamodel */,
+				B8DDEB2C1F5AF01100F0A623 /* Harvey_DataModel_1.1.0.xcdatamodel */,
+				B8DDEB2B1F5AE2DF00F0A623 /* Harvey 1.1.0.xcdatamodel */,
 				B874217C1F54BD4F00E0981A /* Harvey.xcdatamodel */,
 			);
-			currentVersion = B874217C1F54BD4F00E0981A /* Harvey.xcdatamodel */;
-			path = Harvey.xcdatamodeld;
+			currentVersion = B8DDEB311F5AF3F100F0A623 /* Harvey_DataModel_1.1.1.xcdatamodel */;
+			name = Harvey.xcdatamodeld;
+			path = Harvey/Harvey.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

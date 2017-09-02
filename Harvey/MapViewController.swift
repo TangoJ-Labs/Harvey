@@ -6,10 +6,12 @@
 //  Copyright © 2017 tangojlabs. All rights reserved.
 //
 
-import UIKit
+import CoreData
 import GoogleMaps
+import MobileCoreServices
+import UIKit
 
-class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate, CameraViewControllerDelegate, AWSRequestDelegate
+class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate, CameraViewControllerDelegate, AWSRequestDelegate, HoleViewDelegate
 {
     // Save device settings to adjust view if needed
     var screenSize: CGRect!
@@ -36,6 +38,11 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     var menuMapSpotImage: UIImageView!
     var menuMapSpotIndicator: UIImageView!
     var menuMapSpotTapGesture: UITapGestureRecognizer!
+    var menuTimeContainer: UIView!
+    var menuTimeDayIndicator: UIImageView!
+    var menuTimeWeekIndicator: UIImageView!
+    var menuTimeMonthIndicator: UIImageView!
+    var menuTimeYearIndicator: UIImageView!
     var menuAboutContainer: UIView!
     var menuAboutLabel: UILabel!
     var menuAboutTapGesture: UITapGestureRecognizer!
@@ -82,6 +89,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     
     let menuWidth: CGFloat = 80
     var menuVisible: Bool = false
+    var spotMarkersVisible: Bool = false //Start this off false since the 'toggle' will be called to add features
     
     override func viewDidLoad()
     {
@@ -173,10 +181,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         menuMapTrafficIndicator.contentMode = UIViewContentMode.scaleAspectFit
         menuMapTrafficIndicator.clipsToBounds = true
         menuMapTrafficIndicator.image = UIImage(named: Constants.Strings.iconCheckOrange)
-        if Constants.Settings.menuMapTrafficToggle
-        {
-            menuMapTrafficContainer.addSubview(menuMapTrafficIndicator)
-        }
         menuMapTrafficTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.menuMapTrafficTap(_:)))
         menuMapTrafficTapGesture.numberOfTapsRequired = 1  // add single tap
         menuMapTrafficContainer.addGestureRecognizer(menuMapTrafficTapGesture)
@@ -192,10 +196,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         menuMapHydroIndicator.contentMode = UIViewContentMode.scaleAspectFit
         menuMapHydroIndicator.clipsToBounds = true
         menuMapHydroIndicator.image = UIImage(named: Constants.Strings.iconCheckOrange)
-        if Constants.Settings.menuMapHydroToggle
-        {
-            menuMapHydroContainer.addSubview(menuMapHydroIndicator)
-        }
         menuMapHydroTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.menuMapHydroTap(_:)))
         menuMapHydroTapGesture.numberOfTapsRequired = 1  // add single tap
         menuMapHydroContainer.addGestureRecognizer(menuMapHydroTapGesture)
@@ -211,18 +211,96 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         menuMapSpotIndicator.contentMode = UIViewContentMode.scaleAspectFit
         menuMapSpotIndicator.clipsToBounds = true
         menuMapSpotIndicator.image = UIImage(named: Constants.Strings.iconCheckOrange)
-        if Constants.Settings.menuMapSpotToggle
-        {
-            menuMapSpotContainer.addSubview(menuMapSpotIndicator)
-        }
         menuMapSpotTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.menuMapSpotTap(_:)))
         menuMapSpotTapGesture.numberOfTapsRequired = 1  // add single tap
         menuMapSpotContainer.addGestureRecognizer(menuMapSpotTapGesture)
         
-        menuAboutContainer = UIView(frame: CGRect(x: 0, y: menuView.frame.height - 50, width: menuView.frame.width, height: 50))
+        // The time selections for the map spots
+        menuTimeContainer = UIView(frame: CGRect(x: 0, y: 250, width: menuWidth, height: 200))
+        menuView.addSubview(menuTimeContainer)
+        let border1 = CALayer()
+        border1.frame = CGRect(x: 5, y: 25, width: 2, height: 150)
+        border1.backgroundColor = Constants.Colors.standardBackgroundGray.cgColor
+        menuTimeContainer.layer.addSublayer(border1)
+        let menuTimeDot1 = UIView(frame: CGRect(x: 3, y: 22, width: 6, height: 6))
+        menuTimeDot1.layer.cornerRadius = 3
+        menuTimeDot1.backgroundColor = Constants.Colors.standardBackgroundGray
+        menuTimeContainer.addSubview(menuTimeDot1)
+        let menuTimeDot2 = UIView(frame: CGRect(x: 3, y: 72, width: 6, height: 6))
+        menuTimeDot2.layer.cornerRadius = 3
+        menuTimeDot2.backgroundColor = Constants.Colors.standardBackgroundGray
+        menuTimeContainer.addSubview(menuTimeDot2)
+        let menuTimeDot3 = UIView(frame: CGRect(x: 3, y: 122, width: 6, height: 6))
+        menuTimeDot3.layer.cornerRadius = 3
+        menuTimeDot3.backgroundColor = Constants.Colors.standardBackgroundGray
+        menuTimeContainer.addSubview(menuTimeDot3)
+        let menuTimeDot4 = UIView(frame: CGRect(x: 3, y: 172, width: 6, height: 6))
+        menuTimeDot4.layer.cornerRadius = 3
+        menuTimeDot4.backgroundColor = Constants.Colors.standardBackgroundGray
+        menuTimeContainer.addSubview(menuTimeDot4)
+        
+        menuTimeDayIndicator = UIImageView(frame: CGRect(x: 15, y: 0, width: menuWidth - 20, height: 20))
+        menuTimeDayIndicator.contentMode = UIViewContentMode.scaleAspectFit
+        menuTimeDayIndicator.clipsToBounds = true
+        menuTimeDayIndicator.image = UIImage(named: Constants.Strings.iconCheckOrange)
+        let menuTimeLabelDay = UILabel(frame: CGRect(x: 15, y: 0, width: menuWidth - 20, height: 50))
+        menuTimeLabelDay.isUserInteractionEnabled = true
+        menuTimeLabelDay.font = UIFont(name: Constants.Strings.fontAlt, size: 12)
+        menuTimeLabelDay.textColor = Constants.Colors.standardBackgroundGray
+        menuTimeLabelDay.textAlignment = .left
+        menuTimeLabelDay.text = "Past Day"
+        menuTimeContainer.addSubview(menuTimeLabelDay)
+        let menuTimeDayTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.menuTimeDayTap(_:)))
+        menuTimeDayTapGesture.numberOfTapsRequired = 1  // add single tap
+        menuTimeLabelDay.addGestureRecognizer(menuTimeDayTapGesture)
+        menuTimeWeekIndicator = UIImageView(frame: CGRect(x: 15, y: 50, width: menuWidth - 20, height: 20))
+        menuTimeWeekIndicator.contentMode = UIViewContentMode.scaleAspectFit
+        menuTimeWeekIndicator.clipsToBounds = true
+        menuTimeWeekIndicator.image = UIImage(named: Constants.Strings.iconCheckOrange)
+        let menuTimeLabelWeek = UILabel(frame: CGRect(x: 15, y: 50, width: menuWidth - 20, height: 50))
+        menuTimeLabelWeek.isUserInteractionEnabled = true
+        menuTimeLabelWeek.font = UIFont(name: Constants.Strings.fontAlt, size: 12)
+        menuTimeLabelWeek.textColor = Constants.Colors.standardBackgroundGray
+        menuTimeLabelWeek.textAlignment = .left
+        menuTimeLabelWeek.text = "Past Week"
+        menuTimeContainer.addSubview(menuTimeLabelWeek)
+        let menuTimeWeekTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.menuTimeWeekTap(_:)))
+        menuTimeWeekTapGesture.numberOfTapsRequired = 1  // add single tap
+        menuTimeLabelWeek.addGestureRecognizer(menuTimeWeekTapGesture)
+        menuTimeMonthIndicator = UIImageView(frame: CGRect(x: 15, y: 100, width: menuWidth - 20, height: 20))
+        menuTimeMonthIndicator.contentMode = UIViewContentMode.scaleAspectFit
+        menuTimeMonthIndicator.clipsToBounds = true
+        menuTimeMonthIndicator.image = UIImage(named: Constants.Strings.iconCheckOrange)
+        let menuTimeLabelMonth = UILabel(frame: CGRect(x: 15, y: 100, width: menuWidth - 20, height: 50))
+        menuTimeLabelMonth.isUserInteractionEnabled = true
+        menuTimeLabelMonth.font = UIFont(name: Constants.Strings.fontAlt, size: 12)
+        menuTimeLabelMonth.textColor = Constants.Colors.standardBackgroundGray
+        menuTimeLabelMonth.textAlignment = .left
+        menuTimeLabelMonth.text = "Past Month"
+        menuTimeContainer.addSubview(menuTimeLabelMonth)
+        let menuTimeMonthTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.menuTimeMonthTap(_:)))
+        menuTimeMonthTapGesture.numberOfTapsRequired = 1  // add single tap
+        menuTimeLabelMonth.addGestureRecognizer(menuTimeMonthTapGesture)
+        menuTimeYearIndicator = UIImageView(frame: CGRect(x: 15, y: 150, width: menuWidth - 20, height: 20))
+        menuTimeYearIndicator.contentMode = UIViewContentMode.scaleAspectFit
+        menuTimeYearIndicator.clipsToBounds = true
+        menuTimeYearIndicator.image = UIImage(named: Constants.Strings.iconCheckOrange)
+        let menuTimeLabelYear = UILabel(frame: CGRect(x: 15, y: 150, width: menuWidth - 20, height: 50))
+        menuTimeLabelYear.isUserInteractionEnabled = true
+        menuTimeLabelYear.font = UIFont(name: Constants.Strings.fontAlt, size: 12)
+        menuTimeLabelYear.textColor = Constants.Colors.standardBackgroundGray
+        menuTimeLabelYear.textAlignment = .left
+        menuTimeLabelYear.text = "Past Year"
+        menuTimeContainer.addSubview(menuTimeLabelYear)
+        let menuTimeYearTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.menuTimeYearTap(_:)))
+        menuTimeYearTapGesture.numberOfTapsRequired = 1  // add single tap
+        menuTimeLabelYear.addGestureRecognizer(menuTimeYearTapGesture)
+        
+        // The about button at the bottom of the menu
+        menuAboutContainer = UIView(frame: CGRect(x: 0, y: menuView.frame.height - 50, width: menuWidth, height: 50))
         menuView.addSubview(menuAboutContainer)
         menuAboutLabel = UILabel(frame: CGRect(x: 5, y: 5, width: menuAboutContainer.frame.width - 10, height: 40))
-        menuAboutLabel.font = UIFont(name: Constants.Strings.fontAltThink, size: 38)
+        menuAboutLabel.font = UIFont(name: Constants.Strings.fontAltThick, size: 38)
         menuAboutLabel.textColor = Constants.Colors.colorOrange
         menuAboutLabel.textAlignment = .center
         menuAboutLabel.text = "?"
@@ -246,7 +324,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         mapView.delegate = self
 //        mapView.mapType = kGMSTypeNormal
 //        mapView.isIndoorEnabled = true
-        mapView.isTrafficEnabled = true
         mapView.isBuildingsEnabled = true
         mapView.isMyLocationEnabled = true
         mapView.settings.myLocationButton = true
@@ -384,40 +461,54 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         
         infoWindowObs = UILabel(frame: CGRect(x: 10, y: 80, width: infoWindow.frame.width - 20, height: 20))
         infoWindowObs.backgroundColor = UIColor.clear
-        infoWindowObs.textAlignment = .left
+        infoWindowObs.textAlignment = .center
         infoWindowObs.font = UIFont(name: "HelveticaNeue-Light", size: 16)
         infoWindowObs.textColor = Constants.Colors.colorTextDark
         infoWindow.addSubview(infoWindowObs)
         
         infoWindowObsTime = UILabel(frame: CGRect(x: 10, y: 105, width: infoWindow.frame.width - 20, height: 20))
         infoWindowObsTime.backgroundColor = UIColor.clear
-        infoWindowObsTime.textAlignment = .left
+        infoWindowObsTime.textAlignment = .center
         infoWindowObsTime.font = UIFont(name: "HelveticaNeue-Light", size: 16)
         infoWindowObsTime.textColor = Constants.Colors.colorTextDark
         infoWindow.addSubview(infoWindowObsTime)
         
         infoWindowProjHigh = UILabel(frame: CGRect(x: 10, y: 150, width: infoWindow.frame.width - 20, height: 20))
         infoWindowProjHigh.backgroundColor = UIColor.clear
-        infoWindowProjHigh.textAlignment = .left
+        infoWindowProjHigh.textAlignment = .center
         infoWindowProjHigh.font = UIFont(name: "HelveticaNeue-Light", size: 16)
         infoWindowProjHigh.textColor = Constants.Colors.colorTextDark
         infoWindow.addSubview(infoWindowProjHigh)
         
         infoWindowProjHighTime = UILabel(frame: CGRect(x: 10, y: 175, width: infoWindow.frame.width - 20, height: 20))
         infoWindowProjHighTime.backgroundColor = UIColor.clear
-        infoWindowProjHighTime.textAlignment = .left
+        infoWindowProjHighTime.textAlignment = .center
         infoWindowProjHighTime.font = UIFont(name: "HelveticaNeue-Light", size: 16)
         infoWindowProjHighTime.textColor = Constants.Colors.colorTextDark
         infoWindow.addSubview(infoWindowProjHighTime)
         
         infoWindowLastUpdate = UILabel(frame: CGRect(x: 10, y: infoWindow.frame.height - 20, width: infoWindow.frame.width - 20, height: 15))
         infoWindowLastUpdate.backgroundColor = UIColor.clear
-        infoWindowLastUpdate.textAlignment = .left
+        infoWindowLastUpdate.textAlignment = .center
         infoWindowLastUpdate.font = UIFont(name: "HelveticaNeue-Light", size: 12)
         infoWindowLastUpdate.textColor = Constants.Colors.colorTextDark
         infoWindow.addSubview(infoWindowLastUpdate)
         
-        refreshMapData()
+        // Initiate basic setup and data request
+        // Recall the Tutorial Views data in Core Data.  If it is empty for the current ViewController's tutorial, it has not been seen by the curren user.
+        let tutorialView = CoreDataFunctions().tutorialViewRetrieve()
+        print("MVC: TUTORIAL VIEW MAPVIEW: \(tutorialView.tutorialMapViewDatetime)")
+        if tutorialView.tutorialMapViewDatetime == nil
+//        if 2 == 2
+        {
+            let holeView = HoleView(holeViewPosition: 1, frame: viewContainer.bounds, circleOffsetX: 0, circleOffsetY: 0, circleRadius: 0, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 60, textWidth: 260, textFontSize: 24, text: "Welcome to Harvey!\n\nHarvey is a disaster recovery app currently focused on the Southeast Texas area.")
+            holeView.holeViewDelegate = self
+            viewContainer.addSubview(holeView)
+        }
+        else
+        {
+            prepareMap()
+        }
     }
 
     override func didReceiveMemoryWarning()
@@ -490,7 +581,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                 // Create a title for the view that shows the coordinates of the tapped spot
                 let ncTitle = UIView(frame: CGRect(x: screenSize.width / 2 - 75, y: 10, width: 150, height: 40))
                 let ncTitleText = UILabel(frame: CGRect(x: 0, y: 0, width: 150, height: 40))
-                ncTitleText.text = String(Double(round(1000 * coordinate.latitude)/1000)) + ", " + String(Double(round(1000 * coordinate.longitude)/1000))
+                ncTitleText.text = String(Double(round(100000 * coordinate.latitude)/100000)) + ", " + String(Double(round(100000 * coordinate.longitude)/100000))
                 
                 ncTitleText.textColor = Constants.Colors.colorTextNavBar
                 ncTitleText.font = UIFont(name: Constants.Strings.fontAlt, size: 14)
@@ -606,7 +697,18 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     
     func mapView(_ mapView: GMSMapView, didTapInfoWindowOf marker: GMSMarker)
     {
-//        print("MVC - INFO WINDOW TAP: \(marker)")
+        print("MVC - INFO WINDOW TAP: \(marker.userData)")
+        let markerData = marker.userData as? Any
+        if let markerSpotRequest = markerData as? SpotRequest
+        {
+            infoWindowTitle.text = "Photo Requested"
+            infoWindowObs.text = "Take a photo in this area"
+            infoWindowObsTime.text = "to fulfill this request."
+            infoWindowProjHigh.text = ""
+            infoWindowProjHighTime.text = ""
+            infoWindowLastUpdate.text = ""
+            mapContainer.addSubview(infoWindow)
+        }
     }
     
     // Called before the map is moved
@@ -627,56 +729,75 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         // Adjust the Map Camera back to apply the correct camera angle
         adjustMapViewCamera()
         
-//        // Check the markers again since the zoom may have changed
-//        processSpotMarkers()
+        // Check the markers again since the zoom may have changed
+        processSpotMarkers()
+    }
+    // Called when my location button is tapped
+    func didTapMyLocationButton(for mapView: GMSMapView) -> Bool
+    {
+        if let myLocation = mapView.myLocation
+        {
+            let cameraUpdate = GMSCameraUpdate.setTarget(myLocation.coordinate, zoom: Constants.Settings.mapMyLocationTapZoom)
+            mapView.animate(with: cameraUpdate)
+        }
+        return true
     }
     
     
     // MARK: TAP GESTURES
     func menuMapTrafficTap(_ gesture: UITapGestureRecognizer)
     {
-        if Constants.Settings.menuMapTrafficToggle
+        if Constants.Settings.menuMapTraffic == Constants.MenuMapTraffic.yes
         {
             mapView.isTrafficEnabled = false
             menuMapTrafficIndicator.removeFromSuperview()
-            Constants.Settings.menuMapTrafficToggle = false
+            Constants.Settings.menuMapTraffic = Constants.MenuMapTraffic.no
         }
         else
         {
             mapView.isTrafficEnabled = true
             menuMapTrafficContainer.addSubview(menuMapTrafficIndicator)
-            Constants.Settings.menuMapTrafficToggle = true
+            Constants.Settings.menuMapTraffic = Constants.MenuMapTraffic.yes
         }
+        
+        // Record the setting update in Core Data
+        CoreDataFunctions().mapSettingSaveFromGlobalSettings()
     }
     func menuMapHydroTap(_ gesture: UITapGestureRecognizer)
     {
-        if Constants.Settings.menuMapHydroToggle
+        if Constants.Settings.menuMapHydro == Constants.MenuMapHydro.yes
         {
             removeHydroMapFeatures()
             menuMapHydroIndicator.removeFromSuperview()
-            Constants.Settings.menuMapHydroToggle = false
+            Constants.Settings.menuMapHydro = Constants.MenuMapHydro.no
         }
         else
         {
             addHydroMapFeatures()
             menuMapHydroContainer.addSubview(menuMapHydroIndicator)
-            Constants.Settings.menuMapHydroToggle = true
+            Constants.Settings.menuMapHydro = Constants.MenuMapHydro.yes
         }
+        
+        // Record the setting update in Core Data
+        CoreDataFunctions().mapSettingSaveFromGlobalSettings()
     }
     func menuMapSpotTap(_ gesture: UITapGestureRecognizer)
     {
-        if Constants.Settings.menuMapSpotToggle
+        if Constants.Settings.menuMapSpot == Constants.MenuMapSpot.yes
         {
             removeSpotMapFeatures()
             menuMapSpotIndicator.removeFromSuperview()
-            Constants.Settings.menuMapSpotToggle = false
+            Constants.Settings.menuMapSpot = Constants.MenuMapSpot.no
         }
         else
         {
             addSpotMapFeatures()
             menuMapSpotContainer.addSubview(menuMapSpotIndicator)
-            Constants.Settings.menuMapSpotToggle = true
+            Constants.Settings.menuMapSpot = Constants.MenuMapSpot.yes
         }
+        
+        // Record the setting update in Core Data
+        CoreDataFunctions().mapSettingSaveFromGlobalSettings()
     }
     func menuAboutTap(_ gesture: UITapGestureRecognizer)
     {
@@ -709,9 +830,42 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         // Close the menu
         toggleMenu()
     }
+    func menuTimeDayTap(_ gesture: UITapGestureRecognizer)
+    {
+        Constants.Settings.menuMapTimeFilter = Constants.MenuMapTimeFilter.day
+        toggleMenuTime()
+        
+        // Record the setting update in Core Data
+        CoreDataFunctions().mapSettingSaveFromGlobalSettings()
+    }
+    func menuTimeWeekTap(_ gesture: UITapGestureRecognizer)
+    {
+        Constants.Settings.menuMapTimeFilter = Constants.MenuMapTimeFilter.week
+        toggleMenuTime()
+        
+        // Record the setting update in Core Data
+        CoreDataFunctions().mapSettingSaveFromGlobalSettings()
+    }
+    func menuTimeMonthTap(_ gesture: UITapGestureRecognizer)
+    {
+        Constants.Settings.menuMapTimeFilter = Constants.MenuMapTimeFilter.month
+        toggleMenuTime()
+        
+        // Record the setting update in Core Data
+        CoreDataFunctions().mapSettingSaveFromGlobalSettings()
+    }
+    func menuTimeYearTap(_ gesture: UITapGestureRecognizer)
+    {
+        Constants.Settings.menuMapTimeFilter = Constants.MenuMapTimeFilter.year
+        toggleMenuTime()
+        
+        // Record the setting update in Core Data
+        CoreDataFunctions().mapSettingSaveFromGlobalSettings()
+    }
+    
     func refreshViewTap(_ gesture: UITapGestureRecognizer)
     {
-        refreshMapData()
+        requestMapData()
     }
     
     func addSpotRequestButtonTap(_ gesture: UITapGestureRecognizer)
@@ -723,6 +877,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     {
         // Load the CameraVC
         let cameraVC = CameraViewController()
+        cameraVC.cameraDelegate = self
         self.navigationController!.pushViewController(cameraVC, animated: true)
 //        self.present(cameraVC, animated: true, completion: nil)
     }
@@ -731,6 +886,8 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     {
         // Hide the infoWindow
         infoWindow.removeFromSuperview()
+//        infoWindowObs.textAlignment = .left
+//        infoWindowObsTime.textAlignment = .left
     }
     
     func uploadSpotRequestTap(_ gesture: UITapGestureRecognizer)
@@ -746,8 +903,64 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     
     // MARK: DELEGATE METHODS
     
-    func refreshMapData()
+    func reloadMapData()
     {
+        // Before populating the map, delete all markers
+        self.removeSpotMapFeatures()
+        self.removeHydroMapFeatures()
+        
+        // Now populate the map, if settings are true
+        if Constants.Settings.menuMapSpot == Constants.MenuMapSpot.yes
+        {
+            self.addSpotMapFeatures()
+        }
+        if Constants.Settings.menuMapHydro == Constants.MenuMapHydro.yes
+        {
+            self.addHydroMapFeatures()
+        }
+    }
+    
+    
+    // MARK: CUSTOM METHODS
+    
+    func toggleMenuTime()
+    {
+        // Change the check mark indicator
+        switch Constants.Settings.menuMapTimeFilter
+        {
+        case Constants.MenuMapTimeFilter.day:
+            menuTimeContainer.addSubview(menuTimeDayIndicator)
+            menuTimeWeekIndicator.removeFromSuperview()
+            menuTimeMonthIndicator.removeFromSuperview()
+            menuTimeYearIndicator.removeFromSuperview()
+        case Constants.MenuMapTimeFilter.week:
+            menuTimeDayIndicator.removeFromSuperview()
+            menuTimeContainer.addSubview(menuTimeWeekIndicator)
+            menuTimeMonthIndicator.removeFromSuperview()
+            menuTimeYearIndicator.removeFromSuperview()
+        case Constants.MenuMapTimeFilter.month:
+            menuTimeDayIndicator.removeFromSuperview()
+            menuTimeWeekIndicator.removeFromSuperview()
+            menuTimeContainer.addSubview(menuTimeMonthIndicator)
+            menuTimeYearIndicator.removeFromSuperview()
+        case Constants.MenuMapTimeFilter.year:
+            menuTimeDayIndicator.removeFromSuperview()
+            menuTimeWeekIndicator.removeFromSuperview()
+            menuTimeMonthIndicator.removeFromSuperview()
+            menuTimeContainer.addSubview(menuTimeYearIndicator)
+        default:
+            menuTimeContainer.addSubview(menuTimeDayIndicator)
+            menuTimeWeekIndicator.removeFromSuperview()
+            menuTimeMonthIndicator.removeFromSuperview()
+            menuTimeYearIndicator.removeFromSuperview()
+        }
+        
+        // Reload the data with the new filter
+        reloadMapData()
+    }
+    func requestMapData()
+    {
+        print("MVC - REFRESH MAP DATA")
         // Reload all data - Show the loading indicator
         self.refreshViewImage.removeFromSuperview()
         self.refreshViewSpinner.startAnimating()
@@ -755,10 +968,30 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
 //        print("MVC - REQUESTING MAP DATA")
         AWSPrepRequest(requestToCall: AWSGetMapData(userLocation: nil), delegate: self as AWSRequestDelegate).prepRequest()
     }
-    
-    
-    // MARK: CUSTOM METHODS
-    
+    func prepareMap()
+    {
+        // RECALL THE CORE DATA SETTINGS
+        recallGlobalSettingsFromCoreData()
+        
+        // PREPARE THE MAP
+        toggleMenuTime()
+        requestMapData()
+        
+        // Set the menu features that rely on global settings
+        if Constants.Settings.menuMapTraffic == Constants.MenuMapTraffic.yes
+        {
+            menuMapTrafficContainer.addSubview(menuMapTrafficIndicator)
+            mapView.isTrafficEnabled = true
+        }
+        if Constants.Settings.menuMapHydro == Constants.MenuMapHydro.yes
+        {
+            menuMapHydroContainer.addSubview(menuMapHydroIndicator)
+        }
+        if Constants.Settings.menuMapSpot == Constants.MenuMapSpot.yes
+        {
+            menuMapSpotContainer.addSubview(menuMapSpotIndicator)
+        }
+    }
     func mapCameraPositionAdjust(target: CLLocationCoordinate2D)
     {
 //        let newCamera = GMSCameraPosition(target: target, zoom: mapView.camera.zoom, bearing: mapView.camera.bearing, viewingAngle: mapView.camera.viewingAngle)
@@ -794,36 +1027,36 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     // Add markers for Spots on the map if the zoom is high enough
     func processSpotMarkers()
     {
-        // Nullify all current markers
-        for marker in Constants.Data.spotMarkers
-        {
-            marker.map = nil
-        }
-        Constants.Data.spotMarkers = [GMSMarker]()
+        // Check the zoom level - if high enough, show the markers (or keep them);
+        // if low enough, remove the markers (or don't add them)
         
-        // Ensure that the zoom is low enough (far enough away), and add the markers
-        if mapView.camera.zoom < Constants.Settings.mapViewAngledZoom
+        // Ensure that the zoom is low enough (far enough away), and add the markers (if not already visible)
+        print("MVC - MAP ZOOM: \(mapView.camera.zoom)")
+        print("MVC - spotMarkersVisible: \(spotMarkersVisible)")
+        if mapView.camera.zoom < Constants.Settings.mapViewAngledZoom && !spotMarkersVisible
         {
+            print("MVC - ALL SPOT COUNT: \(Constants.Data.allSpot.count)")
             for spot in Constants.Data.allSpot
             {
                 addSpotMarker(spot)
             }
+            print("MVC - TOGGLING spotMarkersVisible TRUE")
+            // Toggle the indicator
+            spotMarkersVisible = true
         }
-        // NOT SURE WHAT THIS WAS ABOUT
-//        else if Constants.Data.spotMarkers.count < 1
-//        {
-//            // Nullify all current markers
-//            for marker in Constants.Data.spotMarkers
-//            {
-//                marker.map = nil
-//            }
-//            Constants.Data.spotMarkers = [GMSMarker]()
-//            
-//            for spot in Constants.Data.allSpot
-//            {
-//                addSpotMarker(spot)
-//            }
-//        }
+        else if mapView.camera.zoom >= Constants.Settings.mapViewAngledZoom && spotMarkersVisible
+        {
+            // Nullify all current markers
+            for marker in Constants.Data.spotMarkers
+            {
+                marker.map = nil
+            }
+            Constants.Data.spotMarkers = [GMSMarker]()
+            
+            print("MVC - TOGGLING spotMarkersVisible FALSE")
+            // Toggle the indicator
+            spotMarkersVisible = false
+        }
     }
     func addSpotMarker(_ spot: Spot)
     {
@@ -996,37 +1229,42 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     {
         for spot in Constants.Data.allSpot
         {
-            print(spot.spotID)
-            // Creates a circle at the Spot location
-            
-            let circle = GMSCircle()
-            circle.position = CLLocationCoordinate2DMake(spot.lat, spot.lng)
-            circle.radius = Constants.Dim.spotRadius
-            circle.zIndex = Constants.Settings.mapMarkerSpot
-            circle.fillColor = Constants.Colors.colorOrange
-            circle.strokeColor = Constants.Colors.colorOrange
-            circle.strokeWidth = 1
-            circle.map = self.mapView
-            Constants.Data.spotCircles.append(circle)
-            
-            self.addSpotMarker(spot)
+//            print(spot.spotID)
+            // Ensure the spot datetime falls within the filter setting
+            if spot.datetime.timeIntervalSince1970 >= Date().timeIntervalSince1970 - Constants().menuMapTimeFilterSeconds(Constants.Settings.menuMapTimeFilter)
+            {
+                // Creates a circle at the Spot location
+                let circle = GMSCircle()
+                circle.position = CLLocationCoordinate2DMake(spot.lat, spot.lng)
+                circle.radius = Constants.Dim.spotRadius
+                circle.zIndex = Constants.Settings.mapMarkerSpot
+                circle.fillColor = Constants.Colors.colorOrange
+                circle.strokeColor = Constants.Colors.colorOrange
+                circle.strokeWidth = 1
+                circle.map = self.mapView
+                Constants.Data.spotCircles.append(circle)
+//                self.addSpotMarker(spot)
+            }
         }
+        // Run the zoom check to see if the markers should be added
+        self.processSpotMarkers()
+        
         for spotRequest in Constants.Data.allSpotRequest
         {
 //            print(spotRequest.requestID)
-            // Custom Marker Icon
-            let markerView = UIImageView(image: UIImage(named: Constants.Strings.markerIconCamera))
-            
-            // Creates a marker at the Spot Request location
-            let marker = GMSMarker()
-            marker.position = CLLocationCoordinate2DMake(spotRequest.lat, spotRequest.lng)
-            marker.zIndex = Constants.Settings.mapMarkerSpotRequest
-            marker.userData = spotRequest
-            marker.snippet = "Photo Requested"
-            marker.iconView = markerView
-//            marker.icon = GMSMarker.markerImage(with: .red)
-            marker.map = self.mapView
-            Constants.Data.spotRequestMarkers.append(marker)
+            // Ensure the spot datetime falls within the filter setting
+            if spotRequest.datetime.timeIntervalSince1970 >= Date().timeIntervalSince1970 - Constants().menuMapTimeFilterSeconds(Constants.Settings.menuMapTimeFilter)
+            {
+                // Creates a marker at the Spot Request location
+                let marker = GMSMarker()
+                marker.position = CLLocationCoordinate2DMake(spotRequest.lat, spotRequest.lng)
+                marker.zIndex = Constants.Settings.mapMarkerSpotRequest
+                marker.userData = spotRequest
+                marker.snippet = "Photo Requested"
+                marker.icon = UIImage(named: Constants.Strings.markerIconCamera)
+                marker.map = self.mapView
+                Constants.Data.spotRequestMarkers.append(marker)
+            }
         }
     }
     func addHydroMapFeatures()
@@ -1036,7 +1274,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         {
 //            print(hydro.gaugeID)
             // Custom Marker Icon
-            let markerView = UIImageView(image: UIImage(named: Constants.Strings.markerIconGauge))
+//            let markerView = UIImageView(image: UIImage(named: Constants.Strings.markerIconGauge))
 //            markerView.tintColor = UIColor.red
             
             // Creates a marker at the Hydro location
@@ -1049,6 +1287,39 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             marker.icon = UIImage(named: Constants.Strings.markerIconGauge)
             marker.map = self.mapView
             Constants.Data.hydroMarkers.append(marker)
+        }
+    }
+    
+    func recallGlobalSettingsFromCoreData()
+    {
+        let mapSettingArray = CoreDataFunctions().mapSettingRetrieve()
+        if mapSettingArray.count > 0
+        {
+            let mapSetting: MapSetting = mapSettingArray[0]
+            print("MVC: MAP SETTING HYDRO: \(mapSetting.menuMapHydro)")
+            print("MVC: MAP SETTING SPOT: \(mapSetting.menuMapSpot)")
+            print("MVC: MAP SETTING TRAFFIC: \(mapSetting.menuMapTraffic)")
+            print("MVC: MAP SETTING TIME: \(mapSetting.menuMapTimeFilter)")
+            if mapSetting.menuMapHydro != 0
+            {
+                Constants.Settings.menuMapHydro = Constants().menuMapHydro(Int(mapSetting.menuMapHydro))
+            }
+            if mapSetting.menuMapSpot != 0
+            {
+                Constants.Settings.menuMapSpot = Constants().menuMapSpot(Int(mapSetting.menuMapSpot))
+            }
+            if mapSetting.menuMapTraffic != 0
+            {
+                Constants.Settings.menuMapTraffic = Constants().menuMapTraffic(Int(mapSetting.menuMapTraffic))
+            }
+            if mapSetting.menuMapTimeFilter != 0
+            {
+                Constants.Settings.menuMapTimeFilter = Constants().menuMapTimeFilter(Int(mapSetting.menuMapTimeFilter))
+            }
+        }
+        else
+        {
+            print("MVC - NO CORE DATA MAP SETTINGS YET")
         }
     }
     
@@ -1074,19 +1345,11 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                 case _ as AWSGetMapData:
                     if success
                     {
-                        // Before populating the map, delete all markers
-                        self.removeSpotMapFeatures()
-                        self.removeHydroMapFeatures()
+                        // Reset the SpotMarker indicator (if the zoom is low enough? - seems to be working w/o check)
+//                        if mapView.camera.zoom < Constants.Settings.mapViewAngledZoom
+                        self.spotMarkersVisible = false
                         
-                        // Now populate the map, if settings are true
-                        if Constants.Settings.menuMapSpotToggle
-                        {
-                            self.addSpotMapFeatures()
-                        }
-                        if Constants.Settings.menuMapHydroToggle
-                        {
-                            self.addHydroMapFeatures()
-                        }
+                        self.reloadMapData()
                         
                         // All the data has been loaded - Hide the loading indicator
                         self.refreshViewSpinner.stopAnimating()
@@ -1153,6 +1416,48 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                     alert.show()
                 }
         })
+    }
+    
+    
+    // MARK: HOLE VIEW DELEGATE
+    
+    func holeViewRemoved(removingViewAtPosition: Int)
+    {
+        // Give a short tutorial for new users
+        
+        switch removingViewAtPosition
+        {
+        case 1:
+            // Show users how to add photo requests (SpotRequests)
+            
+            let holeView = HoleView(holeViewPosition: 2, frame: viewContainer.bounds, circleOffsetX: viewContainer.frame.width - 38, circleOffsetY: viewContainer.frame.height - 170, circleRadius: 40, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 50, textWidth: 260, textFontSize: 24, text: "Add a pin to the map to request a photo at any location.\n\nUse this feature to request environmental and weather condition updates at other locations.")
+            holeView.holeViewDelegate = self
+            viewContainer.addSubview(holeView)
+            
+        case 2:
+            // Show users how to add photos to fulfill requests
+            
+            let holeView = HoleView(holeViewPosition: 3, frame: viewContainer.bounds, circleOffsetX: viewContainer.frame.width - 38, circleOffsetY: viewContainer.frame.height - 105, circleRadius: 40, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 100, textWidth: 260, textFontSize: 24, text: "Add a photo when you are near a photo request location to automatically fulfill the request.")
+            holeView.holeViewDelegate = self
+            viewContainer.addSubview(holeView)
+        
+        case 3:
+            // Conclude the tutorial
+            
+            let holeView = HoleView(holeViewPosition: 4, frame: viewContainer.bounds, circleOffsetX: 0, circleOffsetY: 0, circleRadius: 0, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: (viewContainer.bounds.height / 2) - 130, textWidth: 260, textFontSize: 24, text: "Check out other map pins for additional data.\n\nMore features and data are in development.")
+            holeView.holeViewDelegate = self
+            viewContainer.addSubview(holeView)
+            
+        default:
+            // The tutorial has ended - prepare the app for use
+            prepareMap()
+            
+            // Record the Tutorial View in Core Data
+            let moc = DataController().managedObjectContext
+            let tutorialView = NSEntityDescription.insertNewObject(forEntityName: "TutorialView", into: moc) as! TutorialView
+            tutorialView.setValue(NSDate(), forKey: "tutorialMapViewDatetime")
+            CoreDataFunctions().tutorialViewSave(tutorialView: tutorialView)
+        }
     }
 }
 

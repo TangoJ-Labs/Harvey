@@ -48,6 +48,100 @@ struct Constants
         }
     }
     
+    // CORE DATA NOTE: SOME SETTINGS MIGHT START AT 1, NOT 0 - OBJ-C DEFAULTS TO 0, SO CORE DATA UNSURE IF PREVIOUSLY FILLED IF USING 0
+    enum MenuMapHydro: Int
+    {
+        case no = 1
+        case yes = 2
+    }
+    func menuMapHydro(_ menuMapHydroInt: Int) -> Constants.MenuMapHydro
+    {
+        switch menuMapHydroInt
+        {
+        case 1:
+            return Constants.MenuMapHydro.no
+        case 2:
+            return Constants.MenuMapHydro.yes
+        default:
+            return Constants.MenuMapHydro.yes
+        }
+    }
+    enum MenuMapSpot: Int
+    {
+        case no = 1
+        case yes = 2
+    }
+    func menuMapSpot(_ menuMapSpotInt: Int) -> Constants.MenuMapSpot
+    {
+        switch menuMapSpotInt
+        {
+        case 1:
+            return Constants.MenuMapSpot.no
+        case 2:
+            return Constants.MenuMapSpot.yes
+        default:
+            return Constants.MenuMapSpot.yes
+        }
+    }
+    enum MenuMapTraffic: Int
+    {
+        case no = 1
+        case yes = 2
+    }
+    func menuMapTraffic(_ menuMapTrafficInt: Int) -> Constants.MenuMapTraffic
+    {
+        switch menuMapTrafficInt
+        {
+        case 1:
+            return Constants.MenuMapTraffic.no
+        case 2:
+            return Constants.MenuMapTraffic.yes
+        default:
+            return Constants.MenuMapTraffic.yes
+        }
+    }
+    enum MenuMapTimeFilter: Int
+    {
+        case day = 1
+        case week = 2
+        case month = 3
+        case year = 4
+    }
+    func menuMapTimeFilter(_ menuMapTimeFilterInt: Int) -> Constants.MenuMapTimeFilter
+    {
+        // Evaluate the menuMapTimeFilter Integer received and convert it to the appropriate MenuMapTimeFilter
+        switch menuMapTimeFilterInt
+        {
+        case 1:
+            return Constants.MenuMapTimeFilter.day
+        case 2:
+            return Constants.MenuMapTimeFilter.week
+        case 3:
+            return Constants.MenuMapTimeFilter.month
+        case 4:
+            return Constants.MenuMapTimeFilter.year
+        default:
+            return Constants.MenuMapTimeFilter.day
+        }
+    }
+    func menuMapTimeFilterSeconds(_ menuMapTimeFilter: Constants.MenuMapTimeFilter) -> Double
+    {
+        // Evaluate the menuTime Object received and convert it to the appropriate Integer representing seconds in recency
+        switch menuMapTimeFilter
+        {
+        case Constants.MenuMapTimeFilter.day:
+            return 60 * 60 * 24
+        case Constants.MenuMapTimeFilter.week:
+            return 60 * 60 * 24 * 7
+        case Constants.MenuMapTimeFilter.month:
+            return 60 * 60 * 24 * 31
+        case Constants.MenuMapTimeFilter.year:
+            return 60 * 60 * 24 * 365
+        default:
+            return 60 * 60 * 24
+        }
+    }
+    
     struct Colors
     {
         static let standardBackground = UIColor.white
@@ -143,10 +237,12 @@ struct Constants
         static let mapMarkerSpot: Int32 = 1
         static let mapMarkerSpotRequest: Int32 = 2
         static let mapMarkerHydro: Int32 = 3
+        static let mapMyLocationTapZoom: Float = 18
         
-        static var menuMapTrafficToggle: Bool = true
-        static var menuMapHydroToggle: Bool = true
-        static var menuMapSpotToggle: Bool = true
+        static var menuMapHydro: Constants.MenuMapHydro = Constants.MenuMapHydro.yes
+        static var menuMapSpot: Constants.MenuMapSpot = Constants.MenuMapSpot.yes
+        static var menuMapTraffic: Constants.MenuMapTraffic = Constants.MenuMapTraffic.yes
+        static var menuMapTimeFilter: Constants.MenuMapTimeFilter = Constants.MenuMapTimeFilter.day
         
 //        static var locationManagerSetting: LocationManagerSettingType = Constants.LocationManagerSettingType.significant
         static var statusBarStyle: UIStatusBarStyle = UIStatusBarStyle.lightContent
@@ -164,7 +260,7 @@ struct Constants
         static let fontDefaultThick = "Helvetica"
         static let fontAlt = "HelveticaNeue-Light"
         static let fontAltLight = "HelveticaNeue-UltraLight"
-        static let fontAltThink = "HelveticaNeue"
+        static let fontAltThick = "HelveticaNeue"
         
         static let spotTableViewCellReuseIdentifier = "spotTableViewCell"
         
@@ -180,6 +276,7 @@ struct Constants
         static let iconMenu = "icon_menu.png"
         static let iconProfile = "icon_profile.png"
         static let iconSearch = "icon_search.png"
+        static let iconShareArrow = "icon_share_arrow.png"
         static let iconTraffic = "icon_traffic.png"
         static let markerIconCamera = "marker_icon_camera_yellow.png"
         static let markerIconCameraTemp = "marker_icon_camera_temp_yellow.png"

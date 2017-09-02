@@ -6,9 +6,10 @@
 //  Copyright © 2017 tangojlabs. All rights reserved.
 //
 
+import FBSDKShareKit
 import UIKit
 
-class SpotTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, AWSRequestDelegate
+class SpotTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIGestureRecognizerDelegate, AWSRequestDelegate
 {
     // Save device settings to adjust view if needed
     var screenSize: CGRect!
@@ -20,6 +21,7 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
     var viewContainer: UIView!
     var spotContentTableView: UITableView!
 //    lazy var refreshControl: UIRefreshControl = UIRefreshControl()
+    var tableGestureRecognizer: UITapGestureRecognizer!
     
     // Properties to hold local information
     var viewContainerHeight: CGFloat!
@@ -72,6 +74,10 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
         spotContentTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         viewContainer.addSubview(spotContentTableView)
         
+        tableGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(SpotTableViewController.tableGesture(_:)))
+        tableGestureRecognizer.delegate = self
+        spotContentTableView.addGestureRecognizer(tableGestureRecognizer)
+        
 //        // Create a refresh control for the CollectionView and add a subview to move the refresh control where needed
 //        refreshControl = UIRefreshControl()
 //        refreshControl.attributedTitle = NSAttributedString(string: "")
@@ -104,7 +110,7 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
     {
-        let cellHeight: CGFloat = viewContainer.frame.width + 20
+        let cellHeight: CGFloat = viewContainer.frame.width
         return cellHeight
     }
     
@@ -142,14 +148,14 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
             formatter.pmSymbol = "pm"
             
             // Set the date age label.  If the age is less than 24 hours, just show it in hours.  Otherwise, show the number of days and hours.
-            var stringDate = String(dateAgeHrs / Int(24)) + " days ago" //+ String(dateAgeHrs % 24) + " hrs"
+            var stringDate = String(dateAgeHrs / Int(24)) + " days" //+ String(dateAgeHrs % 24) + " hrs"
             if dateAgeHrs < 24
             {
-                stringDate = String(dateAgeHrs) + " hrs ago"
+                stringDate = String(dateAgeHrs) + " hrs"
             }
             else if dateAgeHrs < 48
             {
-                stringDate = "1 day ago"
+                stringDate = "1 day"
             }
             else if dateAgeHrs < 120
             {
@@ -161,7 +167,11 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                 formatter.dateFormat = "E, MMM d" // "E, MMM d, H:mma"
                 stringDate = formatter.string(from: datetime as Date)
             }
+            // LEAVE SPACES AT BEG AND END OF THE STRING (TO ADD PADDING)
             cell.datetimeLabel.text = stringDate
+            cell.datetimeLabel.sizeToFit()
+            let oldLabelSize = cell.datetimeLabel.frame.size
+            cell.datetimeLabel.frame = CGRect(x: cell.cellImageView.frame.width - (oldLabelSize.width + 15), y: cell.cellImageView.frame.height - 35, width: oldLabelSize.width + 10, height: oldLabelSize.height)
         }
         
         // Start animating the activity indicator
@@ -202,6 +212,43 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
     func scrollViewDidScroll(_ scrollView: UIScrollView)
     {
         
+    }
+    
+    
+    // MARK: GESTURE RECOGNIZERS
+    
+    func tableGesture(_ gesture: UITapGestureRecognizer)
+    {
+        if gesture.state == UIGestureRecognizerState.ended
+        {
+            let tapLocation = gesture.location(in: self.spotContentTableView)
+            if let tappedIndexPath = spotContentTableView.indexPathForRow(at: tapLocation)
+            {
+                if let tappedCell = self.spotContentTableView.cellForRow(at: tappedIndexPath) as? SpotTableViewCell
+                {
+                    let cellTapLocation = gesture.location(in: tappedCell)
+                    if tappedCell.shareButton.frame.contains(cellTapLocation)
+                    {
+                        if let image = spotContent[tappedIndexPath.row].image
+                        {
+                            let photo : FBSDKSharePhoto = FBSDKSharePhoto()
+                            photo.image = image
+                            photo.isUserGenerated = true
+                            let fbShareContent : FBSDKSharePhotoContent = FBSDKSharePhotoContent()
+                            fbShareContent.photos = [photo]
+                            
+                            let shareDialog = FBSDKShareDialog()
+                            shareDialog.shareContent = fbShareContent
+                            shareDialog.mode = .native
+                            if let fbShareResponse = try? shareDialog.show()
+                            {
+                                print("STVC - FB SHARE RESPONSE: \(fbShareResponse)")
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     
     
@@ -269,6 +316,10 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                                 {
                                     // Set the local image property to the downloaded image
                                     contentObject.image = contentImage
+                                    if let filePath = awsGetMediaImage.spotContent.imageFilePath
+                                    {
+                                        contentObject.imageFilePath = filePath
+                                    }
                                     
                                     break findSpotContentLoop
                                 }
@@ -285,6 +336,10 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                                         {
                                             // Set the local image property to the downloaded image
                                             contentObject.image = contentImage
+                                            if let filePath = awsGetMediaImage.spotContent.imageFilePath
+                                            {
+                                                contentObject.imageFilePath = filePath
+                                            }
                                             
                                             break findSpotContentLoop
                                         }

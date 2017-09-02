@@ -14,6 +14,7 @@ class SpotTableViewCell: UITableViewCell
     var mediaActivityIndicator: UIActivityIndicatorView!
     var cellImageView: UIImageView!
     var datetimeLabel: UILabel!
+    var shareButton: UIImageView!
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?)
     {
@@ -21,7 +22,7 @@ class SpotTableViewCell: UITableViewCell
         
         self.backgroundColor = Constants.Colors.standardBackground
         
-        cellContainer = UIView(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.width + 20))
+        cellContainer = UIView(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.width))
         self.addSubview(cellContainer)
         
         cellImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: cellContainer.frame.width, height: cellContainer.frame.width))
@@ -36,11 +37,19 @@ class SpotTableViewCell: UITableViewCell
         cellImageView.addSubview(mediaActivityIndicator)
         
         // The Datetime Label should be in small font just below the Navigation Bar starting at the left of the screen (left aligned text)
-        datetimeLabel = UILabel(frame: CGRect(x: 5, y: cellImageView.frame.height + 2, width: cellContainer.frame.width - 10, height: 15))
-        datetimeLabel.font = UIFont(name: Constants.Strings.fontAlt, size: 14)
+        datetimeLabel = UILabel(frame: CGRect(x: cellImageView.frame.width - 15, y: cellImageView.frame.height - 35, width: 10, height: 30))
+        datetimeLabel.backgroundColor = Constants.Colors.standardBackgroundTransparent
+        datetimeLabel.font = UIFont(name: Constants.Strings.fontAlt, size: 20)
         datetimeLabel.textColor = Constants.Colors.colorGrayDark
-        datetimeLabel.textAlignment = .left
+        datetimeLabel.textAlignment = .center
         cellContainer.addSubview(datetimeLabel)
+        
+        shareButton = UIImageView(frame: CGRect(x: cellContainer.frame.width - 55, y: 5, width: 50, height: 50))
+        shareButton.backgroundColor = Constants.Colors.standardBackgroundGrayTransparent
+        shareButton.image = UIImage(named: Constants.Strings.iconShareArrow)
+        shareButton.contentMode = UIViewContentMode.scaleAspectFit
+        shareButton.clipsToBounds = true
+        cellContainer.addSubview(shareButton)
     }
     
     required init?(coder aDecoder: NSCoder)

@@ -19,6 +19,7 @@ class SpotContent
     var status: String = "active"
     
     var image: UIImage?
+    var imageFilePath: String?
     
     convenience init(contentID: String!, spotID: String!, datetime: Date!, type: Constants.ContentType!, lat: Double!, lng: Double!)
     {
