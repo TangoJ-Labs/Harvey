@@ -125,11 +125,13 @@ class HoleView: UIView
     // MARK: GESTURE RECOGNIZERS
     func okViewTapGesture(_ sender: UITapGestureRecognizer)
     {
+        print("HV-TAP")
         self.removeFromSuperview()
         
         // Call the parent VC to notify the view has been removed
         if let parentVC = self.holeViewDelegate
         {
+            print("HV-REMOVE HOLE VIEW")
             parentVC.holeViewRemoved(removingViewAtPosition: self.holeViewPosition)
         }
     }

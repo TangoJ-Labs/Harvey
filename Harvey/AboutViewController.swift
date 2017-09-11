@@ -21,6 +21,7 @@ class AboutViewController: UIViewController, UITableViewDataSource, UITableViewD
     var headerContainer: UIView!
     var headerLabel: UILabel!
     var headerLabel2: UILabel!
+    var headerLabel3: UILabel!
     var attrTableView: UITableView!
     
     // Properties to hold local information
@@ -51,7 +52,7 @@ class AboutViewController: UIViewController, UITableViewDataSource, UITableViewD
         viewContainer.backgroundColor = Constants.Colors.standardBackground
         self.view.addSubview(viewContainer)
         
-        headerContainer = UIView(frame: CGRect(x: 0, y: 0, width: viewContainer.frame.width, height: 80))
+        headerContainer = UIView(frame: CGRect(x: 0, y: 0, width: viewContainer.frame.width, height: 100))
         headerContainer.backgroundColor = Constants.Colors.standardBackground
         headerContainer.layer.shadowOffset = CGSize(width: 0.5, height: 2)
         headerContainer.layer.shadowOpacity = 0.5
@@ -69,8 +70,15 @@ class AboutViewController: UIViewController, UITableViewDataSource, UITableViewD
         headerLabel2.font = UIFont(name: Constants.Strings.fontAltLight, size: 14)
         headerLabel2.textColor = Constants.Colors.colorTextDark
         headerLabel2.textAlignment = .center
-        headerLabel2.text = "Data provided by:"
+        headerLabel2.text = "www.harveytown.org"
         headerContainer.addSubview(headerLabel2)
+        
+        headerLabel3 = UILabel(frame: CGRect(x: 10, y: 70, width: headerContainer.frame.width - 20, height: 20))
+        headerLabel3.font = UIFont(name: Constants.Strings.fontAltLight, size: 14)
+        headerLabel3.textColor = Constants.Colors.colorTextDark
+        headerLabel3.textAlignment = .center
+        headerLabel3.text = "Data provided by:"
+        headerContainer.addSubview(headerLabel3)
         
         // A tableview will hold all attributions
         attrTableView = UITableView(frame: CGRect(x: 0, y: headerContainer.frame.height, width: viewContainer.frame.width, height: viewContainer.frame.height - headerContainer.frame.height))
@@ -112,7 +120,7 @@ class AboutViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
     {
-        var cellHeight: CGFloat = 120
+        let cellHeight: CGFloat = 120
         
         return cellHeight
     }
@@ -121,7 +129,7 @@ class AboutViewController: UIViewController, UITableViewDataSource, UITableViewD
     {
         var cell: UITableViewCell = attrTableView.dequeueReusableCell(withIdentifier: "about_cell") as! UITableViewCell
         
-        var cellHeight: CGFloat = 120
+        let cellHeight: CGFloat = 120
         var cellText: String = ""
         
         if indexPath.row > 0

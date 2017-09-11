@@ -63,6 +63,21 @@ extension UIImage
         return image
     }
     
+    func imageByNormalizingOrientation() -> UIImage
+    {
+//        if imageOrientation == .up
+//        {
+//            return self
+//        }
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+//        CGContextTranslateCTM(self, 0, size.height)
+//        CGContextScaleCTM(self, 1, -1)
+        draw(in: CGRect(origin: CGPoint.zero, size: size))
+        let normalizedImage: UIImage? = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return normalizedImage!
+    }
+    
     public convenience init?(color: UIColor, size: CGSize = CGSize(width: 1, height: 1))
     {
         let rect = CGRect(origin: .zero, size: size)

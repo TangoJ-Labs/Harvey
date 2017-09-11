@@ -10,6 +10,7 @@ import AWSCore
 import AWSCognito
 import CoreData
 import FBSDKCoreKit
+import FBSDKLoginKit
 import GoogleMaps
 import UIKit
 
@@ -22,6 +23,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool
     {
         print("didFinishLaunchingWithOptions")
+        if let infoDict = Bundle.main.infoDictionary
+        {
+            if let bundleVersion =  infoDict["CFBundleShortVersionString"]
+            {
+                print("AD - BUNDLE VERSION: \(bundleVersion)")
+                Constants.Settings.appVersion = bundleVersion as! String
+            }
+        }
+        
         // Google Maps Prep
         GMSServices.provideAPIKey(Constants.Settings.gKey)
 //        GMSPlacesClient.provideAPIKey(Constants.Settings.gKey)
@@ -39,9 +49,54 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         // Check to see if the facebook user id is already in the FBSDK
         if let facebookToken = FBSDKAccessToken.current()
         {
-            print(facebookToken)
+            print(facebookToken.tokenString)
+            
+            print("AC-CONSTANTS CURRENT USER:")
+            print(Constants.Data.currentUser.userID)
+            print(Constants.Data.currentUser.facebookID)
+            print(Constants.Data.currentUser.type)
+            print(Constants.Data.currentUser.status)
+            print(Constants.Data.currentUser.datetime)
+            print(Constants.Data.currentUser.name)
+            print(Constants.Data.currentUser.thumbnail)
+            print(Constants.Data.currentUser.image)
+            print(Constants.Data.currentUser.connection)
+            
+            // Try to retrieve the current user from Core Data
+            let currentUser = CoreDataFunctions().currentUserRetrieve()
+            print("AC-CD CURRENT USER:")
+            print(currentUser.userID)
+            print(currentUser.facebookID)
+            print(currentUser.type)
+            print(currentUser.status)
+            print(currentUser.datetime)
+            print(currentUser.name)
+            print(currentUser.thumbnail)
+            print(currentUser.image)
+            print(currentUser.connection)
+            if currentUser.userID != nil
+            {
+                Constants.Data.currentUser = currentUser
+            }
+            else
+            {
+                // The user data is missing - log the user out and have them log in again
+                let loginManager = FBSDKLoginManager()
+                loginManager.logOut()
+                
+                pushLoginVC()
+            }
+            
             // Prepare the root View Controller and make visible
             let mapViewController = MapViewController()
+            if let status = Constants.Data.currentUser.status
+            {
+                if status != "eula_privacy_none"
+                {
+                    mapViewController.showAgreement = false
+                    
+                }
+            }
             self.navController.pushViewController(mapViewController, animated: false)
             self.navController.navigationBar.barTintColor = Constants.Colors.colorOrangeOpaque
             
@@ -52,15 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         else
         {
             print("AD - NOT LOGGED IN")
-            // Prepare the root View Controller and make visible
-            let loginViewController = LoginViewController()
-//            let mapViewController = MapViewController()
-            self.navController.pushViewController(loginViewController, animated: false)
-            self.navController.navigationBar.barTintColor = Constants.Colors.colorOrangeOpaque
-            
-            self.window = UIWindow(frame: UIScreen.main.bounds)
-            self.window!.rootViewController = self.navController
-            self.window!.makeKeyAndVisible()
+            pushLoginVC()
         }
         
         return true
@@ -102,6 +149,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool
     {
         return FBSDKApplicationDelegate.sharedInstance().application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
+    }
+    
+    
+    // MARK: CUSTOM METHODS
+    
+    func pushLoginVC()
+    {
+        // Prepare the root View Controller and make visible
+        let loginViewController = LoginViewController()
+        self.navController.pushViewController(loginViewController, animated: false)
+        self.navController.navigationBar.barTintColor = Constants.Colors.colorOrangeOpaque
+        
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        self.window!.rootViewController = self.navController
+        self.window!.makeKeyAndVisible()
     }
 
     // MARK: - Core Data stack

@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>Harveytown</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1.2</string>
+	<string>1.3.5</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -30,7 +32,7 @@
 	<key>FacebookAppID</key>
 	<string>149434858974947</string>
 	<key>FacebookDisplayName</key>
-	<string>Harvey</string>
+	<string>Harveytown</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbapi</string>
@@ -46,9 +48,9 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>To ensure the original location of content, photos must be taken within the Harvey app.</string>
+	<string>To ensure the original location of content, photos must be taken within the Harveytown app.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Harvey shows your location on the map.</string>
+	<string>Harveytown requires your location to provide vital features.  Your location will only be tracked when the app is being used.</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

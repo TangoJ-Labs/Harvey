@@ -9,18 +9,30 @@
 import FBSDKShareKit
 import UIKit
 
-class SpotTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIGestureRecognizerDelegate, AWSRequestDelegate
+class SpotTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIGestureRecognizerDelegate, AWSRequestDelegate, RequestDelegate
 {
+    var spotContent: [SpotContent]!
+    
+    convenience init(spotContent: [SpotContent]!)
+    {
+        self.init(nibName:nil, bundle:nil)
+        
+        self.spotContent = spotContent
+    }
+    
     // Save device settings to adjust view if needed
     var screenSize: CGRect!
     var statusBarHeight: CGFloat!
     var navBarHeight: CGFloat!
     var viewFrameY: CGFloat!
+    var vcHeight: CGFloat!
+    var vcOffsetY: CGFloat!
     
-    // Add the view components
+    // The views to hold major components of the view controller
+    var statusBarView: UIView!
     var viewContainer: UIView!
+    
     var spotContentTableView: UITableView!
-//    lazy var refreshControl: UIRefreshControl = UIRefreshControl()
     var tableGestureRecognizer: UITapGestureRecognizer!
     
     // Properties to hold local information
@@ -29,27 +41,21 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
 //    var spotCellContentHeight: CGFloat!
     var spotMediaSize: CGFloat!
     
-    // This data should be filled when the ViewController is initialized
-    var spotContent = [SpotContent]()
     
     override func viewDidLoad()
     {
         super.viewDidLoad()
-
-        // Device and Status Bar Settings
-        UIApplication.shared.isStatusBarHidden = false
-        UIApplication.shared.statusBarStyle = Constants.Settings.statusBarStyle
-        statusBarHeight = UIApplication.shared.statusBarFrame.size.height
-        navBarHeight = self.navigationController?.navigationBar.frame.height
-        viewFrameY = self.view.frame.minY
-        screenSize = UIScreen.main.bounds
         
+        prepVcLayout()
         self.automaticallyAdjustsScrollViewInsets = false
         
+        // Add the Status Bar, Top Bar and Search Bar last so that they are placed above (z-index) all other views
+        statusBarView = UIView(frame: CGRect(x: 0, y: 0, width: screenSize.width, height: statusBarHeight))
+        statusBarView.backgroundColor = Constants.Colors.colorStatusBar
+        self.view.addSubview(statusBarView)
+        
         // Add the view container to hold all other views (allows for shadows on all subviews)
-        let viewContainerOffset = statusBarHeight + navBarHeight - viewFrameY
-        self.viewContainerHeight = self.view.bounds.height - viewContainerOffset
-        viewContainer = UIView(frame: CGRect(x: 0, y: viewContainerOffset, width: self.view.bounds.width, height: self.viewContainerHeight))
+        viewContainer = UIView(frame: CGRect(x: 0, y: vcOffsetY, width: self.view.bounds.width, height: vcHeight))
         viewContainer.backgroundColor = Constants.Colors.standardBackgroundGrayUltraLight
         self.view.addSubview(viewContainer)
         
@@ -78,12 +84,7 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
         tableGestureRecognizer.delegate = self
         spotContentTableView.addGestureRecognizer(tableGestureRecognizer)
         
-//        // Create a refresh control for the CollectionView and add a subview to move the refresh control where needed
-//        refreshControl = UIRefreshControl()
-//        refreshControl.attributedTitle = NSAttributedString(string: "")
-//        refreshControl.addTarget(self, action: #selector(SpotTableViewController.refreshDataManually), for: UIControlEvents.valueChanged)
-//        spotContentTableView.addSubview(refreshControl)
-//        spotTableView.contentOffset = CGPoint(x: 0, y: -self.refreshControl.frame.size.height)
+        NotificationCenter.default.addObserver(self, selector: #selector(MapViewController.statusBarHeightChange(_:)), name: Notification.Name("UIApplicationWillChangeStatusBarFrameNotification"), object: nil)
         
         // Order the SpotContent Array
         spotContent.sort {
@@ -92,6 +93,45 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
         
         // Request all needed data and prep the cells
         self.refreshDataManually()
+    }
+    
+    
+    // MARK: LAYOUT METHODS
+    
+    func statusBarHeightChange(_ notification: Notification)
+    {
+        prepVcLayout()
+        
+        statusBarView.frame = CGRect(x: 0, y: 0, width: screenSize.width, height: statusBarHeight)
+        viewContainer.frame = CGRect(x: 0, y: vcOffsetY, width: screenSize.width, height: vcHeight)
+        spotContentTableView.frame = CGRect(x: 0, y: 0, width: viewContainer.frame.width, height: viewContainer.frame.height)
+    }
+    
+    func prepVcLayout()
+    {
+        // Record the status bar settings to adjust the view if needed
+        UIApplication.shared.isStatusBarHidden = false
+        UIApplication.shared.statusBarStyle = Constants.Settings.statusBarStyle
+        statusBarHeight = UIApplication.shared.statusBarFrame.size.height
+        
+        // Navigation Bar settings
+        navBarHeight = 44.0
+        if let navController = self.navigationController
+        {
+            navController.isNavigationBarHidden = false
+            navBarHeight = navController.navigationBar.frame.height
+            navController.navigationBar.barTintColor = Constants.Colors.colorOrangeOpaque
+        }
+        viewFrameY = self.view.frame.minY
+        screenSize = UIScreen.main.bounds
+        
+        vcHeight = screenSize.height - statusBarHeight - navBarHeight
+        vcOffsetY = statusBarHeight + navBarHeight
+        if statusBarHeight == 40
+        {
+            vcHeight = screenSize.height - 76
+            vcOffsetY = 56
+        }
     }
 
     
@@ -110,23 +150,95 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
     {
-        let cellHeight: CGFloat = viewContainer.frame.width
+        let cellHeight: CGFloat = tableView.frame.width
         return cellHeight
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
-        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.Strings.spotTableViewCellReuseIdentifier, for: indexPath) as! SpotTableViewCell
-        
 //        print("STVC - CREATING CELL: \(indexPath.row)")
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.Strings.spotTableViewCellReuseIdentifier, for: indexPath) as! SpotTableViewCell
+//        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.Strings.spotTableViewCellReuseIdentifier, for: indexPath)
+        
+//        cell.cellContainer.frame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: tableView.frame.width)
+        
         // Store the spotContent for this cell for reference
         let cellSpotContent = spotContent[indexPath.row]
         
-//        // Remove all subviews
-//        for subview in cell.subviews
-//        {
-//            subview.removeFromSuperview()
-//        }
+        // Remove all subviews
+        for subview in cell.subviews
+        {
+            subview.removeFromSuperview()
+        }
+        
+        cell.cellContainer = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: tableView.frame.width + 50))
+        cell.addSubview(cell.cellContainer)
+        
+//        cell.footerContainer = UIView(frame: CGRect(x: 0, y: cell.cellContainer.frame.height - 50, width: cell.cellContainer.frame.width, height: 50))
+//        cell.footerContainer.backgroundColor = Constants.Colors.standardBackground
+//        cell.cellContainer.addSubview(cell.footerContainer)
+        
+        cell.cellImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: cell.cellContainer.frame.width, height: cell.cellContainer.frame.width))
+        cell.cellImageView.contentMode = UIViewContentMode.scaleAspectFit
+        cell.cellImageView.clipsToBounds = true
+        cell.cellContainer.addSubview(cell.cellImageView)
+        
+        // Add a loading indicator until the Media has downloaded
+        // Give it the same size and location as the imageView
+        cell.mediaActivityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: cell.cellImageView.frame.width, height: cell.cellImageView.frame.height))
+        cell.mediaActivityIndicator.color = UIColor.black
+        cell.cellImageView.addSubview(cell.mediaActivityIndicator)
+        cell.mediaActivityIndicator.startAnimating()
+        
+        cell.userImageView = UIImageView(frame: CGRect(x: 10, y: 10, width: 50, height: 50))
+//        cell.userImageView = UIImageView(frame: CGRect(x: 0, y: cell.cellContainer.frame.height - 50, width: 50, height: 50))
+        cell.userImageView.backgroundColor = Constants.Colors.standardBackgroundGrayTransparent
+        cell.userImageView.contentMode = UIViewContentMode.scaleAspectFit
+        cell.userImageView.clipsToBounds = true
+        cell.cellContainer.addSubview(cell.userImageView)
+        
+        // Add a loading indicator until the user image has downloaded
+        // Give it the same size and location as the user image
+        cell.userImageActivityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: cell.userImageView.frame.width, height: cell.userImageView.frame.height))
+        cell.userImageActivityIndicator.color = UIColor.black
+        cell.userImageView.addSubview(cell.userImageActivityIndicator)
+        cell.userImageActivityIndicator.startAnimating()
+        
+        cell.datetimeLabel = UILabel(frame: CGRect(x: cell.cellImageView.frame.width - 60, y: cell.cellImageView.frame.height - 60, width: 50, height: 50))
+//        cell.datetimeLabel = UILabel(frame: CGRect(x: 50, y: cell.cellContainer.frame.height - 50, width: 50, height: 50))
+        cell.datetimeLabel.backgroundColor = Constants.Colors.standardBackgroundGrayTransparent
+        cell.datetimeLabel.font = UIFont(name: Constants.Strings.fontAlt, size: 16)
+        cell.datetimeLabel.textColor = Constants.Colors.colorTextLight
+        cell.datetimeLabel.textAlignment = .center
+        cell.datetimeLabel.numberOfLines = 2
+        cell.datetimeLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
+        cell.cellContainer.addSubview(cell.datetimeLabel)
+        
+        cell.shareButtonView = UIView(frame: CGRect(x: cell.cellImageView.frame.width - 60, y: 10, width: 50, height: 50))
+//        cell.shareButtonView = UIView(frame: CGRect(x: cell.cellContainer.frame.width - 50, y: cell.cellContainer.frame.height - 50, width: 50, height: 50))
+        cell.shareButtonView.backgroundColor = Constants.Colors.standardBackgroundGrayTransparent
+        cell.cellContainer.addSubview(cell.shareButtonView)
+        
+        cell.shareButtonImage = UIImageView(frame: CGRect(x: 10, y: 10, width: 30, height: 30))
+        cell.shareButtonImage.image = UIImage(named: Constants.Strings.iconShareArrow)
+        cell.shareButtonImage.contentMode = UIViewContentMode.scaleAspectFit
+        cell.shareButtonImage.clipsToBounds = true
+        cell.shareButtonView.addSubview(cell.shareButtonImage)
+        
+        cell.flagButtonView = UIView(frame: CGRect(x: 10, y: cell.cellImageView.frame.height - 60, width: 50, height: 50))
+//        cell.flagButtonView = UIView(frame: CGRect(x: cell.cellContainer.frame.width - 100, y: cell.cellContainer.frame.height - 50, width: 50, height: 50))
+        cell.flagButtonView.backgroundColor = Constants.Colors.standardBackgroundGrayTransparent
+        cell.cellContainer.addSubview(cell.flagButtonView)
+        
+        cell.flagButtonImage = UILabel(frame: CGRect(x: 10, y: 10, width: 30, height: 30))
+//        cell.flagButtonImage.image = UIImage(named: Constants.Strings.iconShareArrow)
+//        cell.flagButtonImage.contentMode = UIViewContentMode.scaleAspectFit
+//        cell.flagButtonImage.clipsToBounds = true
+        cell.flagButtonImage.font = UIFont(name: Constants.Strings.fontAlt, size: 30)
+        cell.flagButtonImage.textColor = Constants.Colors.colorTextLight
+        cell.flagButtonImage.textAlignment = .center
+        cell.flagButtonImage.text = "\u{2691}" // "\u{26A0}"
+        cell.flagButtonView.addSubview(cell.flagButtonImage)
         
         if indexPath.row > 0
         {
@@ -159,19 +271,59 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
             }
             else if dateAgeHrs < 120
             {
-                formatter.dateFormat = "E\n H:mma" //"E, H:mma"
+                formatter.dateFormat = "E\nh:mm\na" //"E, H:mma"
                 stringDate = formatter.string(from: datetime as Date)
+                cell.datetimeLabel.font = UIFont(name: Constants.Strings.fontAlt, size: 12)
+                cell.datetimeLabel.numberOfLines = 3
             }
             else
             {
-                formatter.dateFormat = "E\n MMM d" // "E, MMM d"   "E, MMM d, H:mma"
+                formatter.dateFormat = "E\nMMM d" // "E, MMM d"   "E, MMM d, H:mma"
                 stringDate = formatter.string(from: datetime as Date)
+                cell.datetimeLabel.font = UIFont(name: Constants.Strings.fontAlt, size: 14)
             }
-            // LEAVE SPACES AT BEG AND END OF THE STRING (TO ADD PADDING)
             cell.datetimeLabel.text = stringDate
-//            cell.datetimeLabel.sizeToFit()
-//            let oldLabelSize = cell.datetimeLabel.frame.size
-//            cell.datetimeLabel.frame = CGRect(x: cell.cellImageView.frame.width - (oldLabelSize.width + 15), y: cell.cellImageView.frame.height - 35, width: oldLabelSize.width + 10, height: oldLabelSize.height)
+        }
+        
+        // Find the associated user and assign the image, if available (if not, don't show the user imageview)
+        spotLoop: for spot in Constants.Data.allSpot
+        {
+            print("STVC-SPOT CHECK: \(spot.spotID)")
+            if spot.spotID == cellSpotContent.spotID
+            {
+                print("STVC-SPOT FOUND: \(spot.spotID)")
+                userLoop: for user in Constants.Data.allUsers
+                {
+                    print("STVC-USER CHECK: \(user.userID)")
+                    if user.userID == spot.userID
+                    {
+                        print("STVC-USER FOUND: \(user.userID)")
+                        print("STVC - USER-CHECK 1: \(user.userID)")
+                        print("STVC - FBID-CHECK 2: \(user.facebookID)")
+                        print("STVC - TYPE-CHECK 3: \(user.type)")
+                        print("STVC - STATUS-CHECK 4: \(user.status)")
+                        print("STVC - CONN-CHECK 5: \(user.connection)")
+                        print("STVC - DATETIME-CHECK 6: \(user.datetime)")
+                        print("STVC - NAME-CHECK 7: \(user.name)")
+                        print("STVC - THUMBNAIL-CHECK 8: \(user.image?.size)")
+                        print("STVC - IMAGE-CHECK 9: \(user.thumbnail?.size)")
+                        if let image = user.thumbnail
+                        {
+                            print("STVC-IMAGE ADDED")
+                            cell.userImageView.image = image
+                            cell.cellContainer.addSubview(cell.userImageView)
+                            cell.userImageActivityIndicator.stopAnimating()
+                        }
+                        else
+                        {
+                            // For some reason the thumbnail has not yet downloaded for this user - request the image again
+                            RequestPrep(requestToCall: FBDownloadUserImage(facebookID: user.facebookID, largeImage: false), delegate: self as RequestDelegate).prepRequest()
+                        }
+                        break userLoop
+                    }
+                }
+                break spotLoop
+            }
         }
         
 //        // Add FB Share stuff
@@ -189,8 +341,6 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
 //            cell.cellContainer.addSubview(shareButton)
 //        }
         
-        // Start animating the activity indicator
-        cell.mediaActivityIndicator.startAnimating()
         // Assign the spot content image to the image if available - if not, assign the thumbnail until the real image downloads
         if let contentImage = cellSpotContent.image
         {
@@ -237,13 +387,39 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
         if gesture.state == UIGestureRecognizerState.ended
         {
             let tapLocation = gesture.location(in: self.spotContentTableView)
+//            print("STVC - TAP LOCATION: \(tapLocation)")
             if let tappedIndexPath = spotContentTableView.indexPathForRow(at: tapLocation)
             {
+//                print("STVC - TAPPED INDEX PATH: \(tappedIndexPath)")
                 if let tappedCell = self.spotContentTableView.cellForRow(at: tappedIndexPath) as? SpotTableViewCell
                 {
                     let cellTapLocation = gesture.location(in: tappedCell)
+                    if tappedCell.userImageView.frame.contains(cellTapLocation)
+                    {
+                        // Load the UserVC
+                        let spotID = spotContent[tappedIndexPath.row].spotID
+                        spotLoop: for spot in Constants.Data.allSpot
+                        {
+                            if spot.spotID == spotID
+                            {
+                                userLoop: for user in Constants.Data.allUsers
+                                {
+                                    if user.userID == spot.userID
+                                    {
+                                        print("STVC - USER TAP: \(user.userID)")
+                                        let userVC = UserViewController(user: user)
+                                        self.navigationController!.pushViewController(userVC, animated: true)
+                                        break userLoop
+                                    }
+                                }
+                                break spotLoop
+                            }
+                        }
+                    }
                     if tappedCell.shareButtonView.frame.contains(cellTapLocation)
                     {
+                        // Share the image on Facebook
+//                        print("STVC - SHARE CONTAINS")
                         if let image = spotContent[tappedIndexPath.row].image
                         {
                             let photo : FBSDKSharePhoto = FBSDKSharePhoto()
@@ -260,6 +436,41 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                                 print("STVC - FB SHARE RESPONSE: \(fbShareResponse)")
                             }
                         }
+                    }
+                    else if tappedCell.flagButtonView.frame.contains(cellTapLocation)
+                    {
+                        // Ensure the user wants to flag the content "Are you sure you want to report this image as objectionable or inaccurate?"
+                        let alertController = UIAlertController(title: "REPORT IMAGE", message: "", preferredStyle: UIAlertControllerStyle.alert)
+                        let objectionableAction = UIAlertAction(title: "Inappropriate", style: UIAlertActionStyle.default)
+                        { (result : UIAlertAction) -> Void in
+                            
+                            // Flag the image as objectionable
+                            let contentID = self.spotContent[tappedIndexPath.row].contentID
+                            let spotID = self.spotContent[tappedIndexPath.row].spotID
+                            print("STVC - FLAG 00 FOR CONTENT: \(String(describing: contentID))")
+                            
+                            // Send the SpotContent update
+                            AWSPrepRequest(requestToCall: AWSUpdateSpotContentData(contentID: contentID, spotID: spotID, statusUpdate: "flag-00"), delegate: self as AWSRequestDelegate).prepRequest()
+                        }
+                        alertController.addAction(objectionableAction)
+                        let inaccurateAction = UIAlertAction(title: "Inaccurate", style: UIAlertActionStyle.default)
+                        { (result : UIAlertAction) -> Void in
+                            
+                            // Flag the image as objectionable
+                            let contentID = self.spotContent[tappedIndexPath.row].contentID
+                            let spotID = self.spotContent[tappedIndexPath.row].spotID
+                            print("STVC - FLAG 01 FOR CONTENT: \(String(describing: contentID))")
+                            
+                            // Send the SpotContent update
+                            AWSPrepRequest(requestToCall: AWSUpdateSpotContentData(contentID: contentID, spotID: spotID, statusUpdate: "flag-01"), delegate: self as AWSRequestDelegate).prepRequest()
+                        }
+                        alertController.addAction(inaccurateAction)
+                        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default)
+                        { (result : UIAlertAction) -> Void in
+                            print("STVC - FLAG CANCELLED")
+                        }
+                        alertController.addAction(cancelAction)
+                        self.present(alertController, animated: true, completion: nil)
                     }
                 }
             }
@@ -310,6 +521,10 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
     func showLoginScreen()
     {
         print("BAVC - SHOW LOGIN SCREEN")
+        
+        // Load the LoginVC
+        let loginVC = LoginViewController()
+        self.navigationController!.pushViewController(loginVC, animated: true)
     }
     
     func processAwsReturn(_ objectType: AWSRequestObject, success: Bool)
@@ -375,6 +590,31 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                         let alertController = UtilityFunctions().createAlertOkView("AWSGetMediaImage - Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         self.present(alertController, animated: true, completion: nil)
                     }
+                case let awsUpdateSpotContentData as AWSUpdateSpotContentData:
+                    if success
+                    {
+                        // The flagging update was successful, so remove the image from the current view
+                        // THE GLOBAL ARRAY WAS UPDATED IN THE AWS CLASS RESPONSE
+                        localSpotContentLoop: for (index, spotContentObject) in self.spotContent.enumerated()
+                        {
+                            if spotContentObject.contentID == awsUpdateSpotContentData.contentID
+                            {
+                                // Remove the SpotContent object
+                                self.spotContent.remove(at: index)
+                                
+                                // Update the tableview
+                                self.refreshSpotViewTable()
+                                
+                                break localSpotContentLoop
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Show the error message
+                        let alertController = UtilityFunctions().createAlertOkView("AWSGetMediaImage - Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                        self.present(alertController, animated: true, completion: nil)
+                    }
                 default:
                     print("STVC-DEFAULT: THERE WAS AN ISSUE WITH THE DATA RETURNED FROM AWS")
                     // Show the error message
@@ -382,5 +622,29 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                     self.present(alertController, animated: true, completion: nil)
                 }
         })
+    }
+    
+    func processRequestReturn(_ requestCalled: RequestObject, success: Bool)
+    {
+        // Process the return data based on the method used
+        switch requestCalled
+        {
+        case _ as FBDownloadUserImage:
+            if success
+            {
+                print("STVC-FBDownloadUserImage")
+                self.refreshSpotViewTable()
+            }
+            else
+            {
+                // Show the error message
+                let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                alert.show()
+            }
+        default:
+            // Show the error message
+            let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+            alert.show()
+        }
     }
 }

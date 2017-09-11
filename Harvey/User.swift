@@ -10,20 +10,24 @@ import UIKit
 
 class User
 {
-    var digitsID: String!
     var userID: String!
     var facebookID: String!
-    var userName: String?
-//    var userImageID: String?
-    var userImage: UIImage?
+    var type: String!
+    var status: String!
+    var datetime: Date!
+    var name: String?
+    var thumbnail: UIImage?
+    var image: UIImage?
+    var connection: String = "na"
     
-    convenience init(digitsID: String!, userID: String!, facebookID: String!, userName: String?)
+    convenience init(userID: String!, facebookID: String!, type: String!, status: String!, datetime: Date!)
     {
         self.init()
         
-        self.digitsID = digitsID
         self.userID = userID
         self.facebookID = facebookID
-        self.userName = userName
+        self.type = type
+        self.status = status
+        self.datetime = datetime
     }
 }

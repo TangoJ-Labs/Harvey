@@ -12,6 +12,7 @@
     </entity>
     <entity name="MapSetting" representedClassName="MapSetting" syncable="YES">
         <attribute name="menuMapHydro" optional="YES" attributeType="Integer 32" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="menuMapShelter" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="menuMapSpot" optional="YES" attributeType="Integer 32" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="menuMapTimeFilter" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="menuMapTraffic" optional="YES" attributeType="Integer 32" usesScalarValueType="YES" syncable="YES"/>
@@ -22,7 +23,7 @@
     <elements>
         <element name="LogError" positionX="-54" positionY="18" width="128" height="90"/>
         <element name="LogUserflow" positionX="-36" positionY="45" width="128" height="90"/>
-        <element name="MapSetting" positionX="-63" positionY="-18" width="128" height="105"/>
+        <element name="MapSetting" positionX="-63" positionY="-18" width="128" height="120"/>
         <element name="TutorialView" positionX="-18" positionY="63" width="128" height="60"/>
     </elements>
 </model>

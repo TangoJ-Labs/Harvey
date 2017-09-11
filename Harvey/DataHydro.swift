@@ -8,7 +8,7 @@
 
 import Foundation
 
-class DataHydro
+class Hydro
 {
     var readingID: String!
     var datetime: Date!

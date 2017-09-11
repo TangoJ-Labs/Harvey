@@ -167,7 +167,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         switchCameraView = UIView(frame: CGRect(x: viewContainer.frame.width - 60, y: viewContainer.frame.height - 60, width: 40, height: 40))
         switchCameraView.layer.cornerRadius = 20
         switchCameraView.backgroundColor = UIColor.white.withAlphaComponent(0.3)
-        viewContainer.addSubview(switchCameraView)
+//        viewContainer.addSubview(switchCameraView)
         
         switchCameraLabel = UILabel(frame: CGRect(x: 5, y: 5, width: 30, height: 30))
         switchCameraLabel.backgroundColor = UIColor.clear
@@ -179,7 +179,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         switchCameraTapView = UIView(frame: CGRect(x: viewContainer.frame.width - 70, y: viewContainer.frame.height - 70, width: 60, height: 60))
         switchCameraTapView.layer.cornerRadius = 30
         switchCameraTapView.backgroundColor = UIColor.clear
-        viewContainer.addSubview(switchCameraTapView)
+//        viewContainer.addSubview(switchCameraTapView)
         
         // Add the Exit Camera Button and overlaid Tap View for more tap coverage
         exitCameraView = UIView(frame: CGRect(x: 20, y: viewContainer.frame.height - 60, width: 40, height: 40))
@@ -350,7 +350,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             else if switchCameraTapView.frame.contains(touch.location(in: viewContainer))
             {
 //                print("TOUCHED SWITCH CAMERA BUTTON")
-                switchCamera()
+//                switchCamera()
             }
             else if actionButtonTapView.frame.contains(touch.location(in: viewContainer))
             {
@@ -367,7 +367,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                     if let spot = spot
                     {
                         // Upload the images
-                        for content in spot.spotContent
+                        for (index, content) in spot.spotContent.enumerated()
                         {
                             if let image = content.image
                             {
@@ -383,7 +383,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                                 if let imageData = UIImageJPEGRepresentation(image, 0.6)
                                 {
                                     try? imageData.write(to: imageURL)
-                                    AWSPrepRequest(requestToCall: AWSUploadMediaToBucket(bucket: Constants.Strings.S3BucketMedia, uploadKey: "\(content.contentID!).jpg", mediaURL: imageURL), delegate: self as AWSRequestDelegate).prepRequest()
+                                    AWSPrepRequest(requestToCall: AWSUploadMediaToBucket(bucket: Constants.Strings.S3BucketMedia, uploadKey: "\(content.contentID!).jpg", mediaURL: imageURL, imageIndex: index), delegate: self as AWSRequestDelegate).prepRequest()
                                     
                                     // Start the activity indicator and hide the send image
                                     self.actionButtonLabel.removeFromSuperview()
@@ -834,7 +834,13 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                             
                             if let cgImage = sizedImage.cgImage
                             {
-                                let image = UIImage(cgImage: cgImage, scale: 1.0, orientation: UIImageOrientation(rawValue: imageOrientationValue)!)
+                                let imageRaw = UIImage(cgImage: cgImage, scale: 1.0, orientation: UIImageOrientation(rawValue: imageOrientationValue)!)
+                                print("CVC - OLD IMAGE ORIENTATION: \(imageRaw.imageOrientation.hashValue)")
+                                
+                                // Remove the orientation of the image
+                                let image = imageRaw.imageByNormalizingOrientation()
+                                
+                                print("CVC - NEW IMAGE ORIENTATION: \(image.imageOrientation.hashValue)")
                                 
                                 if let spot = self.spot
                                 {
@@ -856,7 +862,6 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                                         self.spot!.lat = userCoords.latitude
                                         self.spot!.lng = userCoords.longitude
                                         
-//                                    print("CVC - NEW IMAGE ORIENTATION: \(image.imageOrientation.rawValue)")
                                         self.refreshImageRing()
                                     }
                                 }
@@ -939,6 +944,9 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     func showLoginScreen()
     {
         print("CVC - SHOW LOGIN SCREEN")
+        // Load the LoginVC
+        let loginVC = LoginViewController()
+        self.navigationController!.pushViewController(loginVC, animated: true)
     }
     
     func processAwsReturn(_ objectType: AWSRequestObject, success: Bool)
@@ -962,7 +970,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                                 let userCoords = self.mapView.userLocation.coordinate
                                 
                                 // Create the Spot
-                                self.spot = Spot(spotID: randomID, userID: Constants.Data.currentUser.userID, datetime: Date(), lat: userCoords.latitude, lng: userCoords.longitude)
+                                self.spot = Spot(spotID: randomID, userID: Constants.Data.currentUser.userID, datetime: Date(timeIntervalSinceNow: 0), lat: userCoords.latitude, lng: userCoords.longitude)
                             }
                         }
                     }
@@ -982,13 +990,17 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                         self.loadingIndicator.stopAnimating()
                         self.actionButton.addSubview(self.actionButtonLabel)
                     }
-                case _ as AWSUploadMediaToBucket:
+                case let awsUploadMediaToBucket as AWSUploadMediaToBucket:
                     if success
                     {
 //                        print("CVC - AWSUploadMediaToBucket SUCCESS")
                         
-                        // At least one of the images was successfully uploaded, so upload the Spot data
-                        AWSPrepRequest(requestToCall: AWSPutSpotData(spot: self.spot), delegate: self as AWSRequestDelegate).prepRequest()
+                        if awsUploadMediaToBucket.imageIndex == 0
+                        {
+                            // The first image was successfully uploaded, so upload the Spot data
+                            // This ensures that Spots don't exist without some media
+                            AWSPrepRequest(requestToCall: AWSPutSpotData(spot: self.spot), delegate: self as AWSRequestDelegate).prepRequest()
+                        }
                     }
                     else
                     {
@@ -1029,7 +1041,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                         self.actionButton.addSubview(self.actionButtonLabel)
                     }
                 default:
-                    print("MVC-DEFAULT: THERE WAS AN ISSUE WITH THE DATA RETURNED FROM AWS")
+                    print("CVC-DEFAULT: THERE WAS AN ISSUE WITH THE DATA RETURNED FROM AWS")
                     
                     // Show the error message
                     let alertController = UIAlertController(title: "Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.", preferredStyle: UIAlertControllerStyle.alert)

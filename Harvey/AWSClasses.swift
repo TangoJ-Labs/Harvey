@@ -73,11 +73,11 @@ class AWSPrepRequest
                 // Assign the Facebook Token to the AWSRequestObject
                 self.requestToCall.facebookToken = facebookToken
                 
-//                print("AC - COGNITO ID: \(String(describing: Constants.credentialsProvider.identityId))")
+                print("AC-PREP - COGNITO ID: \(String(describing: Constants.credentialsProvider.identityId))")
                 // Ensure that the Cognito ID is still valid and is not older than an hour (AWS will invalidate if older)
                 if Constants.credentialsProvider.identityId != nil && Constants.Data.lastCredentials - NSDate().timeIntervalSinceNow < 3600
                 {
-                    // The Cognito ID is valid, so check for a Blobjot ID and then make the request
+                    // The Cognito ID is valid, so check for a Harvey ID and then make the request
                     self.getHarveyID(facebookToken: facebookToken)
                 }
                 else
@@ -92,19 +92,23 @@ class AWSPrepRequest
                 
                 if let parentVC = self.awsRequestDelegate
                 {
+                    print("AC-PREP-LOGIN - CHECK 1")
                     // Check to see if the parent viewcontroller is already the MapViewController.  If so, call the MVC showLoginScreen function
                     // Otherwise, launch a new MapViewController and show the login screen
                     if parentVC is MapViewController
                     {
+                        print("AC-PREP-LOGIN - CHECK 2")
                         // PARENT VC IS EQUAL TO MVC
                         parentVC.showLoginScreen()
                     }
                     else
                     {
+                        print("AC-PREP-LOGIN - CHECK 3")
                         // PARENT VC IS NOT EQUAL TO MVC
                         let newMapViewController = MapViewController()
                         if let rootNavController = UIApplication.shared.windows[0].rootViewController?.navigationController
                         {
+                            print("AC-PREP-LOGIN - CHECK 4")
                             rootNavController.pushViewController(newMapViewController, animated: true)
                         }
                     }
@@ -122,7 +126,7 @@ class AWSPrepRequest
     // Once the Facebook token is gained, request a Cognito Identity ID
     func getCognitoID()
     {
-//        print("AC - IN GET COGNITO ID: \(String(describing: requestToCall.facebookToken))")
+        print("AC-PREP - IN GET COGNITO ID: \(String(describing: requestToCall.facebookToken))")
         if let token = requestToCall.facebookToken
         {
 //            print("AC - GETTING COGNITO ID: \(String(describing: Constants.credentialsProvider.identityId))")
@@ -178,11 +182,11 @@ class AWSPrepRequest
     // After ensuring that the Cognito ID is valid, so check for a Blobjot ID and then make the request
     func getHarveyID(facebookToken: FBSDKAccessToken!)
     {
-//        print("AC - GET HARVEY ID")
+        print("AC-PREP - GET HARVEY ID")
         // If the Identity ID is still valid, ensure that the current userID is not nil
         if Constants.Data.currentUser.userID != nil
         {
-//            print("AC - CURRENT USER ID: \(String(describing: Constants.Data.currentUser.userID))")
+            print("AC-PREP - CURRENT USER ID: \(String(describing: Constants.Data.currentUser.userID))")
             // The user is already logged in so go ahead and register for notifications
 //            UtilityFunctions().registerPushNotifications()
             
@@ -193,7 +197,7 @@ class AWSPrepRequest
         }
         else
         {
-//            print("AC - FB TOKEN: \(String(describing: facebookToken.tokenString))")
+            print("AC-PREP - FB TOKEN: \(String(describing: facebookToken.tokenString))")
             // The current ID is nil, so request it from AWS, but store the previous request and call it when the user is logged in
             let awsLoginUser = AWSLoginUser(secondaryAwsRequestObject: self.requestToCall)
             awsLoginUser.awsRequestDelegate = self.awsRequestDelegate
@@ -221,9 +225,12 @@ class AWSRequestObject
  Properties:
  - secondaryAwsRequestObject- An optional property that allows the original request to be carried by the login request, when the login request is fired by the prepRequest class due to no user being logged in.  This property should not be used for AWSLoginUser calls based directly on user interaction
  */
-class AWSLoginUser : AWSRequestObject
+class AWSLoginUser: AWSRequestObject, RequestDelegate
 {
     var secondaryAwsRequestObject: AWSRequestObject?
+    var newUser: Bool = false
+    var banned: Bool = false
+    var user: User?
     
     required init(secondaryAwsRequestObject: AWSRequestObject?)
     {
@@ -233,178 +240,175 @@ class AWSLoginUser : AWSRequestObject
     // FBSDK METHOD - Get user data from FB before attempting to log in via AWS
     override func makeRequest()
     {
-        print("AC - FBSDK - COGNITO ID: \(String(describing: Constants.credentialsProvider.identityId))")
-        let fbRequest = FBSDKGraphRequest(graphPath: "me", parameters: ["fields": "id, email, name, picture"]) //parameters: ["fields": "id,email,name,picture"])
-        print("FBSDK - MAKING GRAPH CALL")
-        fbRequest?.start
-            {(connection: FBSDKGraphRequestConnection?, result: Any?, error: Error?) in
-                
-                if error != nil
-                {
-                    print("FBSDK - Error Getting Info \(String(describing: error))")
-//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: "FBSDK - Error Getting Info" + error!.localizedDescription)
-                    
-                    // Record the server request attempt
-                    Constants.Data.serverTries += 1
-                    
-                    // Try again
-                    AWSPrepRequest(requestToCall: AWSLoginUser(secondaryAwsRequestObject: nil), delegate: self.awsRequestDelegate!).prepRequest()
-                }
-                else
-                {
-                    if let resultDict = result as? [String:AnyObject]
-                    {
-//                        if let resultPicture = resultDict["picture"] as? [String:AnyObject]
-//                        {
-//                            if let resultPictureData = resultPicture["data"] as? [String:AnyObject]
-//                            {
-//                                print("FBSDK - IMAGE URL : \(resultPictureData["url"])")
-//                            }
-//                        }
-                        
-                        if let facebookName = resultDict["name"]
-                        {
-                            var facebookImageUrl = "none"
-                            if let resultPicture = resultDict["picture"] as? [String:AnyObject]
-                            {
-                                if let resultPictureData = resultPicture["data"] as? [String:AnyObject]
-                                {
-                                    facebookImageUrl = resultPictureData["url"]! as! String
-                                }
-                            }
-                            self.loginUser((facebookName as! String), facebookThumbnailUrl: facebookImageUrl)
-                        }
-                        else
-                        {
-                            print("FBSDK - Error Processing Facebook Name")
-//                            CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: "FBSDK - Error Processing Facebook Name" + error!.localizedDescription)
-                            
-                            // Record the server request attempt
-                            Constants.Data.serverTries += 1
-                            
-                            // Try again
-                            AWSPrepRequest(requestToCall: AWSLoginUser(secondaryAwsRequestObject: nil), delegate: self.awsRequestDelegate!).prepRequest()
-                        }
-                    }
-                    else
-                    {
-                        print("FBSDK - Error Processing Result")
-//                        CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: "FBSDK - Error Processing Result" + error!.localizedDescription)
-                        
-                        // Record the server request attempt
-                        Constants.Data.serverTries += 1
-                        
-                        // Try again
-                        AWSPrepRequest(requestToCall: AWSLoginUser(secondaryAwsRequestObject: nil), delegate: self.awsRequestDelegate!).prepRequest()
-                    }
-                }
+        if let fbToken = facebookToken
+        {
+            RequestPrep(requestToCall: FBGetUserData(me: true, facebookID: fbToken.userID), delegate: self as RequestDelegate).prepRequest()
         }
     }
     
     // Log in the user or create a new user
     func loginUser(_ facebookName: String, facebookThumbnailUrl: String)
     {
-        print("AC - LU - FACEBOOK TOKEN: \(String(describing: self.facebookToken))")
-        print("AC - LU - COGNITO ID: \(String(describing: Constants.credentialsProvider.identityId))")
-        let json: NSDictionary = ["facebook_id" : self.facebookToken!.userID]
-        
-        let lambdaInvoker = AWSLambdaInvoker.default()
-        lambdaInvoker.invokeFunction("Harvey-LoginUser", jsonObject: json, completionHandler:
-            { (responseData, err) -> Void in
-                
-                if (err != nil)
-                {
-                    print("AC - FBSDK LOGIN - ERROR: \(String(describing: err))")
-//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+        print("AC-LU - FACEBOOK TOKEN: \(String(describing: self.facebookToken))")
+        print("AC-LU - COGNITO ID: \(String(describing: Constants.credentialsProvider.identityId))")
+        if let fbToken = facebookToken
+        {
+            var json = [String : Any]()
+            json["app_version"] = Constants.Settings.appVersion
+            json["facebook_id"] = fbToken.userID
+            
+            let lambdaInvoker = AWSLambdaInvoker.default()
+            lambdaInvoker.invokeFunction("Harvey-LoginUser", jsonObject: json, completionHandler:
+                { (responseData, err) -> Void in
                     
-                    // Record the login attempt
-                    Constants.Data.serverTries += 1
-                    
-                    DispatchQueue.main.async(execute:
-                        {
-                            // Notify the parent view that the AWS call completed with an error
-                            if let parentVC = self.awsRequestDelegate
-                            {
-                                parentVC.processAwsReturn(self, success: false)
-                                
-                                // Try again
-                                AWSPrepRequest(requestToCall: self, delegate: parentVC).prepRequest()
-                            }
-                    })
-                    
-                }
-                else if (responseData != nil)
-                {
-                    // Create a user object to save the data
-                    let currentUser = User()
-                    currentUser.userID = responseData as? String
-                    currentUser.facebookID = self.facebookToken!.userID
-                    currentUser.userName = facebookName
-                    currentUser.userImage = UIImage(named: "PROFILE_DEFAULT.png")
-                    
-                    // The response will be the userID associated with the facebookID used, save the current user globally
-                    Constants.Data.currentUser = currentUser
-                    
-//                    // Save the new login data to Core Data
-//                    CoreDataFunctions().currentUserSave(user: currentUser)
-                    
-//                    // Reset the global User list with Core Data
-//                    UtilityFunctions().resetUserListWithCoreData()
-                    
-//                    UtilityFunctions().registerPushNotifications()
-                    
-                    // If the secondary request object is not nil, process the carried (second) request; no need to
-                    // pass the login response to the parent view controller since it did not explicitly call the login request
-                    if let secondaryAwsRequestObject = self.secondaryAwsRequestObject
+                    if (err != nil)
                     {
-                        AWSPrepRequest(requestToCall: secondaryAwsRequestObject, delegate: self.awsRequestDelegate!).prepRequest()
-                    }
-                    else
-                    {
-                        // Notify the parent view that the AWS Login call completed successfully
-                        if let parentVC = self.awsRequestDelegate
-                        {
-                            parentVC.processAwsReturn(self, success: true)
-                        }
-                    }
-                    
-                    // Download the user image
-                    // Create a session object with the default configuration
-                    if let url = URL(string: "http://graph.facebook.com/" + self.facebookToken!.userID + "/picture?type=large")
-//                    if let url = URL(string: facebookThumbnailUrl)
-                    {
-                        let request = URLRequest(url: url)
-                        let session = URLSession(configuration: .default)
-                        let getFbImage = session.dataTask(with: request)
-                        { (data, response, error) in
-                            if let e = error
+                        print("AC-LU - FBSDK LOGIN - ERROR: \(String(describing: err))")
+//                        CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                        
+                        // Record the login attempt
+                        Constants.Data.serverTries += 1
+                        
+                        DispatchQueue.main.async(execute:
                             {
-                                print("AC - FB IMAGE ERROR: \(e)")
-                            }
-                            else
-                            {
-                                if let res = response as? HTTPURLResponse
+                                // Notify the parent view that the AWS call completed with an error
+                                if let parentVC = self.awsRequestDelegate
                                 {
-                                    print("AC - FB IMAGE RESPONSE CODE: \(res.statusCode)")
-                                    if let imageData = data
+                                    parentVC.processAwsReturn(self, success: false)
+                                    
+                                    // Try again
+                                    AWSPrepRequest(requestToCall: self, delegate: parentVC).prepRequest()
+                                }
+                        })
+                        
+                    }
+                    else if (responseData != nil)
+                    {
+                        // Convert the response to JSON with keys and AnyObject values
+                        if let responseJson = responseData as? [String: AnyObject]
+                        {
+                            if let status = responseJson["status"] as? String
+                            {
+                                print("AC-LU - loginUser - status: \(status)")
+                                if status == "banned"
+                                {
+                                    self.banned = true
+                                    
+                                    // Notify the parent view that the AWS call failed - it will check for a banned user
+                                    if let parentVC = self.awsRequestDelegate
                                     {
-                                        Constants.Data.currentUser.userImage = UIImage(data: imageData)
-                                    }
-                                    else
-                                    {
-                                        print("AC - FB IMAGE IS NIL")
+                                        parentVC.processAwsReturn(self, success: false)
                                     }
                                 }
                                 else
                                 {
-                                    print("AC - FB IMAGE - NO RESPONSE CODE")
+                                    if let userID = responseJson["user_id"] as? String
+                                    {
+                                        print("AC-LU -LOGIN: \(responseJson)")
+                                        // Create a user object to save the data - all data should be available in the response
+                                        let currentUser = User()
+                                        currentUser.userID = userID
+                                        currentUser.facebookID = self.facebookToken!.userID
+                                        currentUser.name = facebookName
+                                        currentUser.image = UIImage(named: "PROFILE_DEFAULT.png")
+                                        currentUser.status = status
+                                        if let type = responseJson["type"] as? String
+                                        {
+                                            currentUser.type = type
+                                        }
+                                        if let timestamp = responseJson["timestamp"] as? Double
+                                        {
+                                            currentUser.datetime = Date(timeIntervalSince1970: timestamp)
+                                        }
+                                        else
+                                        {
+                                            currentUser.datetime = Date(timeIntervalSinceNow: 0)
+                                        }
+                                        
+                                        // Set the created user as the passed user for access by parent classes
+                                        self.user = currentUser
+                                        
+                                        // The response will be the userID associated with the facebookID used, save the current user globally
+                                        Constants.Data.currentUser = currentUser
+                                        
+                                        // Save the new login data to Core Data
+                                        CoreDataFunctions().currentUserSave(user: currentUser, deleteUser: false)
+                                        
+//                                        // Reset the global User list with Core Data
+//                                        UtilityFunctions().resetUserListWithCoreData()
+//                                        
+//                                        UtilityFunctions().registerPushNotifications()
+                                        
+                                        // Check whether the user is a new user, or has logged in before - still in use (9/7/2017)?
+                                        if let newUserInt = responseJson["new_user"] as? Int
+                                        {
+                                            if newUserInt == 1
+                                            {
+                                                self.newUser = true
+                                            }
+                                        }
+                                        
+                                        // If the secondary request object is not nil, process the carried (second) request; no need to
+                                        // pass the login response to the parent view controller since it did not explicitly call the login request
+                                        if let secondaryAwsRequestObject = self.secondaryAwsRequestObject
+                                        {
+                                            print("AC-LU -loginUser - secondary fire")
+                                            AWSPrepRequest(requestToCall: secondaryAwsRequestObject, delegate: self.awsRequestDelegate!).prepRequest()
+                                        }
+                                        else
+                                        {
+                                            print("AC-LU -loginUser - else")
+                                            // Notify the parent view that the AWS Login call completed successfully
+                                            if let parentVC = self.awsRequestDelegate
+                                            {
+                                                parentVC.processAwsReturn(self, success: true)
+                                            }
+                                        }
+                                        
+                                        print("AC-LU -loginUser - call RC-FBI FOR USER: \(self.facebookToken!.userID)")
+                                        // Go ahead and download the user image and make available
+                                        RequestPrep(requestToCall: FBDownloadUserImage(facebookID: self.facebookToken!.userID, largeImage: true), delegate: self as RequestDelegate).prepRequest()
+                                    }
                                 }
                             }
                         }
-                        getFbImage.resume()
+                    }
+            })
+        }
+    }
+    
+    func processRequestReturn(_ requestCalled: RequestObject, success: Bool)
+    {
+        // Process the return data based on the method used
+        switch requestCalled
+        {
+        case let fbGetUserData as FBGetUserData:
+            if success
+            {
+                if let name = fbGetUserData.facebookName
+                {
+                    if let thumbnailUrl = fbGetUserData.facebookThumbnailUrl
+                    {
+                        self.loginUser(name, facebookThumbnailUrl: thumbnailUrl)
                     }
                 }
-        })
+            }
+            else
+            {
+                print("AC-LU -FBGetUserData FAILURE")
+            }
+        case _ as FBDownloadUserImage:
+            if success
+            {
+                print("AC-LU -FBDownloadUserImage SUCCESS")
+            }
+            else
+            {
+                print("AC-LU -FBDownloadUserImage FAILURE")
+            }
+        default:
+            print("AC-LU -processRequestReturn DEFAULT")
+        }
     }
 }
 
@@ -413,33 +417,33 @@ class AWSLogoutUser
     
 }
 
-class AWSGetMapData : AWSRequestObject
+class AWSCheckUser : AWSRequestObject
 {
-    var userLocation: Float?
+    var facebookID: String!
+    var newUser: Bool = true
     
-    required init(userLocation: Float?)
+    required init(facebookID: String)
     {
-        if let userLocation = userLocation
-        {
-            self.userLocation = userLocation
-        }
+        self.facebookID = facebookID
     }
     
     // Use this request function when a Blob is within range of the user's location and the extra Blob data is needed
     override func makeRequest()
     {
-//        print("AC-GMD: REQUESTING MAP DATA: \(String(describing: self.userLocation))")
+        print("AC-CID: SENDING REQUEST")
         
         // Create a JSON object with the passed Blob ID and an indicator of whether or not the Blob data should be filtered (0 for no, 1 for yes)
-        let json: NSDictionary = ["user_location" : self.userLocation]
+        var json = [String : Any]()
+        json["app_version"] = Constants.Settings.appVersion
+        json["facebook_id"] = facebookID
         
         let lambdaInvoker = AWSLambdaInvoker.default()
-        lambdaInvoker.invokeFunction("Harvey-GetMapData", jsonObject: json, completionHandler:
+        lambdaInvoker.invokeFunction("Harvey-App-CheckUser", jsonObject: json, completionHandler:
             { (response, err) -> Void in
                 
                 if (err != nil)
                 {
-                    print("AC-GMD: GET MAP DATA ERROR: \(String(describing: err))")
+                    print("AC-CID: GET DATA ERROR: \(String(describing: err))")
 //                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
                     
                     // Record the server request attempt
@@ -453,13 +457,437 @@ class AWSGetMapData : AWSRequestObject
                 }
                 else if (response != nil)
                 {
-//                    print("AC-GMD RESPONSE:")
+                    print("AC-CID RESPONSE:")
 //                    print(response)
                     
-                    // The data request was successful - reset all data arrays
-                    Constants.Data.allSpot = [Spot]()
-                    Constants.Data.allSpotRequest = [SpotRequest]()
-                    Constants.Data.allHydro = [DataHydro]()
+                    // Convert the response to JSON with keys and AnyObject values
+                    if let responseJson = response as? [String: AnyObject]
+                    {
+                        if let userExistsInt = responseJson["user_exists"] as? Int
+                        {
+                            if userExistsInt == 1
+                            {
+                                self.newUser = false
+                            }
+                            
+                            // Notify the parent view that the AWS call completed successfully
+                            if let parentVC = self.awsRequestDelegate
+                            {
+                                print("AC-GHD - CALLED PARENT")
+                                parentVC.processAwsReturn(self, success: true)
+                            }
+                        }
+                    }
+                }
+        })
+    }
+}
+
+class AWSUpdateUser : AWSRequestObject
+{
+    var userID: String!
+    var facebookID: String?
+    var type: String?
+    var status: String?
+    
+    required init(userID: String)
+    {
+        self.userID = userID
+    }
+    
+    // Use this request function when a Blob is within range of the user's location and the extra Blob data is needed
+    override func makeRequest()
+    {
+        print("AC-UU: SENDING REQUEST")
+        
+        // Create a JSON object with the passed Blob ID and an indicator of whether or not the Blob data should be filtered (0 for no, 1 for yes)
+        var json = [String : Any]()
+        json["app_version"] = Constants.Settings.appVersion
+        json["user_id"] = userID
+        if let facebookID = self.facebookID
+        {
+            json["facebook_id"] = facebookID
+        }
+        if let type = self.type
+        {
+            json["type"] = type
+        }
+        if let status = self.status
+        {
+            json["status"] = status
+        }
+        
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-App-UpdateUser", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("AC-UU: GET DATA ERROR: \(String(describing: err))")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+                    print("AC-UU RESPONSE:")
+//                    print(response)
+                    
+                    // Convert the response to JSON with keys and AnyObject values
+                    if let responseJson = response as? [String: AnyObject]
+                    {
+                        if let response = responseJson["response"] as? String
+                        {
+                            if response == "success"
+                            {
+                                // Notify the parent view that the AWS call completed successfully
+                                if let parentVC = self.awsRequestDelegate
+                                {
+                                    parentVC.processAwsReturn(self, success: true)
+                                }
+                            }
+                            else
+                            {
+                                // Notify the parent view that the AWS call completed with a failure
+                                if let parentVC = self.awsRequestDelegate
+                                {
+                                    parentVC.processAwsReturn(self, success: false)
+                                }
+                            }
+                        }
+                    }
+                }
+        })
+    }
+}
+
+class AWSGetUsers: AWSRequestObject, RequestDelegate
+{
+    // Use this request function to query all current users
+    override func makeRequest()
+    {
+        print("AC-GU: SENDING REQUEST")
+        
+        // Create a JSON object with the passed Blob ID and an indicator of whether or not the Blob data should be filtered (0 for no, 1 for yes)
+        var json = [String : Any]()
+        json["app_version"] = Constants.Settings.appVersion
+        json["key"] = "value"
+        
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-GetUsers", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("AC-GU: GET DATA ERROR: \(String(describing: err))")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+                    print("AC-GU RESPONSE:")
+//                    print(response)
+                    
+                    // Convert the response to JSON with keys and AnyObject values
+                    if let responseArray = response as? [AnyObject]
+                    {
+                        print("AC-GU - CHECK 1")
+//                        // Create a local array to hold all downloaded users
+//                        var downloadedUsers = [User]()
+                        
+                        for arrayObject in responseArray
+                        {
+                            print("AC-GU - CHECK 2")
+                            if let responseJson = arrayObject as? [String: AnyObject]
+                            {
+                                print("AC-GU - CHECK 3: \(responseJson)")
+                                if let facebookID = responseJson["facebook_id"] as? String
+                                {
+                                    print("AC-GU - CHECK 4: \(facebookID)")
+                                    let newUser = User()
+                                    newUser.userID = responseJson["user_id"] as! String
+                                    newUser.facebookID = facebookID
+                                    newUser.type = responseJson["type"] as! String
+                                    newUser.status = responseJson["status"] as! String
+                                    newUser.datetime = Date(timeIntervalSince1970: responseJson["timestamp"] as! Double)
+                                    
+                                    // Check to see if any data currently exists that is not included in the new data
+                                    var userExists = false
+                                    userCheckLoop: for userCheck in Constants.Data.allUsers
+                                    {
+                                        // Check using the FBID since at least that should exist
+                                        if userCheck.facebookID == facebookID
+                                        {
+                                            // If the user already exists, update with newly downloaded data
+                                            userExists = true
+                                            userCheck.userID = newUser.userID
+                                            userCheck.type = newUser.type
+                                            userCheck.status = newUser.status
+                                            userCheck.datetime = newUser.datetime
+                                            break userCheckLoop
+                                        }
+                                    }
+                                    if !userExists
+                                    {
+                                        Constants.Data.allUsers.append(newUser)
+                                    }
+                                    
+                                    // Save the current user data to Core Data
+                                    CoreDataFunctions().userSave(user: newUser, deleteUser: false)
+                                    
+                                    // Request FB data for the user
+                                    RequestPrep(requestToCall: FBGetUserData(me: false, facebookID: newUser.facebookID), delegate: self as RequestDelegate).prepRequest()
+                                }
+                            }
+                        }
+                        
+//                        // Replace the global user array with the new data
+//                        Constants.Data.allUsers = downloadedUsers
+//                        for dUser in downloadedUsers
+//                        {
+//                            Constants.Data.allUsers.append(dUser)
+//                        }
+                        
+                        // Notify the parent view that the AWS call completed successfully
+                        if let parentVC = self.awsRequestDelegate
+                        {
+                            print("AC-GU - CALLED PARENT")
+                            parentVC.processAwsReturn(self, success: true)
+                        }
+                    }
+                    else
+                    {
+                        // Notify the parent view that the AWS call completed with an error
+                        if let parentVC = self.awsRequestDelegate
+                        {
+                            parentVC.processAwsReturn(self, success: false)
+                        }
+                    }
+                }
+        })
+    }
+    
+    func processRequestReturn(_ requestCalled: RequestObject, success: Bool)
+    {
+        // Process the return data based on the method used
+        switch requestCalled
+        {
+        case let fbGetUserData as FBGetUserData:
+            if success
+            {
+                print("AC-FBGetUserData SUCCESS")
+            }
+            else
+            {
+                print("AC-FBGetUserData FAILURE")
+            }
+        default:
+            print("AC-processRequestReturn DEFAULT")
+        }
+    }
+}
+
+class AWSGetUserConnections: AWSRequestObject
+{
+    // Use this request function to query all connections for the current users
+    override func makeRequest()
+    {
+        print("AC-GUC: SENDING REQUEST")
+        
+        // Create a JSON object with the passed Blob ID and an indicator of whether or not the Blob data should be filtered (0 for no, 1 for yes)
+        var json = [String : Any]()
+        json["app_version"] = Constants.Settings.appVersion
+        json["user_id"] = Constants.Data.currentUser.userID
+        
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-GetUserConnections", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("AC-GUC: GET DATA ERROR: \(String(describing: err))")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+                    print("AC-GUC RESPONSE:")
+//                    print(response)
+                    
+                    // Convert the response to JSON with keys and AnyObject values
+                    if let responseArray = response as? [AnyObject]
+                    {
+                        // Currently, the only concern is blocked users, so add all blocked userIDs to the global list and update the user status' in the global user list
+                        // Create a local array to hold all downloaded users
+                        var blockedUserIDs = [String]()
+                        
+                        for arrayObject in responseArray
+                        {
+                            if let responseJson = arrayObject as? [String: AnyObject]
+                            {
+                                if let connection = responseJson["connection"] as? String
+                                {
+                                    if connection == "blocked"
+                                    {
+                                        blockedUserIDs.append(responseJson["target_user_id"] as! String)
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Replace the global connection array with the new data
+                        Constants.Data.allUserBlockList = blockedUserIDs
+                        
+                        // Refresh the user connections
+                        UtilityFunctions().updateUserConnections()
+                        
+                        // Notify the parent view that the AWS call completed successfully
+                        if let parentVC = self.awsRequestDelegate
+                        {
+                            print("AC-GUC - CALLED PARENT")
+                            parentVC.processAwsReturn(self, success: true)
+                        }
+                    }
+                    else
+                    {
+                        // Notify the parent view that the AWS call completed with an error
+                        if let parentVC = self.awsRequestDelegate
+                        {
+                            parentVC.processAwsReturn(self, success: false)
+                        }
+                    }
+                }
+        })
+    }
+}
+
+class AWSPutUserConnection: AWSRequestObject
+{
+    var targetUserID: String!
+    var connection: String!
+    
+    required init(targetUserID: String!, connection: String!)
+    {
+        self.targetUserID = targetUserID
+        self.connection = connection
+    }
+    
+    // Use this request function to query all current users
+    override func makeRequest()
+    {
+        print("AC-PUC: SENDING REQUEST")
+        
+        // Create a JSON object with the passed Blob ID and an indicator of whether or not the Blob data should be filtered (0 for no, 1 for yes)
+        var json = [String : Any]()
+        json["app_version"] = Constants.Settings.appVersion
+        json["user_id"] = Constants.Data.currentUser.userID
+        json["target_user_id"] = targetUserID
+        json["connection"] = connection
+        
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-PutUserConnection", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("AC-PUC: GET DATA ERROR: \(String(describing: err))")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+                    print("AC-PUC RESPONSE:")
+//                    print(response)
+                    
+                    // Notify the parent view that the AWS call completed successfully
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        print("AC-PUC - CALLED PARENT")
+                        parentVC.processAwsReturn(self, success: true)
+                    }
+                }
+        })
+    }
+}
+
+class AWSGetHydroData : AWSRequestObject
+{
+    var userLocation = [String : Double]()
+    
+    required init(userLocation: [String : Double]!)
+    {
+        if let userLocation = userLocation
+        {
+            self.userLocation = userLocation
+        }
+    }
+    
+    // Use this request function when a Blob is within range of the user's location and the extra Blob data is needed
+    override func makeRequest()
+    {
+        print("AC-GHD: REQUESTING DATA: \(String(describing: self.userLocation))")
+        
+        // Create a JSON object with the passed Blob ID and an indicator of whether or not the Blob data should be filtered (0 for no, 1 for yes)
+        var json = [String : Any]()
+        json["app_version"] = Constants.Settings.appVersion
+        json["user_location"] = userLocation
+        
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-GetHydroData", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("AC-GHD: GET DATA ERROR: \(String(describing: err))")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+//                    print("AC-GHD RESPONSE:")
+//                    print(response)
+                    
+                    // The data request was successful - reset the data array
+                    Constants.Data.allHydro = [Hydro]()
                     
                     // Convert the response to JSON with keys and AnyObject values
                     if let allData = response as? [String: AnyObject]
@@ -477,7 +905,7 @@ class AWSGetMapData : AWSRequestObject
                                 {
                                     if let readingID = hydroRaw["reading_id"]
                                     {
-                                        let addHydro = DataHydro()
+                                        let addHydro = Hydro()
                                         addHydro.readingID = readingID as! String
                                         addHydro.datetime = Date(timeIntervalSince1970: hydroRaw["timestamp"] as! Double)
                                         addHydro.gaugeID = hydroRaw["gauge_id"] as! String
@@ -549,39 +977,76 @@ class AWSGetMapData : AWSRequestObject
                                             addHydro.projRecTime = projRecTime as? String
                                         }
                                         Constants.Data.allHydro.append(addHydro)
-//                                    print("AC-GMD - ADDED HYDRO DATA: \(addHydro.title)")
+//                                    print("AC-GHD - ADDED HYDRO DATA: \(addHydro.title)")
                                     }
                                 }
                             }
                         }
                         
-                        // Convert the response to an array of AnyObjects
-                        // EXTRACT SPOT REQUEST DATA
-                        if let allSpotRequestRaw = allData["spot_request"] as? [Any]
+                        // Notify the parent view that the AWS call completed successfully
+                        if let parentVC = self.awsRequestDelegate
                         {
-                            // Loop through each AnyObject (Blob) in the array
-                            for newSpotRequest in allSpotRequestRaw
-                            {
-                                // Convert the response to JSON with keys and AnyObject values
-                                // Then convert the AnyObject values to Strings or Numbers depending on their key
-                                if let spotRequestRaw = newSpotRequest as? [String: AnyObject]
-                                {
-                                    if let requestID = spotRequestRaw["request_id"]
-                                    {
-                                        let addSpotRequest = SpotRequest()
-                                        addSpotRequest.requestID = requestID as? String
-                                        addSpotRequest.datetime = Date(timeIntervalSince1970: spotRequestRaw["timestamp"] as! Double)
-                                        addSpotRequest.userID = spotRequestRaw["user_id"] as! String
-                                        addSpotRequest.status = spotRequestRaw["status"] as! String
-                                        addSpotRequest.lat = spotRequestRaw["lat"] as! Double
-                                        addSpotRequest.lng = spotRequestRaw["lng"] as! Double
-                                        Constants.Data.allSpotRequest.append(addSpotRequest)
-//                                    print("AC-GMD - ADDED SPOT RESPONSE DATA: \(addSpotRequest.title)")
-                                    }
-                                }
-                            }
+                            print("AC-GHD - CALLED PARENT")
+                            parentVC.processAwsReturn(self, success: true)
                         }
-                        
+                    }
+                }
+        })
+    }
+}
+
+class AWSGetSpotData : AWSRequestObject
+{
+    var userLocation = [String : Double]()
+    
+    required init(userLocation: [String : Double]!)
+    {
+        if let userLocation = userLocation
+        {
+            self.userLocation = userLocation
+        }
+    }
+    
+    // Use this request function when a Blob is within range of the user's location and the extra Blob data is needed
+    override func makeRequest()
+    {
+        print("AC-GSD: REQUESTING DATA: \(String(describing: self.userLocation))")
+        
+        // Create a JSON object with the passed Blob ID and an indicator of whether or not the Blob data should be filtered (0 for no, 1 for yes)
+        var json = [String : Any]()
+        json["app_version"] = Constants.Settings.appVersion
+        json["user_location"] = userLocation
+        
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-GetSpotData", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("AC-GSD: GET DATA ERROR: \(String(describing: err))")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+//                    print("AC-GSD RESPONSE:")
+//                    print(response)
+                    
+                    // The data request was successful - reset the data arrays
+                    Constants.Data.allSpot = [Spot]()
+                    Constants.Data.allSpotRequest = [SpotRequest]()
+                    
+                    // Convert the response to JSON with keys and AnyObject values
+                    if let allData = response as? [String: AnyObject]
+                    {
                         // Convert the response to an array of AnyObjects
                         // EXTRACT SPOT DATA
                         if let allSpotRaw = allData["spot"] as? [Any]
@@ -629,7 +1094,33 @@ class AWSGetMapData : AWSRequestObject
                                         addSpot.lng = spotRaw["lng"] as! Double
                                         addSpot.spotContent = spotContent
                                         Constants.Data.allSpot.append(addSpot)
-//                                    print("AC-GMD - ADDED SPOT DATA: \(addSpot.title)")
+//                                    print("AC-GSD - ADDED SPOT DATA: \(addSpot.spotID)")
+                                    }
+                                }
+                            }
+                        }
+                        // Convert the response to an array of AnyObjects
+                        // EXTRACT SPOT REQUEST DATA
+                        if let allSpotRequestRaw = allData["spot_request"] as? [Any]
+                        {
+                            // Loop through each AnyObject (Blob) in the array
+                            for newSpotRequest in allSpotRequestRaw
+                            {
+                                // Convert the response to JSON with keys and AnyObject values
+                                // Then convert the AnyObject values to Strings or Numbers depending on their key
+                                if let spotRequestRaw = newSpotRequest as? [String: AnyObject]
+                                {
+                                    if let requestID = spotRequestRaw["request_id"]
+                                    {
+                                        let addSpotRequest = SpotRequest()
+                                        addSpotRequest.requestID = requestID as? String
+                                        addSpotRequest.datetime = Date(timeIntervalSince1970: spotRequestRaw["timestamp"] as! Double)
+                                        addSpotRequest.userID = spotRequestRaw["user_id"] as! String
+                                        addSpotRequest.status = spotRequestRaw["status"] as! String
+                                        addSpotRequest.lat = spotRequestRaw["lat"] as! Double
+                                        addSpotRequest.lng = spotRequestRaw["lng"] as! Double
+                                        Constants.Data.allSpotRequest.append(addSpotRequest)
+//                                        print("AC-GSRD - ADDED SPOT RESPONSE DATA: \(String(describing: addSpotRequest.requestID))")
                                     }
                                 }
                             }
@@ -638,7 +1129,118 @@ class AWSGetMapData : AWSRequestObject
                         // Notify the parent view that the AWS call completed successfully
                         if let parentVC = self.awsRequestDelegate
                         {
-//                            print("AC-GMD - CALLED PARENT")
+                            print("AC-GSD - CALLED PARENT")
+                            parentVC.processAwsReturn(self, success: true)
+                        }
+                    }
+                }
+        })
+    }
+}
+
+class AWSGetShelterData : AWSRequestObject
+{
+    var userLocation = [String : Double]()
+    
+    required init(userLocation: [String : Double]!)
+    {
+        if let userLocation = userLocation
+        {
+            self.userLocation = userLocation
+        }
+    }
+    
+    // Use this request function when a Blob is within range of the user's location and the extra Blob data is needed
+    override func makeRequest()
+    {
+        print("AC-GSHD: REQUESTING DATA: \(String(describing: self.userLocation))")
+        
+        // Create a JSON object with the passed Blob ID and an indicator of whether or not the Blob data should be filtered (0 for no, 1 for yes)
+        var json = [String : Any]()
+        json["app_version"] = Constants.Settings.appVersion
+        json["user_location"] = userLocation
+        
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-GetShelterData", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("AC-GSHD: GET DATA ERROR: \(String(describing: err))")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+//                    print("AC-GSHD RESPONSE:")
+//                    print(response)
+                    
+                    // The data request was successful - reset the data array
+                    Constants.Data.allShelter = [Shelter]()
+                    
+                    // Convert the response to JSON with keys and AnyObject values
+                    if let allData = response as? [String: AnyObject]
+                    {
+                        // Convert the response to an array of AnyObjects
+                        // EXTRACT SHELTER DATA
+                        if let allShelterRaw = allData["shelter"] as? [Any]
+                        {
+                            // Loop through each AnyObject (Blob) in the array
+                            for newShelter in allShelterRaw
+                            {
+                                // Convert the response to JSON with keys and AnyObject values
+                                // Then convert the AnyObject values to Strings or Numbers depending on their key
+                                if let shelterRaw = newShelter as? [String: AnyObject]
+                                {
+                                    if let shelterID = shelterRaw["shelter_id"]
+                                    {
+                                        let addShelter = Shelter()
+                                        addShelter.shelterID = shelterID as! String
+                                        addShelter.datetime = Date(timeIntervalSince1970: shelterRaw["timestamp"] as! Double)
+                                        addShelter.name = shelterRaw["name"] as! String
+                                        addShelter.address = shelterRaw["address"] as! String
+                                        addShelter.city = shelterRaw["city"] as! String
+                                        addShelter.lat = shelterRaw["lat"] as! Double
+                                        addShelter.lng = shelterRaw["lng"] as! Double
+                                        if shelterRaw["phone"] as! String != "na"
+                                        {
+                                            addShelter.phone = shelterRaw["phone"] as? String
+                                        }
+                                        if shelterRaw["website"] as! String != "na"
+                                        {
+                                            addShelter.website = shelterRaw["website"] as? String
+                                        }
+                                        if shelterRaw["info"] as! String != "na"
+                                        {
+                                            addShelter.info = shelterRaw["info"] as? String
+                                        }
+                                        if shelterRaw["type"] as! String != "na"
+                                        {
+                                            addShelter.type = shelterRaw["type"] as! String
+                                        }
+                                        if shelterRaw["condition"] as! String != "na"
+                                        {
+                                            addShelter.condition = shelterRaw["condition"] as! String
+                                        }
+                                        Constants.Data.allShelter.append(addShelter)
+//                                        print("AC-GSHD - ADDED SHELTER DATA: \(addShelter.name)")
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Notify the parent view that the AWS call completed successfully
+                        if let parentVC = self.awsRequestDelegate
+                        {
+                            print("AC-GSHD - CALLED PARENT")
                             parentVC.processAwsReturn(self, success: true)
                         }
                     }
@@ -661,7 +1263,7 @@ class AWSPutSpotData : AWSRequestObject
     {
 //        print("SENDING DATA TO LAMBDA")
         
-        // Create some JSON to send the Spot data - everything must be a string
+        // Create some JSON to send the Spot data
         // First add all the spotContent objects as JSON
         var jsonSpotContent = [[String: Any]]()
         for content in spot.spotContent
@@ -678,6 +1280,7 @@ class AWSPutSpotData : AWSRequestObject
         
         // Second add all Spot data to the json
         var json = [String: Any]()
+        json["app_version"] = Constants.Settings.appVersion
         json["spot_id"]      = spot.spotID
         json["user_id"]      = spot.userID
         json["timestamp"]    = String(spot.datetime.timeIntervalSince1970)
@@ -709,6 +1312,18 @@ class AWSPutSpotData : AWSRequestObject
                     // Now that the Spot has been created, add it to the global array
                     Constants.Data.allSpot.append(self.spot)
                     
+                    // And remove any SpotRequests that are fulfilled by the Spot
+                    for (srIndex, sRequest) in Constants.Data.allSpotRequest.enumerated()
+                    {
+                        let srCoords = CLLocation(latitude: sRequest.lat, longitude: sRequest.lng)
+                        let spotCoords = CLLocation(latitude: self.spot.lat, longitude: self.spot.lng)
+                        
+                        if spotCoords.distance(from: srCoords) <= Constants.Dim.spotRadius
+                        {
+                            Constants.Data.allSpotRequest.remove(at: srIndex)
+                        }
+                    }
+                    
                     // Notify the parent view that the AWS call completed successfully
                     if let parentVC = self.awsRequestDelegate
                     {
@@ -733,8 +1348,9 @@ class AWSPutSpotRequestData : AWSRequestObject
     {
 //        print("SENDING DATA TO LAMBDA")
         
-        // Create some JSON to send the SpotRequest data - everything must be a string
+        // Create some JSON to send the SpotRequest data
         var json = [String: Any]()
+        json["app_version"] = Constants.Settings.appVersion
         json["request_id"] = spotRequest.requestID
         json["user_id"]    = spotRequest.userID
         json["timestamp"]  = String(spotRequest.datetime.timeIntervalSince1970)
@@ -776,17 +1392,91 @@ class AWSPutSpotRequestData : AWSRequestObject
     }
 }
 
+class AWSUpdateSpotContentData : AWSRequestObject
+{
+    var contentID: String!
+    var spotID: String!
+    var statusUpdate: String!
+    
+    required init(contentID: String!, spotID: String!, statusUpdate: String!)
+    {
+        self.contentID = contentID
+        self.spotID = spotID
+        self.statusUpdate = statusUpdate
+    }
+    
+    // Upload data to Lambda for transfer to DynamoDB
+    override func makeRequest()
+    {
+        // Create some JSON to send the SpotContent update data
+        var json = [String: Any]()
+        json["app_version"]   = Constants.Settings.appVersion
+        json["content_id"]    = contentID
+        json["status_update"] = statusUpdate
+        
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-UpdateSpotContentData", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("SENDING DATA TO LAMBDA ERROR: \(String(describing: err))")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+                    // Now that the SpotContent has been updated, update the global array
+                    globalSpotLoop: for spotObject in Constants.Data.allSpot
+                    {
+                        if spotObject.spotID == self.spotID
+                        {
+                            spotContentLoop: for (index, spotContentObject) in spotObject.spotContent.enumerated()
+                            {
+                                if spotContentObject.contentID == self.contentID
+                                {
+                                    // Remove the SpotContent object
+                                    spotObject.spotContent.remove(at: index)
+                                    
+                                    break spotContentLoop
+                                }
+                            }
+                            
+                            break globalSpotLoop
+                        }
+                    }
+                    
+                    // Notify the parent view that the AWS call completed successfully
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: true)
+                    }
+                }
+        })
+    }
+}
+
 class AWSUploadMediaToBucket : AWSRequestObject
 {
     var bucket: String!
     var uploadKey: String!
     var mediaURL: URL!
+    var imageIndex: Int!
     
-    required init(bucket: String!, uploadKey: String!, mediaURL: URL!)
+    required init(bucket: String!, uploadKey: String!, mediaURL: URL!, imageIndex: Int!)
     {
         self.bucket = bucket
         self.uploadKey = uploadKey
         self.mediaURL = mediaURL
+        self.imageIndex = imageIndex
     }
     
     // Upload a file to AWS S3
@@ -990,7 +1680,9 @@ class AWSGetRandomID : AWSRequestObject
     {
 //        print("AC-GRID - GET RANDOM ID FOR: \(randomIdType)")
         // Create some JSON to send the logged in userID
-        let json: NSDictionary = ["request" : randomIdType.rawValue]
+        var json = [String : Any]()
+        json["app_version"] = Constants.Settings.appVersion
+        json["request"] = randomIdType.rawValue
         
         let lambdaInvoker = AWSLambdaInvoker.default()
         lambdaInvoker.invokeFunction("Harvey-CreateRandomID", jsonObject: json, completionHandler:

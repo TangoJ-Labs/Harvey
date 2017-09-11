@@ -55,6 +55,33 @@ class UtilityFunctions: AWSRequestDelegate
         return documentsDirectory
     }
     
+    func updateUserConnections()
+    {
+        for user in Constants.Data.allUsers
+        {
+            let previousSetting = user.connection
+            var userBlocked = false
+            for blockedUserID in Constants.Data.allUserBlockList
+            {
+                if user.userID == blockedUserID
+                {
+                    userBlocked = true
+                    user.connection = "blocked"
+                }
+            }
+            if !userBlocked
+            {
+                user.connection = "na"
+            }
+            // Only re-save the user data if the connection setting changed
+            if previousSetting != user.connection
+            {
+                // Save the current user data to Core Data
+                CoreDataFunctions().userSave(user: user, deleteUser: false)
+            }
+        }
+    }
+    
     
     // MARK: AWS DELEGATE METHODS
     

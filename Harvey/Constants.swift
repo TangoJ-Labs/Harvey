@@ -83,6 +83,40 @@ struct Constants
             return Constants.MenuMapSpot.yes
         }
     }
+    enum MenuMapShelter: Int
+    {
+        case no = 1
+        case yes = 2
+    }
+    func menuMapShelter(_ menuMapShelterInt: Int) -> Constants.MenuMapShelter
+    {
+        switch menuMapShelterInt
+        {
+        case 1:
+            return Constants.MenuMapShelter.no
+        case 2:
+            return Constants.MenuMapShelter.yes
+        default:
+            return Constants.MenuMapShelter.yes
+        }
+    }
+    enum MenuMapSOS: Int
+    {
+        case no = 1
+        case yes = 2
+    }
+    func menuMapSOS(_ menuMapSOSInt: Int) -> Constants.MenuMapSOS
+    {
+        switch menuMapSOSInt
+        {
+        case 1:
+            return Constants.MenuMapSOS.no
+        case 2:
+            return Constants.MenuMapSOS.yes
+        default:
+            return Constants.MenuMapSOS.yes
+        }
+    }
     enum MenuMapTraffic: Int
     {
         case no = 1
@@ -202,14 +236,18 @@ struct Constants
         
         static var allSpot = [Spot]()
         static var allSpotRequest = [SpotRequest]()
-        static var allHydro = [DataHydro]()
+        static var allHydro = [Hydro]()
+        static var allShelter = [Shelter]()
         
         static var spotCircles = [GMSCircle]()
         static var spotMarkers = [GMSMarker]()
         static var spotRequestMarkers = [GMSMarker]()
         static var hydroMarkers = [GMSMarker]()
+        static var shelterMarkers = [GMSMarker]()
         
         static var currentUser = User()
+        static var allUsers = [User]()
+        static var allUserBlockList = [String]()
     }
     
     struct Dim
@@ -217,12 +255,15 @@ struct Constants
         static let cameraViewImageSize: CGFloat = 50
         static let cameraViewImageCellSize: CGFloat = 60
         
+        static let userTableCellHeight: CGFloat = 50
+        
         static let spotRadius: Double = 50 // in meters - see radius in Spot
         static let dotRadius: CGFloat = 5
     }
     
     struct Settings
     {
+        static var appVersion = ""
         static let gKey = "AIzaSyBKa1WknlP96r0whyI6lFkLuJcPr97un5w"
         static let mapStyleUrl = URL(string: "mapbox://styles/tangojlabs/ciqwaddsl0005b7m0xwctftow")
         static let maxServerTries: Int = 5
@@ -237,12 +278,16 @@ struct Constants
         static let mapMarkerSpot: Int32 = 1
         static let mapMarkerSpotRequest: Int32 = 2
         static let mapMarkerHydro: Int32 = 3
+        static let mapMarkerShelter: Int32 = 4
+        static let mapMarkerSOS: Int32 = 5
         static let mapMyLocationTapZoom: Float = 18
         
         static var menuMapHydro: Constants.MenuMapHydro = Constants.MenuMapHydro.yes
         static var menuMapSpot: Constants.MenuMapSpot = Constants.MenuMapSpot.yes
         static var menuMapTraffic: Constants.MenuMapTraffic = Constants.MenuMapTraffic.yes
-        static var menuMapTimeFilter: Constants.MenuMapTimeFilter = Constants.MenuMapTimeFilter.day
+        static var menuMapShelter: Constants.MenuMapShelter = Constants.MenuMapShelter.yes
+        static var menuMapSOS: Constants.MenuMapSOS = Constants.MenuMapSOS.yes
+        static var menuMapTimeFilter: Constants.MenuMapTimeFilter = Constants.MenuMapTimeFilter.month
         
 //        static var locationManagerSetting: LocationManagerSettingType = Constants.LocationManagerSettingType.significant
         static var statusBarStyle: UIStatusBarStyle = UIStatusBarStyle.lightContent
@@ -263,6 +308,7 @@ struct Constants
         static let fontAltThick = "HelveticaNeue"
         
         static let spotTableViewCellReuseIdentifier = "spotTableViewCell"
+        static let userTableViewCellReuseIdentifier = "userTableViewCell"
         
         static let imageHarvey = "Harvey.png"
         static let iconAccountGray = "icon_account_gray.png"
@@ -281,5 +327,14 @@ struct Constants
         static let markerIconCamera = "marker_icon_camera_yellow.png"
         static let markerIconCameraTemp = "marker_icon_camera_temp_yellow.png"
         static let markerIconGauge = "marker_icon_gauge_blue_opaque.png"
+        static let markerIconShelter = "marker_icon_shelter.png"
+        static let markerIconSOS = "marker_icon_flag_red.png"
     }
+    
+    
+//    struct Agreements
+//    {
+//        static let eula = ""
+//        static let privacy = ""
+//    }
 }
