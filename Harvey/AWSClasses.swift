@@ -417,6 +417,9 @@ class AWSLogoutUser
     
 }
 
+
+// MARK: USER
+
 class AWSCheckUser : AWSRequestObject
 {
     var facebookID: String!
@@ -702,6 +705,9 @@ class AWSGetUsers: AWSRequestObject, RequestDelegate
     }
 }
 
+
+// MARK: USER CONNECTION
+
 class AWSGetUserConnections: AWSRequestObject
 {
     // Use this request function to query all connections for the current users
@@ -841,159 +847,8 @@ class AWSPutUserConnection: AWSRequestObject
     }
 }
 
-class AWSGetHydroData : AWSRequestObject
-{
-    var userLocation = [String : Double]()
-    
-    required init(userLocation: [String : Double]!)
-    {
-        if let userLocation = userLocation
-        {
-            self.userLocation = userLocation
-        }
-    }
-    
-    // Use this request function when a Blob is within range of the user's location and the extra Blob data is needed
-    override func makeRequest()
-    {
-        print("AC-GHD: REQUESTING DATA: \(String(describing: self.userLocation))")
-        
-        // Create a JSON object with the passed Blob ID and an indicator of whether or not the Blob data should be filtered (0 for no, 1 for yes)
-        var json = [String : Any]()
-        json["app_version"] = Constants.Settings.appVersion
-        json["user_location"] = userLocation
-        
-        let lambdaInvoker = AWSLambdaInvoker.default()
-        lambdaInvoker.invokeFunction("Harvey-GetHydroData", jsonObject: json, completionHandler:
-            { (response, err) -> Void in
-                
-                if (err != nil)
-                {
-                    print("AC-GHD: GET DATA ERROR: \(String(describing: err))")
-//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
-                    
-                    // Record the server request attempt
-                    Constants.Data.serverTries += 1
-                    
-                    // Notify the parent view that the AWS call completed with an error
-                    if let parentVC = self.awsRequestDelegate
-                    {
-                        parentVC.processAwsReturn(self, success: false)
-                    }
-                }
-                else if (response != nil)
-                {
-//                    print("AC-GHD RESPONSE:")
-//                    print(response)
-                    
-                    // The data request was successful - reset the data array
-                    Constants.Data.allHydro = [Hydro]()
-                    
-                    // Convert the response to JSON with keys and AnyObject values
-                    if let allData = response as? [String: AnyObject]
-                    {
-                        // Convert the response to an array of AnyObjects
-                        // EXTRACT HYDRO DATA
-                        if let allHydroRaw = allData["hydro"] as? [Any]
-                        {
-                            // Loop through each AnyObject (Blob) in the array
-                            for newHydro in allHydroRaw
-                            {
-                                // Convert the response to JSON with keys and AnyObject values
-                                // Then convert the AnyObject values to Strings or Numbers depending on their key
-                                if let hydroRaw = newHydro as? [String: AnyObject]
-                                {
-                                    if let readingID = hydroRaw["reading_id"]
-                                    {
-                                        let addHydro = Hydro()
-                                        addHydro.readingID = readingID as! String
-                                        addHydro.datetime = Date(timeIntervalSince1970: hydroRaw["timestamp"] as! Double)
-                                        addHydro.gaugeID = hydroRaw["gauge_id"] as! String
-                                        addHydro.title = hydroRaw["title"] as! String
-                                        addHydro.lat = hydroRaw["lat"] as! Double
-                                        addHydro.lng = hydroRaw["lng"] as! Double
-                                        if let obs = hydroRaw["obs"]
-                                        {
-                                            addHydro.obs = obs as? String
-                                        }
-                                        if let obs2 = hydroRaw["obs_2"]
-                                        {
-                                            addHydro.obs2 = obs2 as? String
-                                        }
-                                        if let obsCat = hydroRaw["obs_cat"]
-                                        {
-                                            addHydro.obsCat = obsCat as? String
-                                        }
-                                        if let obsTime = hydroRaw["obs_time"]
-                                        {
-                                            addHydro.obsTime = obsTime as? String
-                                        }
-                                        if let projHigh = hydroRaw["proj_high"]
-                                        {
-                                            addHydro.projHigh = projHigh as? String
-                                        }
-                                        if let projHigh2 = hydroRaw["proj_high_2"]
-                                        {
-                                            addHydro.projHigh2 = projHigh2 as? String
-                                        }
-                                        if let projHighCat = hydroRaw["proj_high_cat"]
-                                        {
-                                            addHydro.projHighCat = projHighCat as? String
-                                        }
-                                        if let projHighTime = hydroRaw["proj_high_time"]
-                                        {
-                                            addHydro.projHighTime = projHighTime as? String
-                                        }
-                                        if let projLast = hydroRaw["proj_last"]
-                                        {
-                                            addHydro.projLast = projLast as? String
-                                        }
-                                        if let projLast2 = hydroRaw["proj_last_2"]
-                                        {
-                                            addHydro.projLast2 = projLast2 as? String
-                                        }
-                                        if let projLastCat = hydroRaw["proj_last_cat"]
-                                        {
-                                            addHydro.projLastCat = projLastCat as? String
-                                        }
-                                        if let projLastTime = hydroRaw["proj_last_time"]
-                                        {
-                                            addHydro.projLastTime = projLastTime as? String
-                                        }
-                                        if let projRec = hydroRaw["proj_rec"]
-                                        {
-                                            addHydro.projRec = projRec as? String
-                                        }
-                                        if let projRec2 = hydroRaw["proj_rec_2"]
-                                        {
-                                            addHydro.projRec2 = projRec2 as? String
-                                        }
-                                        if let projRecCat = hydroRaw["proj_rec_cat"]
-                                        {
-                                            addHydro.projRecCat = projRecCat as? String
-                                        }
-                                        if let projRecTime = hydroRaw["proj_rec_time"]
-                                        {
-                                            addHydro.projRecTime = projRecTime as? String
-                                        }
-                                        Constants.Data.allHydro.append(addHydro)
-//                                    print("AC-GHD - ADDED HYDRO DATA: \(addHydro.title)")
-                                    }
-                                }
-                            }
-                        }
-                        
-                        // Notify the parent view that the AWS call completed successfully
-                        if let parentVC = self.awsRequestDelegate
-                        {
-                            print("AC-GHD - CALLED PARENT")
-                            parentVC.processAwsReturn(self, success: true)
-                        }
-                    }
-                }
-        })
-    }
-}
+
+// MARK: SPOT
 
 class AWSGetSpotData : AWSRequestObject
 {
@@ -1125,18 +980,236 @@ class AWSGetSpotData : AWSRequestObject
                                 }
                             }
                         }
-                        
-                        // Notify the parent view that the AWS call completed successfully
-                        if let parentVC = self.awsRequestDelegate
-                        {
-                            print("AC-GSD - CALLED PARENT")
-                            parentVC.processAwsReturn(self, success: true)
-                        }
+                    }
+                    
+                    // Notify the parent view that the AWS call completed successfully
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        print("AC-GSD - CALLED PARENT")
+                        parentVC.processAwsReturn(self, success: true)
                     }
                 }
         })
     }
 }
+
+class AWSPutSpotData : AWSRequestObject
+{
+    var spot: Spot!
+    
+    required init(spot: Spot!)
+    {
+        self.spot = spot
+    }
+    
+    // Upload data to Lambda for transfer to DynamoDB
+    override func makeRequest()
+    {
+//        print("SENDING DATA TO LAMBDA")
+        
+        // Create some JSON to send the Spot data
+        // First add all the spotContent objects as JSON
+        var jsonSpotContent = [[String: Any]]()
+        for content in spot.spotContent
+        {
+            var json = [String: Any]()
+            json["content_id"] = content.contentID
+            json["spot_id"]    = content.spotID
+            json["timestamp"]  = String(content.datetime.timeIntervalSince1970)
+            json["type"]       = String(content.type.rawValue)
+            json["lat"]        = String(content.lat)
+            json["lng"]        = String(content.lng)
+            jsonSpotContent.append(json)
+        }
+        
+        // Second add all Spot data to the json
+        var json = [String: Any]()
+        json["app_version"] = Constants.Settings.appVersion
+        json["spot_id"]      = spot.spotID
+        json["user_id"]      = spot.userID
+        json["timestamp"]    = String(spot.datetime.timeIntervalSince1970)
+        json["lat"]          = String(spot.lat)
+        json["lng"]          = String(spot.lng)
+        json["spot_content"] = jsonSpotContent
+        
+        print("LAMBDA JSON: \(json)")
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-PutSpotData", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("SENDING DATA TO LAMBDA ERROR: \(String(describing: err))")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+                    // Now that the Spot has been created, add it to the global array
+                    Constants.Data.allSpot.append(self.spot)
+                    
+                    // And remove any SpotRequests that are fulfilled by the Spot
+                    for (srIndex, sRequest) in Constants.Data.allSpotRequest.enumerated()
+                    {
+                        let srCoords = CLLocation(latitude: sRequest.lat, longitude: sRequest.lng)
+                        let spotCoords = CLLocation(latitude: self.spot.lat, longitude: self.spot.lng)
+                        
+                        if spotCoords.distance(from: srCoords) <= Constants.Dim.spotRadius
+                        {
+                            Constants.Data.allSpotRequest.remove(at: srIndex)
+                        }
+                    }
+                    
+                    // Notify the parent view that the AWS call completed successfully
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: true)
+                    }
+                }
+        })
+    }
+}
+
+class AWSUpdateSpotContentData : AWSRequestObject
+{
+    var contentID: String!
+    var spotID: String!
+    var statusUpdate: String!
+    
+    required init(contentID: String!, spotID: String!, statusUpdate: String!)
+    {
+        self.contentID = contentID
+        self.spotID = spotID
+        self.statusUpdate = statusUpdate
+    }
+    
+    // Upload data to Lambda for transfer to DynamoDB
+    override func makeRequest()
+    {
+        // Create some JSON to send the SpotContent update data
+        var json = [String: Any]()
+        json["app_version"]   = Constants.Settings.appVersion
+        json["content_id"]    = contentID
+        json["status_update"] = statusUpdate
+        
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-UpdateSpotContentData", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("SENDING DATA TO LAMBDA ERROR: \(String(describing: err))")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+                    // Now that the SpotContent has been updated, update the global array
+                    globalSpotLoop: for spotObject in Constants.Data.allSpot
+                    {
+                        if spotObject.spotID == self.spotID
+                        {
+                            spotContentLoop: for (index, spotContentObject) in spotObject.spotContent.enumerated()
+                            {
+                                if spotContentObject.contentID == self.contentID
+                                {
+                                    // Remove the SpotContent object
+                                    spotObject.spotContent.remove(at: index)
+                                    
+                                    break spotContentLoop
+                                }
+                            }
+                            
+                            break globalSpotLoop
+                        }
+                    }
+                    
+                    // Notify the parent view that the AWS call completed successfully
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: true)
+                    }
+                }
+        })
+    }
+}
+
+class AWSPutSpotRequestData : AWSRequestObject
+{
+    var spotRequest: SpotRequest!
+    
+    required init(spotRequest: SpotRequest!)
+    {
+        self.spotRequest = spotRequest
+    }
+    
+    // Upload data to Lambda for transfer to DynamoDB
+    override func makeRequest()
+    {
+        //        print("SENDING DATA TO LAMBDA")
+        
+        // Create some JSON to send the SpotRequest data
+        var json = [String: Any]()
+        json["app_version"] = Constants.Settings.appVersion
+        json["request_id"] = spotRequest.requestID
+        json["user_id"]    = spotRequest.userID
+        json["timestamp"]  = String(spotRequest.datetime.timeIntervalSince1970)
+        json["lat"]        = String(spotRequest.lat)
+        json["lng"]        = String(spotRequest.lng)
+        json["status"]     = spotRequest.status
+        
+        print("LAMBDA JSON: \(json)")
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-PutSpotRequestData", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("SENDING DATA TO LAMBDA ERROR: \(String(describing: err))")
+                    //                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+                    // Now that the SpotRequest has been created, add it to the global array
+                    Constants.Data.allSpotRequest.append(self.spotRequest)
+                    
+                    // Notify the parent view that the AWS call completed successfully
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: true)
+                    }
+                }
+        })
+    }
+}
+
+
+// MARK: SHELTER
 
 class AWSGetShelterData : AWSRequestObject
 {
@@ -1236,191 +1309,209 @@ class AWSGetShelterData : AWSRequestObject
                                 }
                             }
                         }
+                    }
+                    // Notify the parent view that the AWS call completed successfully
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        print("AC-GSHD - CALLED PARENT")
+                        parentVC.processAwsReturn(self, success: true)
+                    }
+                }
+        })
+    }
+}
+
+
+// MARK: HAZARD
+
+class AWSGetHazardData : AWSRequestObject
+{
+    // Use this request function to request all active Hazard data
+    override func makeRequest()
+    {
+        print("AC-GH: REQUESTING DATA")
+        
+        // Create a JSON object with the current app version
+        var json = [String : Any]()
+        json["app_version"] = Constants.Settings.appVersion
+        
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-GetHazardData", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("AC-GH: GET DATA ERROR: \(String(describing: err))")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+                    print("AC-GH RESPONSE:")
+                    print(response)
+                    
+                    // Convert the response to JSON with keys and AnyObject values
+                    if let allData = response as? [String: AnyObject]
+                    {
+                        // Convert the response to an array of AnyObjects
+                        // EXTRACT HAZARD DATA
+                        if let allHazardRaw = allData["hazard"] as? [Any]
+                        {
+                            // Loop through each AnyObject in the array
+                            for newHazard in allHazardRaw
+                            {
+                                // Convert the response to JSON with keys and AnyObject values
+                                // Then convert the AnyObject values to Strings or Numbers depending on their key
+                                if let hazardRaw = newHazard as? [String: AnyObject]
+                                {
+                                    // Double-check one of the key values before moving on
+                                    if let hazardID = hazardRaw["hazard_id"]
+                                    {
+                                        let addHazard = Hazard()
+                                        addHazard.hazardID = hazardID as? String
+                                        addHazard.userID = hazardRaw["user_id"] as! String
+                                        addHazard.datetime = Date(timeIntervalSince1970: hazardRaw["timestamp"] as! Double)
+                                        addHazard.lat = hazardRaw["lat"] as! Double
+                                        addHazard.lng = hazardRaw["lng"] as! Double
+                                        addHazard.status = hazardRaw["status"] as! String
+                                        addHazard.type = Constants().hazardType(hazardRaw["type"] as! Int)
+                                        
+                                        // Check to see if the hazard already exists
+                                        var hazardExists = false
+                                        hazardLoop: for hazard in Constants.Data.allHazard
+                                        {
+                                            if hazard.hazardID! == hazardID as! String
+                                            {
+                                                // It already exists, so update the values
+                                                hazardExists = true
+                                                
+                                                hazard.userID = addHazard.userID
+                                                hazard.datetime = addHazard.datetime
+                                                hazard.lat = addHazard.lat
+                                                hazard.lng = addHazard.lng
+                                                hazard.status = addHazard.status
+                                                hazard.type = addHazard.type
+                                                
+                                                break hazardLoop
+                                            }
+                                        }
+                                        if !hazardExists
+                                        {
+                                            // It does not exist, so add it to the list
+                                            Constants.Data.allHazard.append(addHazard)
+                                        }
+                                        print("AC-GH - ADDED/UPDATED HAZARD DATA: \(addHazard.hazardID)")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // Notify the parent view that the AWS call completed successfully
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        print("AC-GH - CALLED PARENT")
+                        parentVC.processAwsReturn(self, success: true)
+                    }
+                }
+        })
+    }
+}
+
+class AWSPutHazardData: AWSRequestObject
+{
+    var hazard: Hazard!
+    
+    required init(hazard: Hazard!)
+    {
+        self.hazard = hazard
+    }
+    
+    // Use this request function to update or create a new Hazard db entry
+    override func makeRequest()
+    {
+        print("AC-PH: SENDING REQUEST")
+        
+        // Ensure that the hazard ID has been added
+        if let hazardID = hazard.hazardID
+        {
+            print("AC-PH - HAZARD STATUS: \(hazard.status)")
+            // Create a JSON object with the passed data
+            var json = [String : Any]()
+            json["hazard_id"] = hazardID
+            json["user_id"] = Constants.Data.currentUser.userID
+            json["timestamp"] = String(hazard.datetime.timeIntervalSince1970)
+            json["lat"] = String(hazard.lat)
+            json["lng"] = String(hazard.lng)
+            json["type"] = String(hazard.type.rawValue)
+            json["status"] = hazard.status
+            
+            let lambdaInvoker = AWSLambdaInvoker.default()
+            lambdaInvoker.invokeFunction("Harvey-PutHazardData", jsonObject: json, completionHandler:
+                { (response, err) -> Void in
+                    
+                    if (err != nil)
+                    {
+                        print("AC-PH: GET DATA ERROR: \(String(describing: err))")
+//                        CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                        
+                        // Record the server request attempt
+                        Constants.Data.serverTries += 1
+                        
+                        // Notify the parent view that the AWS call completed with an error
+                        if let parentVC = self.awsRequestDelegate
+                        {
+                            parentVC.processAwsReturn(self, success: false)
+                        }
+                    }
+                    else if (response != nil)
+                    {
+                        print("AC-PH RESPONSE:")
+                        print(response)
+                        
+                        // Now add the new Hazard to the global array
+                        Constants.Data.allHazard.append(self.hazard)
                         
                         // Notify the parent view that the AWS call completed successfully
                         if let parentVC = self.awsRequestDelegate
                         {
-                            print("AC-GSHD - CALLED PARENT")
+                            print("AC-PH - CALLED PARENT")
                             parentVC.processAwsReturn(self, success: true)
                         }
                     }
-                }
-        })
-    }
-}
-
-class AWSPutSpotData : AWSRequestObject
-{
-    var spot: Spot!
-    
-    required init(spot: Spot!)
-    {
-        self.spot = spot
-    }
-    
-    // Upload data to Lambda for transfer to DynamoDB
-    override func makeRequest()
-    {
-//        print("SENDING DATA TO LAMBDA")
-        
-        // Create some JSON to send the Spot data
-        // First add all the spotContent objects as JSON
-        var jsonSpotContent = [[String: Any]]()
-        for content in spot.spotContent
-        {
-            var json = [String: Any]()
-            json["content_id"] = content.contentID
-            json["spot_id"]    = content.spotID
-            json["timestamp"]  = String(content.datetime.timeIntervalSince1970)
-            json["type"]       = String(content.type.rawValue)
-            json["lat"]        = String(content.lat)
-            json["lng"]        = String(content.lng)
-            jsonSpotContent.append(json)
+            })
         }
-        
-        // Second add all Spot data to the json
-        var json = [String: Any]()
-        json["app_version"] = Constants.Settings.appVersion
-        json["spot_id"]      = spot.spotID
-        json["user_id"]      = spot.userID
-        json["timestamp"]    = String(spot.datetime.timeIntervalSince1970)
-        json["lat"]          = String(spot.lat)
-        json["lng"]          = String(spot.lng)
-        json["spot_content"] = jsonSpotContent
-        
-        print("LAMBDA JSON: \(json)")
-        let lambdaInvoker = AWSLambdaInvoker.default()
-        lambdaInvoker.invokeFunction("Harvey-PutSpotData", jsonObject: json, completionHandler:
-            { (response, err) -> Void in
-                
-                if (err != nil)
-                {
-                    print("SENDING DATA TO LAMBDA ERROR: \(String(describing: err))")
-//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
-                    
-                    // Record the server request attempt
-                    Constants.Data.serverTries += 1
-                    
-                    // Notify the parent view that the AWS call completed with an error
-                    if let parentVC = self.awsRequestDelegate
-                    {
-                        parentVC.processAwsReturn(self, success: false)
-                    }
-                }
-                else if (response != nil)
-                {
-                    // Now that the Spot has been created, add it to the global array
-                    Constants.Data.allSpot.append(self.spot)
-                    
-                    // And remove any SpotRequests that are fulfilled by the Spot
-                    for (srIndex, sRequest) in Constants.Data.allSpotRequest.enumerated()
-                    {
-                        let srCoords = CLLocation(latitude: sRequest.lat, longitude: sRequest.lng)
-                        let spotCoords = CLLocation(latitude: self.spot.lat, longitude: self.spot.lng)
-                        
-                        if spotCoords.distance(from: srCoords) <= Constants.Dim.spotRadius
-                        {
-                            Constants.Data.allSpotRequest.remove(at: srIndex)
-                        }
-                    }
-                    
-                    // Notify the parent view that the AWS call completed successfully
-                    if let parentVC = self.awsRequestDelegate
-                    {
-                        parentVC.processAwsReturn(self, success: true)
-                    }
-                }
-        })
     }
 }
 
-class AWSPutSpotRequestData : AWSRequestObject
-{
-    var spotRequest: SpotRequest!
-    
-    required init(spotRequest: SpotRequest!)
-    {
-        self.spotRequest = spotRequest
-    }
-    
-    // Upload data to Lambda for transfer to DynamoDB
-    override func makeRequest()
-    {
-//        print("SENDING DATA TO LAMBDA")
-        
-        // Create some JSON to send the SpotRequest data
-        var json = [String: Any]()
-        json["app_version"] = Constants.Settings.appVersion
-        json["request_id"] = spotRequest.requestID
-        json["user_id"]    = spotRequest.userID
-        json["timestamp"]  = String(spotRequest.datetime.timeIntervalSince1970)
-        json["lat"]        = String(spotRequest.lat)
-        json["lng"]        = String(spotRequest.lng)
-        json["status"]     = spotRequest.status
-        
-        print("LAMBDA JSON: \(json)")
-        let lambdaInvoker = AWSLambdaInvoker.default()
-        lambdaInvoker.invokeFunction("Harvey-PutSpotRequestData", jsonObject: json, completionHandler:
-            { (response, err) -> Void in
-                
-                if (err != nil)
-                {
-                    print("SENDING DATA TO LAMBDA ERROR: \(String(describing: err))")
-//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
-                    
-                    // Record the server request attempt
-                    Constants.Data.serverTries += 1
-                    
-                    // Notify the parent view that the AWS call completed with an error
-                    if let parentVC = self.awsRequestDelegate
-                    {
-                        parentVC.processAwsReturn(self, success: false)
-                    }
-                }
-                else if (response != nil)
-                {
-                    // Now that the SpotRequest has been created, add it to the global array
-                    Constants.Data.allSpotRequest.append(self.spotRequest)
-                    
-                    // Notify the parent view that the AWS call completed successfully
-                    if let parentVC = self.awsRequestDelegate
-                    {
-                        parentVC.processAwsReturn(self, success: true)
-                    }
-                }
-        })
-    }
-}
 
-class AWSUpdateSpotContentData : AWSRequestObject
+// MARK: SOS
+
+class AWSGetSOSData : AWSRequestObject
 {
-    var contentID: String!
-    var spotID: String!
-    var statusUpdate: String!
-    
-    required init(contentID: String!, spotID: String!, statusUpdate: String!)
-    {
-        self.contentID = contentID
-        self.spotID = spotID
-        self.statusUpdate = statusUpdate
-    }
-    
-    // Upload data to Lambda for transfer to DynamoDB
+    // Use this request function to request all SOS data
     override func makeRequest()
     {
-        // Create some JSON to send the SpotContent update data
-        var json = [String: Any]()
-        json["app_version"]   = Constants.Settings.appVersion
-        json["content_id"]    = contentID
-        json["status_update"] = statusUpdate
+        print("AC-SOS: REQUESTING DATA")
+        
+        // Create a JSON object with the passed Blob ID and an indicator of whether or not the Blob data should be filtered (0 for no, 1 for yes)
+        var json = [String : Any]()
+        json["app_version"] = Constants.Settings.appVersion
         
         let lambdaInvoker = AWSLambdaInvoker.default()
-        lambdaInvoker.invokeFunction("Harvey-UpdateSpotContentData", jsonObject: json, completionHandler:
+        lambdaInvoker.invokeFunction("Harvey-GetSOSData", jsonObject: json, completionHandler:
             { (response, err) -> Void in
                 
                 if (err != nil)
                 {
-                    print("SENDING DATA TO LAMBDA ERROR: \(String(describing: err))")
+                    print("AC-SOS: GET DATA ERROR: \(String(describing: err))")
 //                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
                     
                     // Record the server request attempt
@@ -1434,35 +1525,273 @@ class AWSUpdateSpotContentData : AWSRequestObject
                 }
                 else if (response != nil)
                 {
-                    // Now that the SpotContent has been updated, update the global array
-                    globalSpotLoop: for spotObject in Constants.Data.allSpot
+                    print("AC-SOS RESPONSE:")
+                    print(response)
+                    
+                    // The data request was successful - reset the data array
+                    Constants.Data.allSOS = [SOS]()
+                    
+                    // Convert the response to JSON with keys and AnyObject values
+                    if let allData = response as? [String: AnyObject]
                     {
-                        if spotObject.spotID == self.spotID
+                        // Convert the response to an array of AnyObjects
+                        // EXTRACT SOS DATA
+                        if let allSOSRaw = allData["sos"] as? [Any]
                         {
-                            spotContentLoop: for (index, spotContentObject) in spotObject.spotContent.enumerated()
+                            // Loop through each AnyObject in the array
+                            for newSOS in allSOSRaw
                             {
-                                if spotContentObject.contentID == self.contentID
+                                // Convert the response to JSON with keys and AnyObject values
+                                // Then convert the AnyObject values to Strings or Numbers depending on their key
+                                if let sosRaw = newSOS as? [String: AnyObject]
                                 {
-                                    // Remove the SpotContent object
-                                    spotObject.spotContent.remove(at: index)
-                                    
-                                    break spotContentLoop
+                                    if let userID = sosRaw["user_id"]
+                                    {
+                                        let addSOS = SOS()
+                                        addSOS.userID = userID as! String
+                                        addSOS.datetime = Date(timeIntervalSince1970: sosRaw["timestamp"] as! Double)
+                                        addSOS.lat = sosRaw["lat"] as! Double
+                                        addSOS.lng = sosRaw["lng"] as! Double
+                                        addSOS.status = sosRaw["status"] as! String
+                                        addSOS.type = sosRaw["type"] as! String
+                                        
+                                        Constants.Data.allSOS.append(addSOS)
+                                        print("AC-SOS - ADDED SOS DATA: \(addSOS.status)")
+                                    }
                                 }
                             }
-                            
-                            break globalSpotLoop
                         }
                     }
                     
                     // Notify the parent view that the AWS call completed successfully
                     if let parentVC = self.awsRequestDelegate
                     {
+                        print("AC-SOS - CALLED PARENT")
                         parentVC.processAwsReturn(self, success: true)
                     }
                 }
         })
     }
 }
+
+class AWSUpdateSOSData: AWSRequestObject
+{
+    var sos: SOS!
+    
+    required init(sos: SOS!)
+    {
+        self.sos = sos
+    }
+    
+    // Use this request function to query all current users
+    override func makeRequest()
+    {
+        print("AC-USOS: SENDING REQUEST")
+        
+        // Create a JSON object with the passed Blob ID and an indicator of whether or not the Blob data should be filtered (0 for no, 1 for yes)
+        var json = [String : Any]()
+        json["user_id"] = Constants.Data.currentUser.userID
+        json["timestamp"] = String(sos.datetime.timeIntervalSince1970)
+        json["lat"] = String(sos.lat)
+        json["lng"] = String(sos.lng)
+        json["status"] = sos.status
+        json["type"] = sos.type
+        if let sosID = sos.sosID
+        {
+            json["sos_id"] = sosID
+        }
+        
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-UpdateSOSLatest", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("AC-USOS: GET DATA ERROR: \(String(describing: err))")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+                    print("AC-USOS RESPONSE:")
+                    print(response)
+                    
+                    // Notify the parent view that the AWS call completed successfully
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        print("AC-USOS - CALLED PARENT")
+                        parentVC.processAwsReturn(self, success: true)
+                    }
+                }
+        })
+    }
+}
+
+
+// MARK: HYDRO
+
+class AWSGetHydroData : AWSRequestObject
+{
+    var userLocation = [String : Double]()
+    
+    required init(userLocation: [String : Double]!)
+    {
+        if let userLocation = userLocation
+        {
+            self.userLocation = userLocation
+        }
+    }
+    
+    // Use this request function when a Blob is within range of the user's location and the extra Blob data is needed
+    override func makeRequest()
+    {
+        print("AC-GHD: REQUESTING DATA: \(String(describing: self.userLocation))")
+        
+        // Create a JSON object with the passed Blob ID and an indicator of whether or not the Blob data should be filtered (0 for no, 1 for yes)
+        var json = [String : Any]()
+        json["app_version"] = Constants.Settings.appVersion
+        json["user_location"] = userLocation
+        
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-GetHydroData", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("AC-GHD: GET DATA ERROR: \(String(describing: err))")
+                    //                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+//                    print("AC-GHD RESPONSE:")
+//                    print(response)
+                    
+                    // The data request was successful - reset the data array
+                    Constants.Data.allHydro = [Hydro]()
+                    
+                    // Convert the response to JSON with keys and AnyObject values
+                    if let allData = response as? [String: AnyObject]
+                    {
+                        // Convert the response to an array of AnyObjects
+                        // EXTRACT HYDRO DATA
+                        if let allHydroRaw = allData["hydro"] as? [Any]
+                        {
+                            // Loop through each AnyObject (Blob) in the array
+                            for newHydro in allHydroRaw
+                            {
+                                // Convert the response to JSON with keys and AnyObject values
+                                // Then convert the AnyObject values to Strings or Numbers depending on their key
+                                if let hydroRaw = newHydro as? [String: AnyObject]
+                                {
+                                    if let readingID = hydroRaw["reading_id"]
+                                    {
+                                        let addHydro = Hydro()
+                                        addHydro.readingID = readingID as! String
+                                        addHydro.datetime = Date(timeIntervalSince1970: hydroRaw["timestamp"] as! Double)
+                                        addHydro.gaugeID = hydroRaw["gauge_id"] as! String
+                                        addHydro.title = hydroRaw["title"] as! String
+                                        addHydro.lat = hydroRaw["lat"] as! Double
+                                        addHydro.lng = hydroRaw["lng"] as! Double
+                                        if let obs = hydroRaw["obs"]
+                                        {
+                                            addHydro.obs = obs as? String
+                                        }
+                                        if let obs2 = hydroRaw["obs_2"]
+                                        {
+                                            addHydro.obs2 = obs2 as? String
+                                        }
+                                        if let obsCat = hydroRaw["obs_cat"]
+                                        {
+                                            addHydro.obsCat = obsCat as? String
+                                        }
+                                        if let obsTime = hydroRaw["obs_time"]
+                                        {
+                                            addHydro.obsTime = obsTime as? String
+                                        }
+                                        if let projHigh = hydroRaw["proj_high"]
+                                        {
+                                            addHydro.projHigh = projHigh as? String
+                                        }
+                                        if let projHigh2 = hydroRaw["proj_high_2"]
+                                        {
+                                            addHydro.projHigh2 = projHigh2 as? String
+                                        }
+                                        if let projHighCat = hydroRaw["proj_high_cat"]
+                                        {
+                                            addHydro.projHighCat = projHighCat as? String
+                                        }
+                                        if let projHighTime = hydroRaw["proj_high_time"]
+                                        {
+                                            addHydro.projHighTime = projHighTime as? String
+                                        }
+                                        if let projLast = hydroRaw["proj_last"]
+                                        {
+                                            addHydro.projLast = projLast as? String
+                                        }
+                                        if let projLast2 = hydroRaw["proj_last_2"]
+                                        {
+                                            addHydro.projLast2 = projLast2 as? String
+                                        }
+                                        if let projLastCat = hydroRaw["proj_last_cat"]
+                                        {
+                                            addHydro.projLastCat = projLastCat as? String
+                                        }
+                                        if let projLastTime = hydroRaw["proj_last_time"]
+                                        {
+                                            addHydro.projLastTime = projLastTime as? String
+                                        }
+                                        if let projRec = hydroRaw["proj_rec"]
+                                        {
+                                            addHydro.projRec = projRec as? String
+                                        }
+                                        if let projRec2 = hydroRaw["proj_rec_2"]
+                                        {
+                                            addHydro.projRec2 = projRec2 as? String
+                                        }
+                                        if let projRecCat = hydroRaw["proj_rec_cat"]
+                                        {
+                                            addHydro.projRecCat = projRecCat as? String
+                                        }
+                                        if let projRecTime = hydroRaw["proj_rec_time"]
+                                        {
+                                            addHydro.projRecTime = projRecTime as? String
+                                        }
+                                        Constants.Data.allHydro.append(addHydro)
+//                                    print("AC-GHD - ADDED HYDRO DATA: \(addHydro.title)")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Notify the parent view that the AWS call completed successfully
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        print("AC-GHD - CALLED PARENT")
+                        parentVC.processAwsReturn(self, success: true)
+                    }
+                }
+        })
+    }
+}
+
 
 class AWSUploadMediaToBucket : AWSRequestObject
 {

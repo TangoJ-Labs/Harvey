@@ -22,6 +22,8 @@ struct Constants
     
     enum randomIdType: String
     {
+        case random_hazard_id = "random_hazard_id"
+        case random_sos_id = "random_sos_id"
         case random_spot_id = "random_spot_id"
         case random_media_id = "random_media_id"
     }
@@ -45,6 +47,28 @@ struct Constants
             return Constants.ContentType.video
         default:
             return Constants.ContentType.text
+        }
+    }
+    
+    enum HazardType: Int
+    {
+        case general = 0
+        case road = 1
+        case building = 2
+    }
+    func hazardType(_ hazardTypeInt: Int) -> Constants.HazardType
+    {
+        // Evaluate the hazardType Integer received and convert it to the appropriate HazardType
+        switch hazardTypeInt
+        {
+        case 0:
+            return Constants.HazardType.general
+        case 1:
+            return Constants.HazardType.road
+        case 2:
+            return Constants.HazardType.building
+        default:
+            return Constants.HazardType.general
         }
     }
     
@@ -98,6 +122,23 @@ struct Constants
             return Constants.MenuMapShelter.yes
         default:
             return Constants.MenuMapShelter.yes
+        }
+    }
+    enum MenuMapHazard: Int
+    {
+        case no = 1
+        case yes = 2
+    }
+    func menuMapHazard(_ menuMapHazardInt: Int) -> Constants.MenuMapHazard
+    {
+        switch menuMapHazardInt
+        {
+        case 1:
+            return Constants.MenuMapHazard.no
+        case 2:
+            return Constants.MenuMapHazard.yes
+        default:
+            return Constants.MenuMapHazard.yes
         }
     }
     enum MenuMapSOS: Int
@@ -185,6 +226,7 @@ struct Constants
         static let standardBackgroundGrayUltraLight = UIColor(red: 242/255, green: 242/255, blue: 242/255, alpha: 1.0) //#F2F2F2
         static let standardBackgroundGrayUltraLightTransparent = UIColor(red: 242/255, green: 242/255, blue: 242/255, alpha: 0.3) //#F2F2F2
         
+        static let colorRed = UIColor.red //UIColor(red: 235/255, green: 109/255, blue: 36/255, alpha: 0.4) //#EB6D24
         static let colorOrange = UIColor(red: 235/255, green: 109/255, blue: 36/255, alpha: 0.4) //#EB6D24
         static let colorOrangeOpaque = UIColor(red: 235/255, green: 109/255, blue: 36/255, alpha: 1.0) //#EB6D24
         static let colorYellow = UIColor(red: 249/255, green: 160/255, blue: 30/255, alpha: 0.4) //#F9A01E
@@ -238,12 +280,16 @@ struct Constants
         static var allSpotRequest = [SpotRequest]()
         static var allHydro = [Hydro]()
         static var allShelter = [Shelter]()
+        static var allHazard = [Hazard]()
+        static var allSOS = [SOS]()
         
         static var spotCircles = [GMSCircle]()
         static var spotMarkers = [GMSMarker]()
         static var spotRequestMarkers = [GMSMarker]()
         static var hydroMarkers = [GMSMarker]()
         static var shelterMarkers = [GMSMarker]()
+        static var hazardMarkers = [GMSMarker]()
+        static var sosMarkers = [GMSMarker]()
         
         static var currentUser = User()
         static var allUsers = [User]()
@@ -279,13 +325,15 @@ struct Constants
         static let mapMarkerSpotRequest: Int32 = 2
         static let mapMarkerHydro: Int32 = 3
         static let mapMarkerShelter: Int32 = 4
-        static let mapMarkerSOS: Int32 = 5
+        static let mapMarkerHazard: Int32 = 5
+        static let mapMarkerSOS: Int32 = 6
         static let mapMyLocationTapZoom: Float = 18
         
         static var menuMapHydro: Constants.MenuMapHydro = Constants.MenuMapHydro.yes
         static var menuMapSpot: Constants.MenuMapSpot = Constants.MenuMapSpot.yes
         static var menuMapTraffic: Constants.MenuMapTraffic = Constants.MenuMapTraffic.yes
         static var menuMapShelter: Constants.MenuMapShelter = Constants.MenuMapShelter.yes
+        static var menuMapHazard: Constants.MenuMapHazard = Constants.MenuMapHazard.yes
         static var menuMapSOS: Constants.MenuMapSOS = Constants.MenuMapSOS.yes
         static var menuMapTimeFilter: Constants.MenuMapTimeFilter = Constants.MenuMapTimeFilter.month
         
@@ -309,6 +357,7 @@ struct Constants
         
         static let spotTableViewCellReuseIdentifier = "spotTableViewCell"
         static let userTableViewCellReuseIdentifier = "userTableViewCell"
+        static let activityTableViewCellReuseIdentifier = "activityTableViewCell"
         
         static let imageHarvey = "Harvey.png"
         static let iconAccountGray = "icon_account_gray.png"
@@ -317,13 +366,17 @@ struct Constants
         static let iconCheckOrange = "icon_check_orange.png"
         static let iconCloseOrange = "icon_close_orange.png"
         static let iconCheckYellow = "icon_check_yellow.png"
+        static let iconCheckYellowPin = "icon_check_yellow_pin.png"
         static let iconCloseYellow = "icon_close_yellow.png"
+        static let iconCloseDark = "icon_close_dark.png"
         static let iconLocation = "icon_location.png"
         static let iconMenu = "icon_menu.png"
         static let iconProfile = "icon_profile.png"
         static let iconSearch = "icon_search.png"
         static let iconShareArrow = "icon_share_arrow.png"
         static let iconTraffic = "icon_traffic.png"
+        static let iconHazard = "icon_hazard.png"
+        static let iconPinsMulti = "icon_pins_multi.png"
         static let markerIconCamera = "marker_icon_camera_yellow.png"
         static let markerIconCameraTemp = "marker_icon_camera_temp_yellow.png"
         static let markerIconGauge = "marker_icon_gauge_blue_opaque.png"

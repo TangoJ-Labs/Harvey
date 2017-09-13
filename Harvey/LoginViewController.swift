@@ -50,15 +50,15 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate, AWSReques
         
         // Set the navBar settings - Create bar buttons and title for the Nav Bar
         // Only show the back bar button if the user is logged in (then viewing from parent view)
-        var backButtonIcon = ""
-        if Constants.Data.currentUser.facebookID != nil
-        {
-            backButtonIcon = "\u{2190}"
-        }
-        let leftButtonItem = UIBarButtonItem(title: backButtonIcon,
+//        var backButtonIcon = ""
+//        if Constants.Data.currentUser.facebookID != nil
+//        {
+//            backButtonIcon = "\u{2190}"
+//        }
+        let leftButtonItem = UIBarButtonItem(title: "",
                                               style: UIBarButtonItemStyle.plain,
                                               target: self,
-                                              action: #selector(LoginViewController.popViewController(_:)))
+                                              action: #selector(LoginViewController.blankFunc(_:)))
         leftButtonItem.tintColor = Constants.Colors.colorTextNavBar
         
         let rightButtonItem = UIBarButtonItem(title: "",

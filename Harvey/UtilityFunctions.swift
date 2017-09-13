@@ -7,6 +7,7 @@
 //
 
 import AWSCognito
+import FBSDKLoginKit
 import UIKit
 
 class UtilityFunctions: AWSRequestDelegate
@@ -34,6 +35,17 @@ class UtilityFunctions: AWSRequestDelegate
         alertController.addAction(okAction)
 //        self.present(alertController, animated: true, completion: nil)
 //        alertController.show()
+    }
+    
+    func logOutFBAndClearData()
+    {
+        // The user has rejected an agreement, so log them out and send them to the LoginVC
+        let loginManager = FBSDKLoginManager()
+        loginManager.logOut()
+        
+        // Clear the global user data
+        Constants.Data.currentUser = User()
+        CoreDataFunctions().currentUserSave(user: Constants.Data.currentUser, deleteUser: true)
     }
     
     //https://www.hackingwithswift.com/example-code/media/how-to-save-a-uiimage-to-a-file-using-uiimagepngrepresentation

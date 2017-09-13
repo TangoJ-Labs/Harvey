@@ -22,6 +22,9 @@ class SpotTableViewCell: UITableViewCell
     var flagButtonView: UIView!
     var flagButtonImage: UILabel!
     
+    var deleteButtonView: UIView!
+    var deleteButtonImage: UILabel!
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?)
     {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

@@ -43,10 +43,10 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     var menuMapShelterImage: UIImageView!
     var menuMapShelterIndicator: UIImageView!
     var menuMapShelterTapGesture: UITapGestureRecognizer!
-    var menuMapSOSContainer: UIView!
-    var menuMapSOSImage: UIImageView!
-    var menuMapSOSIndicator: UIImageView!
-    var menuMapSOSTapGesture: UITapGestureRecognizer!
+    var menuMapHazardContainer: UIView!
+    var menuMapHazardImage: UIImageView!
+    var menuMapHazardIndicator: UIImageView!
+    var menuMapHazardTapGesture: UITapGestureRecognizer!
     var menuTimeContainer: UIView!
     var menuTimeDayIndicator: UIImageView!
     var menuTimeWeekIndicator: UIImageView!
@@ -64,13 +64,18 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     var refreshViewSpinner: UIActivityIndicatorView!
     var refreshViewTapGesture: UITapGestureRecognizer!
     
-    var addSpotRequestAddButton: UIView!
-    var addSpotRequestAddButtonSpinner: UIActivityIndicatorView!
-    var addSpotRequestAddButtonImage: UIImageView!
-    var addSpotRequestAddButtonTapGesture: UITapGestureRecognizer!
+    var addHazardButton: UIView!
+    var addHazardButtonImage: UIImageView!
+    var addHazardButtonSpinner: UIActivityIndicatorView!
+    var addHazardButtonTapGesture: UITapGestureRecognizer!
     var addSpotRequestButton: UIView!
     var addSpotRequestButtonImage: UIImageView!
+    var addSpotRequestButtonSpinner: UIActivityIndicatorView!
     var addSpotRequestButtonTapGesture: UITapGestureRecognizer!
+    var addPinContainer: UIView!
+    var addPinButton: UIView!
+    var addPinButtonImage: UIImageView!
+    var addPinButtonTapGesture: UITapGestureRecognizer!
     var addImageButton: UIView!
     var addImageButtonImage: UIImageView!
     var addImageButtonTapGesture: UITapGestureRecognizer!
@@ -81,7 +86,13 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     
     
     // Data Variables
-    var addSpotRequestToggle: Bool = false
+    var addHazardActive: Bool = false
+    var newHazardPrepInProgress: Bool = false
+    var newHazard: Hazard?
+    var newHazardMarker: GMSMarker?
+    
+    var addSpotRequestActive: Bool = false
+    var newSpotRequestPrepInProgress: Bool = false
     var newSpotRequest: SpotRequest?
     var newSpotRequestMarker: GMSMarker?
     
@@ -91,6 +102,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     
     let menuWidth: CGFloat = 80
     var menuVisible: Bool = false
+    var pinContainerVisible: Bool = false
     var spotMarkersVisible: Bool = false //Start this off false since the 'toggle' will be called to add features
     var initialDataRequest: Bool = false //Record whether the initial data request has occured - request does not happen until the user's location is determined
     
@@ -98,6 +110,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     var downloadingSpot: Bool = false
     var downloadingHydro: Bool = false
     var downloadingShelter: Bool = false
+    var downloadingHazard: Bool = false
     
     // Check whether the user needs to agree to the terms again - default is that they need to see it unless specified otherwise
     var showAgreement: Bool = true
@@ -185,20 +198,20 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         menuMapSpotTapGesture.numberOfTapsRequired = 1  // add single tap
         menuMapSpotContainer.addGestureRecognizer(menuMapSpotTapGesture)
         
-        menuMapHydroContainer = UIView(frame: CGRect(x: 0, y: 100, width: menuView.frame.width, height: 50))
-        menuView.addSubview(menuMapHydroContainer)
-        menuMapHydroImage = UIImageView(frame: CGRect(x: 5, y: 5, width: 40, height: 40))
-        menuMapHydroImage.contentMode = UIViewContentMode.scaleAspectFit
-        menuMapHydroImage.clipsToBounds = true
-        menuMapHydroImage.image = UIImage(named: Constants.Strings.markerIconGauge)
-        menuMapHydroContainer.addSubview(menuMapHydroImage)
-        menuMapHydroIndicator = UIImageView(frame: CGRect(x: menuMapTrafficImage.frame.width + 10, y: 5, width: 25, height: 40))
-        menuMapHydroIndicator.contentMode = UIViewContentMode.scaleAspectFit
-        menuMapHydroIndicator.clipsToBounds = true
-        menuMapHydroIndicator.image = UIImage(named: Constants.Strings.iconCheckOrange)
-        menuMapHydroTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.menuMapHydroTap(_:)))
-        menuMapHydroTapGesture.numberOfTapsRequired = 1  // add single tap
-        menuMapHydroContainer.addGestureRecognizer(menuMapHydroTapGesture)
+        menuMapHazardContainer = UIView(frame: CGRect(x: 0, y: 100, width: menuView.frame.width, height: 50))
+        menuView.addSubview(menuMapHazardContainer)
+        menuMapHazardImage = UIImageView(frame: CGRect(x: 5, y: 5, width: 40, height: 40))
+        menuMapHazardImage.contentMode = UIViewContentMode.scaleAspectFit
+        menuMapHazardImage.clipsToBounds = true
+        menuMapHazardImage.image = UIImage(named: Constants.Strings.iconHazard)
+        menuMapHazardContainer.addSubview(menuMapHazardImage)
+        menuMapHazardIndicator = UIImageView(frame: CGRect(x: menuMapTrafficImage.frame.width + 10, y: 5, width: 25, height: 40))
+        menuMapHazardIndicator.contentMode = UIViewContentMode.scaleAspectFit
+        menuMapHazardIndicator.clipsToBounds = true
+        menuMapHazardIndicator.image = UIImage(named: Constants.Strings.iconCheckOrange)
+        menuMapHazardTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.menuMapHazardTap(_:)))
+        menuMapHazardTapGesture.numberOfTapsRequired = 1  // add single tap
+        menuMapHazardContainer.addGestureRecognizer(menuMapHazardTapGesture)
         
         menuMapShelterContainer = UIView(frame: CGRect(x: 0, y: 150, width: menuView.frame.width, height: 50))
         menuView.addSubview(menuMapShelterContainer)
@@ -215,20 +228,20 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         menuMapShelterTapGesture.numberOfTapsRequired = 1  // add single tap
         menuMapShelterContainer.addGestureRecognizer(menuMapShelterTapGesture)
         
-        menuMapSOSContainer = UIView(frame: CGRect(x: 0, y: 200, width: menuView.frame.width, height: 50))
-        menuView.addSubview(menuMapSOSContainer)
-        menuMapSOSImage = UIImageView(frame: CGRect(x: 5, y: 5, width: 40, height: 40))
-        menuMapSOSImage.contentMode = UIViewContentMode.scaleAspectFit
-        menuMapSOSImage.clipsToBounds = true
-        menuMapSOSImage.image = UIImage(named: Constants.Strings.markerIconSOS)
-        menuMapSOSContainer.addSubview(menuMapSOSImage)
-        menuMapSOSIndicator = UIImageView(frame: CGRect(x: menuMapTrafficImage.frame.width + 10, y: 5, width: 25, height: 40))
-        menuMapSOSIndicator.contentMode = UIViewContentMode.scaleAspectFit
-        menuMapSOSIndicator.clipsToBounds = true
-        menuMapSOSIndicator.image = UIImage(named: Constants.Strings.iconCheckOrange)
-        menuMapSOSTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.menuMapSOSTap(_:)))
-        menuMapSOSTapGesture.numberOfTapsRequired = 1  // add single tap
-        menuMapSOSContainer.addGestureRecognizer(menuMapSOSTapGesture)
+        menuMapHydroContainer = UIView(frame: CGRect(x: 0, y: 200, width: menuView.frame.width, height: 50))
+        menuView.addSubview(menuMapHydroContainer)
+        menuMapHydroImage = UIImageView(frame: CGRect(x: 5, y: 5, width: 40, height: 40))
+        menuMapHydroImage.contentMode = UIViewContentMode.scaleAspectFit
+        menuMapHydroImage.clipsToBounds = true
+        menuMapHydroImage.image = UIImage(named: Constants.Strings.markerIconGauge)
+        menuMapHydroContainer.addSubview(menuMapHydroImage)
+        menuMapHydroIndicator = UIImageView(frame: CGRect(x: menuMapTrafficImage.frame.width + 10, y: 5, width: 25, height: 40))
+        menuMapHydroIndicator.contentMode = UIViewContentMode.scaleAspectFit
+        menuMapHydroIndicator.clipsToBounds = true
+        menuMapHydroIndicator.image = UIImage(named: Constants.Strings.iconCheckOrange)
+        menuMapHydroTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.menuMapHydroTap(_:)))
+        menuMapHydroTapGesture.numberOfTapsRequired = 1  // add single tap
+        menuMapHydroContainer.addGestureRecognizer(menuMapHydroTapGesture)
         
         // The time selections for the map spots
         menuTimeContainer = UIView(frame: CGRect(x: 0, y: menuView.frame.height - 250, width: menuWidth, height: 200))
@@ -385,33 +398,44 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         refreshViewTapGesture.numberOfTapsRequired = 1  // add single tap
         refreshView.addGestureRecognizer(refreshViewTapGesture)
         
-        addSpotRequestAddButton = UIView(frame: CGRect(x: mapContainer.frame.width - 66, y: mapContainer.frame.height - 264, width: 56, height: 56))
-        addSpotRequestAddButton.backgroundColor = Constants.Colors.standardBackground
-        addSpotRequestAddButton.layer.cornerRadius = 28
-        addSpotRequestAddButton.layer.shadowOffset = CGSize(width: 0, height: 0.6)
-        addSpotRequestAddButton.layer.shadowOpacity = 0.5
-        addSpotRequestAddButton.layer.shadowRadius = 1.0
+        // PIN CONTAINER
         
-        addSpotRequestAddButtonSpinner = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: addSpotRequestAddButton.frame.width, height: addSpotRequestAddButton.frame.height))
-        addSpotRequestAddButtonSpinner.color = Constants.Colors.colorYellow
-        addSpotRequestAddButton.addSubview(addSpotRequestAddButtonSpinner)
+        addPinContainer = UIView(frame: CGRect(x: mapContainer.frame.width - 66, y: mapContainer.frame.height - 198, width: 56, height: 56))
+        addPinContainer.backgroundColor = Constants.Colors.standardBackground
+        addPinContainer.layer.cornerRadius = 28
+        addPinContainer.layer.shadowOffset = CGSize(width: 0, height: 0.6)
+        addPinContainer.layer.shadowOpacity = 0.5
+        addPinContainer.layer.shadowRadius = 1.0
+        mapContainer.addSubview(addPinContainer)
         
-        addSpotRequestAddButtonImage = UIImageView(frame: CGRect(x: 2, y: 7, width: 46, height: 46))
-        addSpotRequestAddButtonImage.contentMode = UIViewContentMode.scaleAspectFit
-        addSpotRequestAddButtonImage.clipsToBounds = true
-        addSpotRequestAddButtonImage.image = UIImage(named: Constants.Strings.iconCheckYellow)
-        addSpotRequestAddButton.addSubview(addSpotRequestAddButtonImage)
+        // PIN CONTAINER
+        // HAZARD BUTTON
         
-        addSpotRequestAddButtonTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.uploadSpotRequestTap(_:)))
-        addSpotRequestAddButtonTapGesture.numberOfTapsRequired = 1  // add single tap
-        addSpotRequestAddButton.addGestureRecognizer(addSpotRequestAddButtonTapGesture)
+        addHazardButton = UIView(frame: CGRect(x: mapContainer.frame.width - 66, y: mapContainer.frame.height - 198, width: 56, height: 56))
+        addHazardButton.backgroundColor = UIColor.clear
+        addHazardButton.layer.cornerRadius = 28
+        mapContainer.addSubview(addHazardButton)
+        
+        addHazardButtonImage = UIImageView(frame: CGRect(x: 5, y: 5, width: 46, height: 46))
+        addHazardButtonImage.contentMode = UIViewContentMode.scaleAspectFit
+        addHazardButtonImage.clipsToBounds = true
+        addHazardButtonImage.image = UIImage(named: Constants.Strings.iconHazard)
+        addHazardButton.addSubview(addHazardButtonImage)
+        
+        addHazardButtonSpinner = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: addHazardButton.frame.width, height: addHazardButton.frame.height))
+        addHazardButtonSpinner.color = Constants.Colors.colorRed
+        addHazardButton.addSubview(addHazardButtonSpinner)
+        
+        addHazardButtonTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.addHazardButtonTap(_:)))
+        addHazardButtonTapGesture.numberOfTapsRequired = 1  // add single tap
+        addHazardButton.addGestureRecognizer(addHazardButtonTapGesture)
+        
+        // HAZARD BUTTON
+        // SPOT REQUEST BUTTON
         
         addSpotRequestButton = UIView(frame: CGRect(x: mapContainer.frame.width - 66, y: mapContainer.frame.height - 198, width: 56, height: 56))
-        addSpotRequestButton.backgroundColor = Constants.Colors.standardBackground
+        addSpotRequestButton.backgroundColor = UIColor.clear
         addSpotRequestButton.layer.cornerRadius = 28
-        addSpotRequestButton.layer.shadowOffset = CGSize(width: 0, height: 0.6)
-        addSpotRequestButton.layer.shadowOpacity = 0.5
-        addSpotRequestButton.layer.shadowRadius = 1.0
         mapContainer.addSubview(addSpotRequestButton)
         
         addSpotRequestButtonImage = UIImageView(frame: CGRect(x: 5, y: 5, width: 46, height: 46))
@@ -420,9 +444,38 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         addSpotRequestButtonImage.image = UIImage(named: Constants.Strings.markerIconCamera)
         addSpotRequestButton.addSubview(addSpotRequestButtonImage)
         
+        addSpotRequestButtonSpinner = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: addSpotRequestButton.frame.width, height: addSpotRequestButton.frame.height))
+        addSpotRequestButtonSpinner.color = Constants.Colors.colorYellow
+        addSpotRequestButton.addSubview(addSpotRequestButtonSpinner)
+        
         addSpotRequestButtonTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.addSpotRequestButtonTap(_:)))
         addSpotRequestButtonTapGesture.numberOfTapsRequired = 1  // add single tap
         addSpotRequestButton.addGestureRecognizer(addSpotRequestButtonTapGesture)
+        
+        // SPOT REQUEST BUTTON
+        // PIN BUTTON
+        
+        addPinButton = UIView(frame: CGRect(x: mapContainer.frame.width - 66, y: mapContainer.frame.height - 198, width: 56, height: 56))
+        addPinButton.backgroundColor = Constants.Colors.standardBackground
+        addPinButton.layer.cornerRadius = 28
+        addPinButton.layer.shadowOffset = CGSize(width: 0, height: 0.6)
+        addPinButton.layer.shadowOpacity = 0.5
+        addPinButton.layer.shadowRadius = 1.0
+        mapContainer.addSubview(addPinButton)
+        
+        addPinButtonImage = UIImageView(frame: CGRect(x: 5, y: 5, width: 46, height: 46))
+        addPinButtonImage.contentMode = UIViewContentMode.scaleAspectFit
+        addPinButtonImage.clipsToBounds = true
+        addPinButtonImage.image = UIImage(named: Constants.Strings.iconPinsMulti)
+        addPinButton.addSubview(addPinButtonImage)
+        
+        addPinButtonTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.addPinButtonTap(_:)))
+        addPinButtonTapGesture.numberOfTapsRequired = 1  // add single tap
+        addPinButton.addGestureRecognizer(addPinButtonTapGesture)
+        
+        // PIN BUTTON
+        
+        // IMAGE BUTTON
         
         addImageButton = UIView(frame: CGRect(x: mapContainer.frame.width - 66, y: mapContainer.frame.height - 132, width: 56, height: 56))
         addImageButton.backgroundColor = Constants.Colors.standardBackground
@@ -441,6 +494,8 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         addImageButtonTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.addImageButtonTap(_:)))
         addImageButtonTapGesture.numberOfTapsRequired = 1  // add single tap
         addImageButton.addGestureRecognizer(addImageButtonTapGesture)
+        
+        // IMAGE BUTTON
         
         // Add the infowindow views to show the popups
         infoWindowHydro = InfoWindowHydro(frame: CGRect(x: (mapContainer.frame.width / 2) - 140, y: 80, width: 280, height: 260))
@@ -571,22 +626,48 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             toggleMenu()
         }
         
-        if addSpotRequestToggle
+        if addHazardActive
         {
-            self.newSpotRequest = SpotRequest(userID: Constants.Data.currentUser.userID, datetime: Date(), lat: coordinate.latitude, lng: coordinate.longitude)
-            
-            // Remove the previous and add a marker at the tap coordinates
-            if newSpotRequestMarker != nil
+            print("MVC - DID TAP - IN addHazardActive: \(newHazardPrepInProgress)")
+            if !newHazardPrepInProgress
             {
-                newSpotRequestMarker!.map = nil
+                self.newHazard = Hazard(userID: Constants.Data.currentUser.userID, datetime: Date(), lat: coordinate.latitude, lng: coordinate.longitude, type: Constants.HazardType.general)
+                
+                // Remove the previous and add a marker at the tap coordinates
+                if newHazardMarker != nil
+                {
+                    newHazardMarker!.map = nil
+                }
+                // Custom Marker Icon
+                let markerView = UIImageView(image: UIImage(named: Constants.Strings.iconHazard))
+                newHazardMarker = GMSMarker()
+                newHazardMarker!.position = coordinate
+                newHazardMarker!.groundAnchor = CGPoint(x: 0.5, y: 0.5)
+                newHazardMarker!.zIndex = 200
+                newHazardMarker!.iconView = markerView
+                newHazardMarker!.map = mapView
             }
-            // Custom Marker Icon
-            let markerView = UIImageView(image: UIImage(named: Constants.Strings.markerIconCameraTemp))
-            newSpotRequestMarker = GMSMarker()
-            newSpotRequestMarker!.position = coordinate
-            newSpotRequestMarker!.zIndex = 100
-            newSpotRequestMarker!.iconView = markerView
-            newSpotRequestMarker!.map = mapView
+        }
+        else if addSpotRequestActive
+        {
+            print("MVC - DID TAP - IN addSpotRequestToggle: \(newSpotRequestPrepInProgress)")
+            if !newSpotRequestPrepInProgress
+            {
+                self.newSpotRequest = SpotRequest(userID: Constants.Data.currentUser.userID, datetime: Date(), lat: coordinate.latitude, lng: coordinate.longitude)
+                
+                // Remove the previous and add a marker at the tap coordinates
+                if newSpotRequestMarker != nil
+                {
+                    newSpotRequestMarker!.map = nil
+                }
+                // Custom Marker Icon
+                let markerView = UIImageView(image: UIImage(named: Constants.Strings.markerIconCameraTemp))
+                newSpotRequestMarker = GMSMarker()
+                newSpotRequestMarker!.position = coordinate
+                newSpotRequestMarker!.zIndex = 100
+                newSpotRequestMarker!.iconView = markerView
+                newSpotRequestMarker!.map = mapView
+            }
         }
         else
         {
@@ -660,7 +741,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         }
         else if let markerSpot = markerData as? Spot
         {
-//            print(markerSpotRequest.requestID)
+            print(markerSpot.spotID)
             // Center the map on the tapped marker
             let markerCoords = CLLocationCoordinate2DMake(markerSpot.lat, markerSpot.lng)
             mapCameraPositionAdjust(target: markerCoords)
@@ -671,7 +752,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         }
         else if let markerSpotRequest = markerData as? SpotRequest
         {
-//            print(markerSpotRequest.requestID)
+            print(markerSpotRequest.requestID)
             // Center the map on the tapped marker
             let markerCoords = CLLocationCoordinate2DMake(markerSpotRequest.lat, markerSpotRequest.lng)
             mapCameraPositionAdjust(target: markerCoords)
@@ -711,6 +792,15 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             }
             infoWindowShelter.labelFooter.text = "Last Updated: " + dateString
             mapContainer.addSubview(infoWindowShelter)
+        }
+        else if let markerHazard = markerData as? Hazard
+        {
+            print(markerHazard.hazardID)
+            // Center the map on the tapped marker
+            let markerCoords = CLLocationCoordinate2DMake(markerHazard.lat, markerHazard.lng)
+            mapCameraPositionAdjust(target: markerCoords)
+            
+            mapView.selectedMarker = marker
         }
         
         return true
@@ -853,19 +943,19 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         // Record the setting update in Core Data
         CoreDataFunctions().mapSettingSaveFromGlobalSettings()
     }
-    func menuMapSOSTap(_ gesture: UITapGestureRecognizer)
+    func menuMapHazardTap(_ gesture: UITapGestureRecognizer)
     {
-        if Constants.Settings.menuMapSOS == Constants.MenuMapSOS.yes
+        if Constants.Settings.menuMapHazard == Constants.MenuMapHazard.yes
         {
-            removeSOSMapFeatures()
-            menuMapSOSIndicator.removeFromSuperview()
-            Constants.Settings.menuMapSOS = Constants.MenuMapSOS.no
+            removeHazardMapFeatures()
+            menuMapHazardIndicator.removeFromSuperview()
+            Constants.Settings.menuMapHazard = Constants.MenuMapHazard.no
         }
         else
         {
-            addSOSMapFeatures()
-            menuMapSOSContainer.addSubview(menuMapSOSIndicator)
-            Constants.Settings.menuMapSOS = Constants.MenuMapSOS.yes
+            addHazardMapFeatures()
+            menuMapHazardContainer.addSubview(menuMapHazardIndicator)
+            Constants.Settings.menuMapHazard = Constants.MenuMapHazard.yes
         }
         
         // Record the setting update in Core Data
@@ -943,11 +1033,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         }
     }
     
-    func addSpotRequestButtonTap(_ gesture: UITapGestureRecognizer)
-    {
-        spotRequestToggle()
-    }
-    
     func addImageButtonTap(_ gesture: UITapGestureRecognizer)
     {
         // Load the CameraVC
@@ -965,14 +1050,162 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
 //        infoWindowObsTime.textAlignment = .left
     }
     
-    func uploadSpotRequestTap(_ gesture: UITapGestureRecognizer)
+    func addPinButtonTap(_ gesture: UITapGestureRecognizer)
     {
-        // Hide the check mark and show the spinner
-        addSpotRequestAddButtonImage.removeFromSuperview()
-        addSpotRequestAddButtonSpinner.startAnimating()
+        if pinContainerVisible
+        {
+            self.addPinButtonImage.image = UIImage(named: Constants.Strings.iconPinsMulti)
+            self.pinContainerVisible = false
+            
+            // Reset all toggles
+            if addSpotRequestActive && !newSpotRequestPrepInProgress
+            {
+                // Ensure the other marker selections are not selected
+                addSpotRequestDeactivate()
+            }
+            if addHazardActive && !newHazardPrepInProgress
+            {
+                // Ensure the other marker selections are not selected
+                addHazardDeactivate()
+            }
+            
+            // Hide the pin container
+            UIView.animate(withDuration: 0.5, animations:
+                {
+                    self.addPinContainer.frame = CGRect(x: self.mapContainer.frame.width - 66, y: self.mapContainer.frame.height - 198, width: 56, height: 56)
+                    self.addSpotRequestButton.frame = CGRect(x: self.mapContainer.frame.width - 66, y: self.mapContainer.frame.height - 198, width: 56, height: 56)
+                    self.addHazardButton.frame = CGRect(x: self.mapContainer.frame.width - 66, y: self.mapContainer.frame.height - 198, width: 56, height: 56)
+            }, completion:
+                {
+                    (value: Bool) in
+                    
+            })
+        }
+        else
+        {
+            self.addPinButtonImage.image = UIImage(named: Constants.Strings.iconCloseDark)
+            self.pinContainerVisible = true
+            
+            // Expand the container to show the pin selection buttons
+            UIView.animate(withDuration: 0.5, animations:
+                {
+                    self.addPinContainer.frame = CGRect(x: self.mapContainer.frame.width - 66, y: self.mapContainer.frame.height - (198 + 56 * 2), width: 56, height: 56 * 3)
+                    self.addSpotRequestButton.frame = CGRect(x: self.mapContainer.frame.width - 66, y: self.mapContainer.frame.height - (198 + 56), width: 56, height: 56)
+                    self.addHazardButton.frame = CGRect(x: self.mapContainer.frame.width - 66, y: self.mapContainer.frame.height - (198 + 56 * 2), width: 56, height: 56)
+            }, completion:
+                {
+                    (value: Bool) in
+                    
+            })
+        }
+    }
+    func addHazardButtonTap(_ gesture: UITapGestureRecognizer)
+    {
+        print("MVC - addHazardButtonTap: \(newHazardPrepInProgress)")
+        if !newHazardPrepInProgress
+        {
+            if addHazardActive
+            {
+                print("MVC - addHazardButtonTap 2")
+                // The addHazard process is already active, so a second tap means the user clicked the check mark
+                // Hold the Hazard interaction while uploading
+                newHazardPrepInProgress = true
+                
+                // Hide the check mark and show the spinner
+                addHazardButtonImage.removeFromSuperview()
+                addHazardButtonSpinner.startAnimating()
+                
+                // Request a randomID for the Hazard before upload - the upload will fire when the id is downloaded
+                AWSPrepRequest(requestToCall: AWSGetRandomID(randomIdType: Constants.randomIdType.random_hazard_id), delegate: self as AWSRequestDelegate).prepRequest()
+            }
+            else
+            {
+                print("MVC - addHazardButtonTap 3")
+                // The addHazard process was not active, so activate it now that the user has made that selection
+                addHazardActivate()
+            }
+        }
+    }
+    func addSpotRequestButtonTap(_ gesture: UITapGestureRecognizer)
+    {
+        print("MVC - addHazardButtonTap: \(newSpotRequestPrepInProgress)")
+        if !newSpotRequestPrepInProgress
+        {
+            if addSpotRequestActive
+            {
+                print("MVC - addSpotRequestButtonTap 2")
+                // The addSpotRequest process is already active, so a second tap means the user clicked the check mark
+                // Hold the SpotRequest interaction while uploading
+                newSpotRequestPrepInProgress = true
+                
+                // Hide the check mark and show the spinner
+                addSpotRequestButtonImage.removeFromSuperview()
+                addSpotRequestButtonSpinner.startAnimating()
+                
+                // Request a randomID for the SpotRequest before upload
+                AWSPrepRequest(requestToCall: AWSGetRandomID(randomIdType: Constants.randomIdType.random_spot_id), delegate: self as AWSRequestDelegate).prepRequest()
+            }
+            else
+            {
+                print("MVC - addSpotRequestButtonTap 3")
+                // The addSpotRequest process was not active, so activate it now that the user has made that selection
+                addSpotRequestActivate()
+            }
+        }
+    }
+    
+    func addHazardActivate()
+    {
+        print("MVC - addHazardActivate")
+        // Ensure the other marker selections are not selected
+        addSpotRequestDeactivate()
         
-        // Request a randomID for the SpotRequest before upload
-        AWSPrepRequest(requestToCall: AWSGetRandomID(randomIdType: Constants.randomIdType.random_spot_id), delegate: self as AWSRequestDelegate).prepRequest()
+        // Indicate that the addHazard process is in progress and change the image
+        addHazardActive = true
+        addHazardButtonImage.image = UIImage(named: Constants.Strings.iconCheckOrange)
+    }
+    func addHazardDeactivate()
+    {
+        print("MVC - addHazardDeactivate")
+        addHazardActive = false
+        
+        // Remove the Hazard temporary marker
+        if self.newHazardMarker != nil
+        {
+            self.newHazardMarker!.map = nil
+        }
+        
+        // Show the icon and hide the spinner
+        addHazardButtonImage.image = UIImage(named: Constants.Strings.iconHazard)
+        addHazardButton.addSubview(addHazardButtonImage)
+        addHazardButtonSpinner.stopAnimating()
+    }
+    
+    func addSpotRequestActivate()
+    {
+        print("MVC - addSpotRequestActivate")
+        // Ensure the other marker selections are not selected
+        addHazardDeactivate()
+        
+        // Indicate that the addSpotRequest process is in progress and change the image
+        addSpotRequestActive = true
+        addSpotRequestButtonImage.image = UIImage(named: Constants.Strings.iconCheckYellowPin)
+    }
+    func addSpotRequestDeactivate()
+    {
+        print("MVC - addSpotRequestDeactivate")
+        addSpotRequestActive = false
+        
+        // Remove the SpotRequest temporary marker
+        if self.newSpotRequestMarker != nil
+        {
+            self.newSpotRequestMarker!.map = nil
+        }
+        
+        // Show the icon and hide the spinner
+        addSpotRequestButtonImage.image = UIImage(named: Constants.Strings.markerIconCamera)
+        addSpotRequestButton.addSubview(addSpotRequestButtonImage)
+        addSpotRequestButtonSpinner.stopAnimating()
     }
     
     
@@ -980,10 +1213,12 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     
     func reloadMapData()
     {
+        print("MVC - RELOAD MAP")
         // Before populating the map, delete all markers
         self.removeSpotMapFeatures()
         self.removeHydroMapFeatures()
         self.removeShelterMapFeatures()
+        self.removeHazardMapFeatures()
         
         // Now populate the map, if settings are true
         if Constants.Settings.menuMapSpot == Constants.MenuMapSpot.yes
@@ -998,9 +1233,13 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         {
             self.addShelterMapFeatures()
         }
+        if Constants.Settings.menuMapHazard == Constants.MenuMapHazard.yes
+        {
+            self.addHazardMapFeatures()
+        }
         
         // Check to see whether any data is still downloading - if not, stop the spinner
-        if !downloadingSpot && !downloadingHydro && !downloadingShelter
+        if !downloadingSpot && !downloadingHydro && !downloadingShelter && !downloadingHazard
         {
             // All the data has been loaded - Hide the loading indicator
             self.refreshViewSpinner.stopAnimating()
@@ -1061,6 +1300,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         AWSPrepRequest(requestToCall: AWSGetSpotData(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
         AWSPrepRequest(requestToCall: AWSGetHydroData(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
         AWSPrepRequest(requestToCall: AWSGetShelterData(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
+        AWSPrepRequest(requestToCall: AWSGetHazardData(), delegate: self as AWSRequestDelegate).prepRequest()
         AWSPrepRequest(requestToCall: AWSGetUsers(), delegate: self as AWSRequestDelegate).prepRequest()
         AWSPrepRequest(requestToCall: AWSGetUserConnections(), delegate: self as AWSRequestDelegate).prepRequest()
         
@@ -1068,6 +1308,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         downloadingSpot = true
         downloadingHydro = true
         downloadingShelter = true
+        downloadingHazard = true
         
         // Ensure that the initialDataRequest is true
         initialDataRequest = true
@@ -1101,6 +1342,10 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         if Constants.Settings.menuMapShelter == Constants.MenuMapShelter.yes
         {
             menuMapShelterContainer.addSubview(menuMapShelterIndicator)
+        }
+        if Constants.Settings.menuMapHazard == Constants.MenuMapHazard.yes
+        {
+            menuMapHazardContainer.addSubview(menuMapHazardIndicator)
         }
     }
     func mapCameraPositionAdjust(target: CLLocationCoordinate2D)
@@ -1194,7 +1439,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             }
             
             // Create the SpotVC, pass the content, and assign the created Nav Bar settings to the Tab Bar Controller
-            let spotTableVC = SpotTableViewController(spotContent: spotContent)
+            let spotTableVC = SpotTableViewController(spotContent: spotContent, allowDelete: false)
             spotTableVC.navigationItem.setLeftBarButton(backButtonItem, animated: true)
             spotTableVC.navigationItem.titleView = ncTitle
             
@@ -1286,60 +1531,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         Constants.Data.spotMarkers.append(marker)
     }
     
-    func spotRequestToggle()
-    {
-        if addSpotRequestToggle
-        {
-            addSpotRequestToggle = false
-            addSpotRequestButtonImage.image = UIImage(named: Constants.Strings.markerIconCamera)
-            addSpotRequestAddButton.removeFromSuperview()
-            
-            // Remove the SpotRequest temporary marker
-            if self.newSpotRequestMarker != nil
-            {
-                self.newSpotRequestMarker!.map = nil
-            }
-        }
-        else
-        {
-            addSpotRequestToggle = true
-            addSpotRequestButtonImage.image = UIImage(named: Constants.Strings.iconCloseYellow)
-            mapContainer.addSubview(addSpotRequestAddButton)
-        }
-    }
-    
-    // Update the SpotRequests on the map
-    func spotRequestUpdate()
-    {
-        // Remove all the current spotRequests from the map
-        for marker in Constants.Data.spotRequestMarkers
-        {
-            marker.map = nil
-        }
-        Constants.Data.spotRequestMarkers = [GMSMarker]()
-        
-        // Add the current requests
-        for spotRequest in Constants.Data.allSpotRequest
-        {
-            if spotRequest.status == "active"
-            {
-                // Custom Marker Icon
-                let markerView = UIImageView(image: UIImage(named: Constants.Strings.markerIconCamera))
-                
-                // Creates a marker at the Spot Request location
-                let marker = GMSMarker()
-                marker.position = CLLocationCoordinate2DMake(spotRequest.lat, spotRequest.lng)
-                marker.zIndex = Constants.Settings.mapMarkerSpotRequest
-                marker.userData = spotRequest
-                marker.snippet = "Photo Requested"
-                marker.iconView = markerView
-//                marker.icon = GMSMarker.markerImage(with: .black)
-                marker.map = self.mapView
-                Constants.Data.spotRequestMarkers.append(marker)
-            }
-        }
-    }
-    
     
     // MARK: NAVIGATION / BAR BUTTON METHODS
     
@@ -1357,9 +1548,9 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     }
     func loadProfileVC(_ sender: UIBarButtonItem)
     {
-        // Load the LoginVC
-        let loginVC = LoginViewController()
-        self.navigationController!.pushViewController(loginVC, animated: true)
+        // Load the ProfileVC
+        let profileVC = ProfileViewController()
+        self.navigationController!.pushViewController(profileVC, animated: true)
     }
     func loadProfileVC()
     {
@@ -1410,13 +1601,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     
     func infoWindowSelectCancel()
     {
-        // The user has rejected an agreement, so log them out and send them to the LoginVC
-        let loginManager = FBSDKLoginManager()
-        loginManager.logOut()
-        
-        // Clear the global user data
-        Constants.Data.currentUser = User()
-        CoreDataFunctions().currentUserSave(user: Constants.Data.currentUser, deleteUser: true)
+        UtilityFunctions().logOutFBAndClearData()
         
         // Load the LoginVC
         let loginVC = LoginViewController()
@@ -1463,6 +1648,14 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             marker.map = nil
         }
         Constants.Data.shelterMarkers = [GMSMarker]()
+    }
+    func removeHazardMapFeatures()
+    {
+        for marker in Constants.Data.hazardMarkers
+        {
+            marker.map = nil
+        }
+        Constants.Data.hazardMarkers = [GMSMarker]()
     }
     
     func addSpotMapFeatures()
@@ -1512,18 +1705,11 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
 //        print("MVC - HYDRO DATA COUNT: \(Constants.Data.allHydro.count)")
         for hydro in Constants.Data.allHydro
         {
-//            print(hydro.gaugeID)
-            // Custom Marker Icon
-//            let markerView = UIImageView(image: UIImage(named: Constants.Strings.markerIconGauge))
-//            markerView.tintColor = UIColor.red
-            
             // Creates a marker at the Hydro location
             let marker = GMSMarker()
             marker.position = CLLocationCoordinate2DMake(hydro.lat, hydro.lng)
             marker.zIndex = Constants.Settings.mapMarkerHydro
             marker.userData = hydro
-//            marker.iconView = markerView
-//            marker.icon = GMSMarker.markerImage(with: .blue)
             marker.icon = UIImage(named: Constants.Strings.markerIconGauge)
             marker.map = self.mapView
             Constants.Data.hydroMarkers.append(marker)
@@ -1541,10 +1727,29 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                 marker.position = CLLocationCoordinate2DMake(shelter.lat, shelter.lng)
                 marker.zIndex = Constants.Settings.mapMarkerShelter
                 marker.userData = shelter
-//                marker.icon = GMSMarker.markerImage(with: .green)
                 marker.icon = UIImage(named: Constants.Strings.markerIconShelter)
                 marker.map = self.mapView
                 Constants.Data.shelterMarkers.append(marker)
+            }
+        }
+    }
+    func addHazardMapFeatures()
+    {
+        print("MVC - Hazard DATA:")
+        for hazard in Constants.Data.allHazard
+        {
+            if hazard.status != "inactive"
+            {
+                // Creates a marker at the Hazard location
+                let marker = GMSMarker()
+                marker.position = CLLocationCoordinate2DMake(hazard.lat, hazard.lng)
+                marker.zIndex = Constants.Settings.mapMarkerHazard
+                marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
+                marker.userData = hazard
+                marker.snippet = "Hazard Reported"
+                marker.icon = UIImage(named: Constants.Strings.iconHazard)
+                marker.map = self.mapView
+                Constants.Data.hazardMarkers.append(marker)
             }
         }
     }
@@ -1658,17 +1863,46 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
                     }
+                case _ as AWSGetHazardData:
+                    if success
+                    {
+                        // Mark the proper data as downloaded
+                        self.downloadingHazard = false
+                        
+                        self.reloadMapData()
+                    }
+                    else
+                    {
+                        print("MVC-ERROR: AWSGetShelterData")
+                        // Show the error message
+                        let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                        alert.show()
+                    }
                 case let awsGetRandomID as AWSGetRandomID:
                     if success
                     {
-                        // The randomID is only requested for uploading a new SpotRequest, so upload the SpotRequest when the randomID is received
+                        // The randomID is only requested once the upload command is given, so upload the data when the randomID is received
 //                        print("MVC - AWSGetRandomID: \(String(describing: awsGetRandomID.randomID))")
-                        if let spotRequest = self.newSpotRequest
+                        if awsGetRandomID.randomIdType == Constants.randomIdType.random_spot_id
                         {
-                            spotRequest.requestID = awsGetRandomID.randomID
-                            
-                            // Upload the SpotRequest
-                            AWSPrepRequest(requestToCall: AWSPutSpotRequestData(spotRequest: spotRequest), delegate: self as AWSRequestDelegate).prepRequest()
+                            if let spotRequest = self.newSpotRequest
+                            {
+                                spotRequest.requestID = awsGetRandomID.randomID
+                                
+                                // Upload the SpotRequest
+                                AWSPrepRequest(requestToCall: AWSPutSpotRequestData(spotRequest: spotRequest), delegate: self as AWSRequestDelegate).prepRequest()
+                            }
+                        }
+                        else if awsGetRandomID.randomIdType == Constants.randomIdType.random_hazard_id
+                        {
+                            if let hazard = self.newHazard
+                            {
+                                print("MVC-AWSGetRandomID for HAZARD for user: \(hazard.userID)")
+                                hazard.hazardID = awsGetRandomID.randomID
+                                
+                                // Upload the Hazard
+                                AWSPrepRequest(requestToCall: AWSPutHazardData(hazard: hazard), delegate: self as AWSRequestDelegate).prepRequest()
+                            }
                         }
                     }
                     else
@@ -1682,23 +1916,38 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                     if success
                     {
                         // The SpotRequest was already added to the global array in AWSClasses
-//                        print("CVC - AWSPutSpotRequestData SUCCESS")
+                        print("MVC - AWSPutSpotRequestData SUCCESS")
                         
-                        // Remove the SpotRequest temporary marker
-                        if self.newSpotRequestMarker != nil
-                        {
-                            self.newSpotRequestMarker!.map = nil
-                        }
-                        
-                        // Update the SpotRequests
-                        self.spotRequestUpdate()
+                        // Release the hold on adding a new SpotRequest while uploading
+                        self.newSpotRequestPrepInProgress = false
                         
                         // Reset the view controllers involved
-                        self.spotRequestToggle()
+                        self.addSpotRequestDeactivate()
                         
-                        // Show the check mark and hide the spinner
-                        self.addSpotRequestAddButton.addSubview(self.addSpotRequestAddButtonImage)
-                        self.addSpotRequestAddButtonSpinner.stopAnimating()
+                        // Update the SpotRequests
+                        self.reloadMapData()
+                    }
+                    else
+                    {
+                        print("ERROR: AWSPutSpotRequestData")
+                        // Show the error message
+                        let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                        alert.show()
+                    }
+                case _ as AWSPutHazardData:
+                    if success
+                    {
+                        // The Hazard was already added to the global array in AWSClasses
+                        print("MVC - AWSPutHazardData SUCCESS")
+                        
+                        // Release the hold on adding a new Hazard while uploading
+                        self.newHazardPrepInProgress = false
+                        
+                        // Reset the view controllers involved
+                        self.addHazardDeactivate()
+                        
+                        // Update the Hazards
+                        self.reloadMapData()
                     }
                     else
                     {

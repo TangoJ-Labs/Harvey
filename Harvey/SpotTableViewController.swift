@@ -12,12 +12,14 @@ import UIKit
 class SpotTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIGestureRecognizerDelegate, AWSRequestDelegate, RequestDelegate
 {
     var spotContent: [SpotContent]!
+    var allowDelete: Bool!
     
-    convenience init(spotContent: [SpotContent]!)
+    convenience init(spotContent: [SpotContent], allowDelete: Bool)
     {
         self.init(nibName:nil, bundle:nil)
         
         self.spotContent = spotContent
+        self.allowDelete = allowDelete
     }
     
     // Save device settings to adjust view if needed
@@ -41,6 +43,10 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
 //    var spotCellContentHeight: CGFloat!
     var spotMediaSize: CGFloat!
     
+    // Settings to increment the number of cells displayed as the user scrolls content into view
+    // Prevents all content being displayed at once and overloading the app with content and downloading
+    let visibleIncrementSize: Int = 5
+    var visibleCells: Int = 5
     
     override func viewDidLoad()
     {
@@ -90,9 +96,6 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
         spotContent.sort {
             $0.datetime > $1.datetime
         }
-        
-        // Request all needed data and prep the cells
-        self.refreshDataManually()
     }
     
     
@@ -144,8 +147,7 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
-        let cellCount = spotContent.count
-        return cellCount
+        return visibleCells
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
@@ -162,196 +164,264 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
         
 //        cell.cellContainer.frame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: tableView.frame.width)
         
-        // Store the spotContent for this cell for reference
-        let cellSpotContent = spotContent[indexPath.row]
-        
-        // Remove all subviews
-        for subview in cell.subviews
+        if spotContent.count > indexPath.row
         {
-            subview.removeFromSuperview()
-        }
-        
-        cell.cellContainer = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: tableView.frame.width + 50))
-        cell.addSubview(cell.cellContainer)
-        
-//        cell.footerContainer = UIView(frame: CGRect(x: 0, y: cell.cellContainer.frame.height - 50, width: cell.cellContainer.frame.width, height: 50))
-//        cell.footerContainer.backgroundColor = Constants.Colors.standardBackground
-//        cell.cellContainer.addSubview(cell.footerContainer)
-        
-        cell.cellImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: cell.cellContainer.frame.width, height: cell.cellContainer.frame.width))
-        cell.cellImageView.contentMode = UIViewContentMode.scaleAspectFit
-        cell.cellImageView.clipsToBounds = true
-        cell.cellContainer.addSubview(cell.cellImageView)
-        
-        // Add a loading indicator until the Media has downloaded
-        // Give it the same size and location as the imageView
-        cell.mediaActivityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: cell.cellImageView.frame.width, height: cell.cellImageView.frame.height))
-        cell.mediaActivityIndicator.color = UIColor.black
-        cell.cellImageView.addSubview(cell.mediaActivityIndicator)
-        cell.mediaActivityIndicator.startAnimating()
-        
-        cell.userImageView = UIImageView(frame: CGRect(x: 10, y: 10, width: 50, height: 50))
-//        cell.userImageView = UIImageView(frame: CGRect(x: 0, y: cell.cellContainer.frame.height - 50, width: 50, height: 50))
-        cell.userImageView.backgroundColor = Constants.Colors.standardBackgroundGrayTransparent
-        cell.userImageView.contentMode = UIViewContentMode.scaleAspectFit
-        cell.userImageView.clipsToBounds = true
-        cell.cellContainer.addSubview(cell.userImageView)
-        
-        // Add a loading indicator until the user image has downloaded
-        // Give it the same size and location as the user image
-        cell.userImageActivityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: cell.userImageView.frame.width, height: cell.userImageView.frame.height))
-        cell.userImageActivityIndicator.color = UIColor.black
-        cell.userImageView.addSubview(cell.userImageActivityIndicator)
-        cell.userImageActivityIndicator.startAnimating()
-        
-        cell.datetimeLabel = UILabel(frame: CGRect(x: cell.cellImageView.frame.width - 60, y: cell.cellImageView.frame.height - 60, width: 50, height: 50))
-//        cell.datetimeLabel = UILabel(frame: CGRect(x: 50, y: cell.cellContainer.frame.height - 50, width: 50, height: 50))
-        cell.datetimeLabel.backgroundColor = Constants.Colors.standardBackgroundGrayTransparent
-        cell.datetimeLabel.font = UIFont(name: Constants.Strings.fontAlt, size: 16)
-        cell.datetimeLabel.textColor = Constants.Colors.colorTextLight
-        cell.datetimeLabel.textAlignment = .center
-        cell.datetimeLabel.numberOfLines = 2
-        cell.datetimeLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
-        cell.cellContainer.addSubview(cell.datetimeLabel)
-        
-        cell.shareButtonView = UIView(frame: CGRect(x: cell.cellImageView.frame.width - 60, y: 10, width: 50, height: 50))
-//        cell.shareButtonView = UIView(frame: CGRect(x: cell.cellContainer.frame.width - 50, y: cell.cellContainer.frame.height - 50, width: 50, height: 50))
-        cell.shareButtonView.backgroundColor = Constants.Colors.standardBackgroundGrayTransparent
-        cell.cellContainer.addSubview(cell.shareButtonView)
-        
-        cell.shareButtonImage = UIImageView(frame: CGRect(x: 10, y: 10, width: 30, height: 30))
-        cell.shareButtonImage.image = UIImage(named: Constants.Strings.iconShareArrow)
-        cell.shareButtonImage.contentMode = UIViewContentMode.scaleAspectFit
-        cell.shareButtonImage.clipsToBounds = true
-        cell.shareButtonView.addSubview(cell.shareButtonImage)
-        
-        cell.flagButtonView = UIView(frame: CGRect(x: 10, y: cell.cellImageView.frame.height - 60, width: 50, height: 50))
-//        cell.flagButtonView = UIView(frame: CGRect(x: cell.cellContainer.frame.width - 100, y: cell.cellContainer.frame.height - 50, width: 50, height: 50))
-        cell.flagButtonView.backgroundColor = Constants.Colors.standardBackgroundGrayTransparent
-        cell.cellContainer.addSubview(cell.flagButtonView)
-        
-        cell.flagButtonImage = UILabel(frame: CGRect(x: 10, y: 10, width: 30, height: 30))
-//        cell.flagButtonImage.image = UIImage(named: Constants.Strings.iconShareArrow)
-//        cell.flagButtonImage.contentMode = UIViewContentMode.scaleAspectFit
-//        cell.flagButtonImage.clipsToBounds = true
-        cell.flagButtonImage.font = UIFont(name: Constants.Strings.fontAlt, size: 30)
-        cell.flagButtonImage.textColor = Constants.Colors.colorTextLight
-        cell.flagButtonImage.textAlignment = .center
-        cell.flagButtonImage.text = "\u{2691}" // "\u{26A0}"
-        cell.flagButtonView.addSubview(cell.flagButtonImage)
-        
-        if indexPath.row > 0
-        {
-            let border1 = CALayer()
-            border1.frame = CGRect(x: 0, y: 0, width: cell.cellContainer.frame.width, height: 1)
-            border1.backgroundColor = Constants.Colors.standardBackgroundGrayUltraLight.cgColor
-            cell.cellContainer.layer.addSublayer(border1)
-        }
-        cell.datetimeLabel.text = String(indexPath.row)
-        if let datetime = cellSpotContent.datetime
-        {
-            // Capture the number of hours it has been since the Spot was created (as a positive integer)
-            let dateAgeHrs: Int = -1 * Int(datetime.timeIntervalSinceNow / 3600)
+            // Store the spotContent for this cell for reference
+            let cellSpotContent = spotContent[indexPath.row]
             
-            // Set the datetime label.  If the Spot's recency is less than 5 days (120 hours), just show the day and time.
-            // If the Spot's recency is more than 5 days, include the date
-            let formatter = DateFormatter()
-            formatter.amSymbol = "am"
-            formatter.pmSymbol = "pm"
+            // Remove all subviews
+            for subview in cell.subviews
+            {
+                subview.removeFromSuperview()
+            }
             
-            // Set the date age label.  If the age is less than 24 hours, just show it in hours.  Otherwise, show the number of days and hours.
-            var stringDate = String(dateAgeHrs / Int(24)) + "\ndays" //+ String(dateAgeHrs % 24) + " hrs"
-            if dateAgeHrs < 24
+            cell.cellContainer = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: tableView.frame.width + 50))
+            cell.addSubview(cell.cellContainer)
+            
+            //        cell.footerContainer = UIView(frame: CGRect(x: 0, y: cell.cellContainer.frame.height - 50, width: cell.cellContainer.frame.width, height: 50))
+            //        cell.footerContainer.backgroundColor = Constants.Colors.standardBackground
+            //        cell.cellContainer.addSubview(cell.footerContainer)
+            
+            cell.cellImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: cell.cellContainer.frame.width, height: cell.cellContainer.frame.width))
+            cell.cellImageView.contentMode = UIViewContentMode.scaleAspectFit
+            cell.cellImageView.clipsToBounds = true
+            cell.cellContainer.addSubview(cell.cellImageView)
+            
+            // Add a loading indicator until the Media has downloaded
+            // Give it the same size and location as the imageView
+            cell.mediaActivityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: cell.cellImageView.frame.width, height: cell.cellImageView.frame.height))
+            cell.mediaActivityIndicator.color = UIColor.black
+            cell.cellImageView.addSubview(cell.mediaActivityIndicator)
+            cell.mediaActivityIndicator.startAnimating()
+            
+            cell.userImageView = UIImageView(frame: CGRect(x: 10, y: 10, width: 50, height: 50))
+            //        cell.userImageView = UIImageView(frame: CGRect(x: 0, y: cell.cellContainer.frame.height - 50, width: 50, height: 50))
+            cell.userImageView.backgroundColor = Constants.Colors.standardBackgroundGrayTransparent
+            cell.userImageView.contentMode = UIViewContentMode.scaleAspectFit
+            cell.userImageView.clipsToBounds = true
+            cell.cellContainer.addSubview(cell.userImageView)
+            
+            // Add a loading indicator until the user image has downloaded
+            // Give it the same size and location as the user image
+            cell.userImageActivityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: cell.userImageView.frame.width, height: cell.userImageView.frame.height))
+            cell.userImageActivityIndicator.color = UIColor.black
+            cell.userImageView.addSubview(cell.userImageActivityIndicator)
+            cell.userImageActivityIndicator.startAnimating()
+            
+            cell.datetimeLabel = UILabel(frame: CGRect(x: cell.cellImageView.frame.width - 60, y: cell.cellImageView.frame.height - 60, width: 50, height: 50))
+            //        cell.datetimeLabel = UILabel(frame: CGRect(x: 50, y: cell.cellContainer.frame.height - 50, width: 50, height: 50))
+            cell.datetimeLabel.backgroundColor = Constants.Colors.standardBackgroundGrayTransparent
+            cell.datetimeLabel.font = UIFont(name: Constants.Strings.fontAlt, size: 16)
+            cell.datetimeLabel.textColor = Constants.Colors.colorTextLight
+            cell.datetimeLabel.textAlignment = .center
+            cell.datetimeLabel.numberOfLines = 2
+            cell.datetimeLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
+            cell.cellContainer.addSubview(cell.datetimeLabel)
+            
+            cell.shareButtonView = UIView(frame: CGRect(x: cell.cellImageView.frame.width - 60, y: 10, width: 50, height: 50))
+            //        cell.shareButtonView = UIView(frame: CGRect(x: cell.cellContainer.frame.width - 50, y: cell.cellContainer.frame.height - 50, width: 50, height: 50))
+            cell.shareButtonView.backgroundColor = Constants.Colors.standardBackgroundGrayTransparent
+            cell.cellContainer.addSubview(cell.shareButtonView)
+            
+            cell.shareButtonImage = UIImageView(frame: CGRect(x: 10, y: 10, width: 30, height: 30))
+            cell.shareButtonImage.image = UIImage(named: Constants.Strings.iconShareArrow)
+            cell.shareButtonImage.contentMode = UIViewContentMode.scaleAspectFit
+            cell.shareButtonImage.clipsToBounds = true
+            cell.shareButtonView.addSubview(cell.shareButtonImage)
+            
+            cell.flagButtonView = UIView(frame: CGRect(x: 10, y: cell.cellImageView.frame.height - 60, width: 50, height: 50))
+            //        cell.flagButtonView = UIView(frame: CGRect(x: cell.cellContainer.frame.width - 100, y: cell.cellContainer.frame.height - 50, width: 50, height: 50))
+            cell.flagButtonView.backgroundColor = Constants.Colors.standardBackgroundGrayTransparent
+            cell.cellContainer.addSubview(cell.flagButtonView)
+            
+            cell.flagButtonImage = UILabel(frame: CGRect(x: 10, y: 10, width: 30, height: 30))
+            //        cell.flagButtonImage.image = UIImage(named: Constants.Strings.iconShareArrow)
+            //        cell.flagButtonImage.contentMode = UIViewContentMode.scaleAspectFit
+            //        cell.flagButtonImage.clipsToBounds = true
+            cell.flagButtonImage.font = UIFont(name: Constants.Strings.fontAlt, size: 30)
+            cell.flagButtonImage.textColor = Constants.Colors.colorTextLight
+            cell.flagButtonImage.textAlignment = .center
+            cell.flagButtonImage.text = "\u{2691}" // "\u{26A0}"
+            cell.flagButtonView.addSubview(cell.flagButtonImage)
+            
+            if indexPath.row > 0
             {
-                stringDate = String(dateAgeHrs) + "\nhrs"
+                let border1 = CALayer()
+                border1.frame = CGRect(x: 0, y: 0, width: cell.cellContainer.frame.width, height: 1)
+                border1.backgroundColor = Constants.Colors.standardBackgroundGrayUltraLight.cgColor
+                cell.cellContainer.layer.addSublayer(border1)
             }
-            else if dateAgeHrs < 48
+            cell.datetimeLabel.text = String(indexPath.row)
+            if let datetime = cellSpotContent.datetime
             {
-                stringDate = "1\nday"
+                // Capture the number of hours it has been since the Spot was created (as a positive integer)
+                let dateAgeHrs: Int = -1 * Int(datetime.timeIntervalSinceNow / 3600)
+                
+                // Set the datetime label.  If the Spot's recency is less than 5 days (120 hours), just show the day and time.
+                // If the Spot's recency is more than 5 days, include the date
+                let formatter = DateFormatter()
+                formatter.amSymbol = "am"
+                formatter.pmSymbol = "pm"
+                
+                // Set the date age label.  If the age is less than 24 hours, just show it in hours.  Otherwise, show the number of days and hours.
+                var stringDate = String(dateAgeHrs / Int(24)) + "\ndays" //+ String(dateAgeHrs % 24) + " hrs"
+                if dateAgeHrs < 24
+                {
+                    stringDate = String(dateAgeHrs) + "\nhrs"
+                }
+                else if dateAgeHrs < 48
+                {
+                    stringDate = "1\nday"
+                }
+                else if dateAgeHrs < 120
+                {
+                    formatter.dateFormat = "E\nh:mm\na" //"E, H:mma"
+                    stringDate = formatter.string(from: datetime as Date)
+                    cell.datetimeLabel.font = UIFont(name: Constants.Strings.fontAlt, size: 12)
+                    cell.datetimeLabel.numberOfLines = 3
+                }
+                else
+                {
+                    formatter.dateFormat = "E\nMMM d" // "E, MMM d"   "E, MMM d, H:mma"
+                    stringDate = formatter.string(from: datetime as Date)
+                    cell.datetimeLabel.font = UIFont(name: Constants.Strings.fontAlt, size: 14)
+                }
+                cell.datetimeLabel.text = stringDate
             }
-            else if dateAgeHrs < 120
+            
+            // If the delete button is allowed, place it over the user image
+            if allowDelete
             {
-                formatter.dateFormat = "E\nh:mm\na" //"E, H:mma"
-                stringDate = formatter.string(from: datetime as Date)
-                cell.datetimeLabel.font = UIFont(name: Constants.Strings.fontAlt, size: 12)
-                cell.datetimeLabel.numberOfLines = 3
+                cell.deleteButtonView = UIView(frame: CGRect(x: 10, y: cell.cellImageView.frame.height - 60, width: 50, height: 50))
+                cell.deleteButtonView.backgroundColor = Constants.Colors.colorGrayDark
+                cell.cellContainer.addSubview(cell.deleteButtonView)
+                
+                cell.deleteButtonImage = UILabel(frame: CGRect(x: 0, y: 0, width: cell.deleteButtonView.frame.width, height: cell.deleteButtonView.frame.height))
+                cell.deleteButtonImage.text = "DELETE"
+                cell.deleteButtonImage.textColor = Constants.Colors.colorTextLight
+                cell.deleteButtonImage.font = UIFont(name: Constants.Strings.fontAlt, size: 12)
+                cell.deleteButtonImage.textAlignment = .center
+                cell.deleteButtonView.addSubview(cell.deleteButtonImage)
+                
+                // Show the current user's image in all the cells
+                if let image = Constants.Data.currentUser.image
+                {
+                    print("STVC - USER IMAGE ADDED")
+                    cell.userImageView.image = image
+                    cell.cellContainer.addSubview(cell.userImageView)
+                    cell.userImageActivityIndicator.stopAnimating()
+                }
+                else if let image = Constants.Data.currentUser.thumbnail
+                {
+                    print("STVC - USER THUMBNAIL ADDED")
+                    cell.userImageView.image = image
+                    cell.cellContainer.addSubview(cell.userImageView)
+                    cell.userImageActivityIndicator.stopAnimating()
+                }
+                else
+                {
+                    // For some reason the thumbnail has not yet downloaded for this user - request the image again
+                    RequestPrep(requestToCall: FBDownloadUserImage(facebookID: Constants.Data.currentUser.facebookID, largeImage: false), delegate: self as RequestDelegate).prepRequest()
+                }
             }
             else
             {
-                formatter.dateFormat = "E\nMMM d" // "E, MMM d"   "E, MMM d, H:mma"
-                stringDate = formatter.string(from: datetime as Date)
-                cell.datetimeLabel.font = UIFont(name: Constants.Strings.fontAlt, size: 14)
-            }
-            cell.datetimeLabel.text = stringDate
-        }
-        
-        // Find the associated user and assign the image, if available (if not, don't show the user imageview)
-        spotLoop: for spot in Constants.Data.allSpot
-        {
-            print("STVC-SPOT CHECK: \(spot.spotID)")
-            if spot.spotID == cellSpotContent.spotID
-            {
-                print("STVC-SPOT FOUND: \(spot.spotID)")
-                userLoop: for user in Constants.Data.allUsers
+                // Various users' content is shown - show the user image
+                // Find the associated user and assign the image, if available (if not, don't show the user imageview)
+                spotLoop: for spot in Constants.Data.allSpot
                 {
-                    print("STVC-USER CHECK: \(user.userID)")
-                    if user.userID == spot.userID
+                    print("STVC-SPOT CHECK: \(spot.spotID)")
+                    if spot.spotID == cellSpotContent.spotID
                     {
-                        print("STVC-USER FOUND: \(user.userID)")
-                        print("STVC - USER-CHECK 1: \(user.userID)")
-                        print("STVC - FBID-CHECK 2: \(user.facebookID)")
-                        print("STVC - TYPE-CHECK 3: \(user.type)")
-                        print("STVC - STATUS-CHECK 4: \(user.status)")
-                        print("STVC - CONN-CHECK 5: \(user.connection)")
-                        print("STVC - DATETIME-CHECK 6: \(user.datetime)")
-                        print("STVC - NAME-CHECK 7: \(user.name)")
-                        print("STVC - THUMBNAIL-CHECK 8: \(user.image?.size)")
-                        print("STVC - IMAGE-CHECK 9: \(user.thumbnail?.size)")
-                        if let image = user.thumbnail
+                        print("STVC-SPOT FOUND: \(spot.spotID)")
+                        userLoop: for user in Constants.Data.allUsers
                         {
-                            print("STVC-IMAGE ADDED")
-                            cell.userImageView.image = image
-                            cell.cellContainer.addSubview(cell.userImageView)
-                            cell.userImageActivityIndicator.stopAnimating()
+                            print("STVC-USER CHECK: \(user.userID)")
+                            if user.userID == spot.userID
+                            {
+                                print("STVC-USER FOUND: \(user.userID)")
+                                print("STVC - USER-CHECK 1: \(user.userID)")
+                                print("STVC - FBID-CHECK 2: \(user.facebookID)")
+                                print("STVC - TYPE-CHECK 3: \(user.type)")
+                                print("STVC - STATUS-CHECK 4: \(user.status)")
+                                print("STVC - CONN-CHECK 5: \(user.connection)")
+                                print("STVC - DATETIME-CHECK 6: \(user.datetime)")
+                                print("STVC - NAME-CHECK 7: \(user.name)")
+                                print("STVC - THUMBNAIL-CHECK 8: \(user.image?.size)")
+                                print("STVC - IMAGE-CHECK 9: \(user.thumbnail?.size)")
+                                if let image = user.thumbnail
+                                {
+                                    print("STVC - USER IMAGE ADDED")
+                                    cell.userImageView.image = image
+                                    cell.cellContainer.addSubview(cell.userImageView)
+                                    cell.userImageActivityIndicator.stopAnimating()
+                                }
+                                else
+                                {
+                                    // For some reason the thumbnail has not yet downloaded for this user - request the image again
+                                    RequestPrep(requestToCall: FBDownloadUserImage(facebookID: user.facebookID, largeImage: false), delegate: self as RequestDelegate).prepRequest()
+                                }
+                                break userLoop
+                            }
                         }
-                        else
-                        {
-                            // For some reason the thumbnail has not yet downloaded for this user - request the image again
-                            RequestPrep(requestToCall: FBDownloadUserImage(facebookID: user.facebookID, largeImage: false), delegate: self as RequestDelegate).prepRequest()
-                        }
-                        break userLoop
+                        break spotLoop
                     }
                 }
-                break spotLoop
             }
-        }
-        
-//        // Add FB Share stuff
-//        if let image = cellSpotContent.image
-//        {
-//            let photo : FBSDKSharePhoto = FBSDKSharePhoto()
-//            photo.image = image
-//            photo.isUserGenerated = true
-//            let fbShareContent : FBSDKSharePhotoContent = FBSDKSharePhotoContent()
-//            fbShareContent.photos = [photo]
-//            
-//            let shareButton = FBSDKShareButton()
-//            shareButton.center = cell.cellContainer.center
-//            shareButton.shareContent = fbShareContent
-//            cell.cellContainer.addSubview(shareButton)
-//        }
-        
-        // Assign the spot content image to the image if available - if not, assign the thumbnail until the real image downloads
-        if let contentImage = cellSpotContent.image
-        {
-//            print("STVC - ADDING IMAGE: \(contentImage)")
-            cell.cellImageView.image = contentImage
             
-            // Stop animating the activity indicator
-            cell.mediaActivityIndicator.stopAnimating()
+            // Add the content image, if available - otherwise download and indicate as being downloaded so it does not fire again
+            if let contentImage = cellSpotContent.image
+            {
+                print("STVC - ADDING IMAGE: \(contentImage)")
+                cell.cellImageView.image = contentImage
+                
+                // Stop animating the activity indicator
+                cell.mediaActivityIndicator.stopAnimating()
+            }
+            else
+            {
+                print("STVC - NO IMAGE")
+                if !spotContent[indexPath.row].imageDownloading
+                {
+                    print("STVC - DOWNLOADING IMAGE")
+                    // Get the missing image
+                    AWSPrepRequest(requestToCall: AWSGetMediaImage(spotContent: cellSpotContent), delegate: self as AWSRequestDelegate).prepRequest()
+                    
+                    // Save the downloading indicator on the object in the array, otherwise it will download again
+                    spotContent[indexPath.row].imageDownloading = true
+                }
+            }
         }
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
+    {
+        print("STVC - VISIBLE CELLS: \(visibleCells) - WILL DISPLAY CELL: \(indexPath.row)")
+        
+        // Determine if the last visible cell is being shown - if so, show more cells
+        // (subtract one from the cell count since the table indices start at 0)
+        if indexPath.row == visibleCells - 1
+        {
+            // Increase the cells viewable and refresh the table (ensure not more than the original list count)
+            let oldVisibleCellCount = visibleCells
+            if spotContent.count >= oldVisibleCellCount + visibleIncrementSize
+            {
+                visibleCells = oldVisibleCellCount + visibleIncrementSize
+            }
+            else
+            {
+                visibleCells = spotContent.count
+            }
+            print("STVC - INCREASING CELL RANGE TO: \(visibleCells)")
+            
+            // Only refresh if the count changed
+            if visibleCells > oldVisibleCellCount
+            {
+                refreshSpotViewTable()
+            }
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
@@ -387,32 +457,36 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
         if gesture.state == UIGestureRecognizerState.ended
         {
             let tapLocation = gesture.location(in: self.spotContentTableView)
-//            print("STVC - TAP LOCATION: \(tapLocation)")
+            print("STVC - TAP LOCATION: \(tapLocation)")
             if let tappedIndexPath = spotContentTableView.indexPathForRow(at: tapLocation)
             {
-//                print("STVC - TAPPED INDEX PATH: \(tappedIndexPath)")
+                print("STVC - TAPPED INDEX PATH: \(tappedIndexPath)")
                 if let tappedCell = self.spotContentTableView.cellForRow(at: tappedIndexPath) as? SpotTableViewCell
                 {
                     let cellTapLocation = gesture.location(in: tappedCell)
                     if tappedCell.userImageView.frame.contains(cellTapLocation)
                     {
                         // Load the UserVC
-                        let spotID = spotContent[tappedIndexPath.row].spotID
-                        spotLoop: for spot in Constants.Data.allSpot
+                        print("STVC - SPOT CONTENT COUNT: \(spotContent.count)")
+                        if spotContent.count > tappedIndexPath.row
                         {
-                            if spot.spotID == spotID
+                            let spotID = spotContent[tappedIndexPath.row].spotID
+                            spotLoop: for spot in Constants.Data.allSpot
                             {
-                                userLoop: for user in Constants.Data.allUsers
+                                if spot.spotID == spotID
                                 {
-                                    if user.userID == spot.userID
+                                    userLoop: for user in Constants.Data.allUsers
                                     {
-                                        print("STVC - USER TAP: \(user.userID)")
-                                        let userVC = UserViewController(user: user)
-                                        self.navigationController!.pushViewController(userVC, animated: true)
-                                        break userLoop
+                                        if user.userID == spot.userID
+                                        {
+                                            print("STVC - USER TAP: \(user.userID)")
+                                            let userVC = UserViewController(user: user)
+                                            self.navigationController!.pushViewController(userVC, animated: true)
+                                            break userLoop
+                                        }
                                     }
+                                    break spotLoop
                                 }
-                                break spotLoop
                             }
                         }
                     }
@@ -439,38 +513,46 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                     }
                     else if tappedCell.flagButtonView.frame.contains(cellTapLocation)
                     {
-                        // Ensure the user wants to flag the content "Are you sure you want to report this image as objectionable or inaccurate?"
-                        let alertController = UIAlertController(title: "REPORT IMAGE", message: "", preferredStyle: UIAlertControllerStyle.alert)
-                        let objectionableAction = UIAlertAction(title: "Inappropriate", style: UIAlertActionStyle.default)
-                        { (result : UIAlertAction) -> Void in
-                            
-                            // Flag the image as objectionable
-                            let contentID = self.spotContent[tappedIndexPath.row].contentID
-                            let spotID = self.spotContent[tappedIndexPath.row].spotID
-                            print("STVC - FLAG 00 FOR CONTENT: \(String(describing: contentID))")
-                            
-                            // Send the SpotContent update
-                            AWSPrepRequest(requestToCall: AWSUpdateSpotContentData(contentID: contentID, spotID: spotID, statusUpdate: "flag-00"), delegate: self as AWSRequestDelegate).prepRequest()
+                        // If delete isn't allowed, the user is tapping on the user image, if it is, the user is tapping on the delete button
+                        if !allowDelete
+                        {
+                            // Ensure the user wants to flag the content "Are you sure you want to report this image as objectionable or inaccurate?"
+                            let alertController = UIAlertController(title: "REPORT IMAGE", message: "", preferredStyle: UIAlertControllerStyle.alert)
+                            let objectionableAction = UIAlertAction(title: "Inappropriate", style: UIAlertActionStyle.default)
+                            { (result : UIAlertAction) -> Void in
+                                
+                                // Flag the image as objectionable
+                                let contentID = self.spotContent[tappedIndexPath.row].contentID
+                                let spotID = self.spotContent[tappedIndexPath.row].spotID
+                                print("STVC - FLAG 00 FOR CONTENT: \(String(describing: contentID))")
+                                
+                                // Send the SpotContent update
+                                AWSPrepRequest(requestToCall: AWSUpdateSpotContentData(contentID: contentID, spotID: spotID, statusUpdate: "flag-00"), delegate: self as AWSRequestDelegate).prepRequest()
+                            }
+                            alertController.addAction(objectionableAction)
+                            let inaccurateAction = UIAlertAction(title: "Inaccurate", style: UIAlertActionStyle.default)
+                            { (result : UIAlertAction) -> Void in
+                                
+                                // Flag the image as objectionable
+                                let contentID = self.spotContent[tappedIndexPath.row].contentID
+                                let spotID = self.spotContent[tappedIndexPath.row].spotID
+                                print("STVC - FLAG 01 FOR CONTENT: \(String(describing: contentID))")
+                                
+                                // Send the SpotContent update
+                                AWSPrepRequest(requestToCall: AWSUpdateSpotContentData(contentID: contentID, spotID: spotID, statusUpdate: "flag-01"), delegate: self as AWSRequestDelegate).prepRequest()
+                            }
+                            alertController.addAction(inaccurateAction)
+                            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default)
+                            { (result : UIAlertAction) -> Void in
+                                print("STVC - FLAG CANCELLED")
+                            }
+                            alertController.addAction(cancelAction)
+                            self.present(alertController, animated: true, completion: nil)
                         }
-                        alertController.addAction(objectionableAction)
-                        let inaccurateAction = UIAlertAction(title: "Inaccurate", style: UIAlertActionStyle.default)
-                        { (result : UIAlertAction) -> Void in
-                            
-                            // Flag the image as objectionable
-                            let contentID = self.spotContent[tappedIndexPath.row].contentID
-                            let spotID = self.spotContent[tappedIndexPath.row].spotID
-                            print("STVC - FLAG 01 FOR CONTENT: \(String(describing: contentID))")
-                            
-                            // Send the SpotContent update
-                            AWSPrepRequest(requestToCall: AWSUpdateSpotContentData(contentID: contentID, spotID: spotID, statusUpdate: "flag-01"), delegate: self as AWSRequestDelegate).prepRequest()
+                        else
+                        {
+                            print("STVC - DELETE IMAGE: \(spotContent[tappedIndexPath.row].contentID)")
                         }
-                        alertController.addAction(inaccurateAction)
-                        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default)
-                        { (result : UIAlertAction) -> Void in
-                            print("STVC - FLAG CANCELLED")
-                        }
-                        alertController.addAction(cancelAction)
-                        self.present(alertController, animated: true, completion: nil)
                     }
                 }
             }
@@ -501,18 +583,6 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                     self.spotContentTableView.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: true)
                 }
         })
-    }
-    
-    func refreshDataManually()
-    {
-        for spotContentObject in spotContent
-        {
-            if spotContentObject.image == nil
-            {
-                // Upload the SpotRequest
-                AWSPrepRequest(requestToCall: AWSGetMediaImage(spotContent: spotContentObject), delegate: self as AWSRequestDelegate).prepRequest()
-            }
-        }
     }
     
     

@@ -31,7 +31,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate
                 Constants.Settings.appVersion = bundleVersion as! String
             }
         }
-        
+        print("AD-TIMESTAMP: \(Date().timeIntervalSince1970)")
+        print("AD-TIMESTAMP - 12hr: \(Date().timeIntervalSince1970 - (60 * 60 * 12))")
         // Google Maps Prep
         GMSServices.provideAPIKey(Constants.Settings.gKey)
 //        GMSPlacesClient.provideAPIKey(Constants.Settings.gKey)
@@ -51,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         {
             print(facebookToken.tokenString)
             
-            print("AC-CONSTANTS CURRENT USER:")
+            print("AD-CONSTANTS CURRENT USER:")
             print(Constants.Data.currentUser.userID)
             print(Constants.Data.currentUser.facebookID)
             print(Constants.Data.currentUser.type)
@@ -64,7 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
             
             // Try to retrieve the current user from Core Data
             let currentUser = CoreDataFunctions().currentUserRetrieve()
-            print("AC-CD CURRENT USER:")
+            print("AD-CD CURRENT USER:")
             print(currentUser.userID)
             print(currentUser.facebookID)
             print(currentUser.type)
