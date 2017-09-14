@@ -12,7 +12,7 @@ import GoogleMaps
 import MobileCoreServices
 import UIKit
 
-class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate, CameraViewControllerDelegate, InfoWindowDelegate, AWSRequestDelegate, HoleViewDelegate
+class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate, CameraViewControllerDelegate, InfoWindowDelegate, SpotTableViewControllerDelegate, AWSRequestDelegate, HoleViewDelegate
 {
     // Save device settings to adjust view if needed
     var screenSize: CGRect!
@@ -340,9 +340,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         // Add the map container to allow the map to be moved with all subviews
         mapContainer = UIView(frame: CGRect(x: 0, y: 0, width: viewContainer.frame.width, height: viewContainer.frame.height))
         mapContainer.backgroundColor = Constants.Colors.standardBackground
-        mapContainer.layer.shadowOffset = CGSize(width: 0.2, height: 0.2)
-        mapContainer.layer.shadowOpacity = 0.2
-        mapContainer.layer.shadowRadius = 1.0
         viewContainer.addSubview(mapContainer)
         
         // Create a camera with the default location (if location services are used, this should not be shown for long)
@@ -1162,7 +1159,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         
         // Indicate that the addHazard process is in progress and change the image
         addHazardActive = true
-        addHazardButtonImage.image = UIImage(named: Constants.Strings.iconCheckOrange)
+        addHazardButtonImage.image = UIImage(named: Constants.Strings.iconCheckHazard)
     }
     func addHazardDeactivate()
     {
@@ -1211,7 +1208,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     
     // MARK: DELEGATE METHODS
     
-    func reloadMapData()
+    func reloadData()
     {
         print("MVC - RELOAD MAP")
         // Before populating the map, delete all markers
@@ -1283,7 +1280,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         }
         
         // Reload the data with the new filter
-        reloadMapData()
+        reloadData()
     }
     func requestMapData(userLocation: CLLocation)
     {
@@ -1428,18 +1425,9 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             ncTitleText.textAlignment = .center
             ncTitle.addSubview(ncTitleText)
             
-            // Instantiate a SpotContent array to hold all content
-            var spotContent = [SpotContent]()
-            for spot in tappedSpots
-            {
-                if spot.spotContent.count > 0
-                {
-                    spotContent = spotContent + spot.spotContent
-                }
-            }
-            
             // Create the SpotVC, pass the content, and assign the created Nav Bar settings to the Tab Bar Controller
-            let spotTableVC = SpotTableViewController(spotContent: spotContent, allowDelete: false)
+            let spotTableVC = SpotTableViewController(spots: tappedSpots, allowDelete: false)
+            spotTableVC.spotTableDelegate = self
             spotTableVC.navigationItem.setLeftBarButton(backButtonItem, animated: true)
             spotTableVC.navigationItem.titleView = ncTitle
             
@@ -1610,7 +1598,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     
     func infoWindowSelectOk()
     {
-        reloadMapData()
+        reloadData()
     }
     
     // MARK: DATA METHODS
@@ -1824,7 +1812,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                         // Mark the proper data as downloaded
                         self.downloadingSpot = false
                         
-                        self.reloadMapData()
+                        self.reloadData()
                     }
                     else
                     {
@@ -1839,7 +1827,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                         // Mark the proper data as downloaded
                         self.downloadingHydro = false
                         
-                        self.reloadMapData()
+                        self.reloadData()
                     }
                     else
                     {
@@ -1854,7 +1842,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                         // Mark the proper data as downloaded
                         self.downloadingShelter = false
                         
-                        self.reloadMapData()
+                        self.reloadData()
                     }
                     else
                     {
@@ -1869,7 +1857,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                         // Mark the proper data as downloaded
                         self.downloadingHazard = false
                         
-                        self.reloadMapData()
+                        self.reloadData()
                     }
                     else
                     {
@@ -1925,7 +1913,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                         self.addSpotRequestDeactivate()
                         
                         // Update the SpotRequests
-                        self.reloadMapData()
+                        self.reloadData()
                     }
                     else
                     {
@@ -1947,7 +1935,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                         self.addHazardDeactivate()
                         
                         // Update the Hazards
-                        self.reloadMapData()
+                        self.reloadData()
                     }
                     else
                     {

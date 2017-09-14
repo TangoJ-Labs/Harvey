@@ -78,7 +78,7 @@ class UtilityFunctions: AWSRequestDelegate
                 if user.userID == blockedUserID
                 {
                     userBlocked = true
-                    user.connection = "blocked"
+                    user.connection = "block"
                 }
             }
             if !userBlocked
@@ -92,6 +92,33 @@ class UtilityFunctions: AWSRequestDelegate
                 CoreDataFunctions().userSave(user: user, deleteUser: false)
             }
         }
+    }
+    
+    func removeBlockedUsersFromGlobalSpotArray()
+    {
+        // Remove all blocked users' data from the global list
+        // Create a new list with all non-blocked users' data (removing the data directly will fault out)
+        var nonBlockedSpots = [Spot]()
+        for spot in Constants.Data.allSpot
+        {
+            print("UF - CHECK USER: \(index): \(spot.userID)")
+            var userBlocked = false
+            for user in Constants.Data.allUserBlockList
+            {
+                print("UF - BLOCKED USER: \(user)")
+                if user == spot.userID
+                {
+                    print("UF - ALL SPOT COUNT: \(Constants.Data.allSpot.count)")
+                    print("UF - REMOVE BLOCKED USER: \(index)")
+                    userBlocked = true
+                }
+            }
+            if !userBlocked
+            {
+                nonBlockedSpots.append(spot)
+            }
+        }
+        Constants.Data.allSpot = nonBlockedSpots
     }
     
     

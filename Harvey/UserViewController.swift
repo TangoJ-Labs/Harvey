@@ -8,6 +8,12 @@
 
 import UIKit
 
+
+protocol UserViewControllerDelegate
+{
+    func updateData()
+}
+
 class UserViewController: UIViewController, AWSRequestDelegate, RequestDelegate
 {
     var user: User!
@@ -21,6 +27,10 @@ class UserViewController: UIViewController, AWSRequestDelegate, RequestDelegate
             self.user = user
         }
     }
+    
+    var userDelegate: UserViewControllerDelegate?
+    
+    // MARK: PROPERTIES
     
     // Save device settings to adjust view if needed
     var screenSize: CGRect!
@@ -215,13 +225,12 @@ class UserViewController: UIViewController, AWSRequestDelegate, RequestDelegate
         { (result : UIAlertAction) -> Void in
             print("BLOCK USER")
             // Change the user status to blocked
-            AWSPrepRequest(requestToCall: AWSPutUserConnection(targetUserID: self.user.userID, connection: "blocked"), delegate: self as AWSRequestDelegate).prepRequest()
+            AWSPrepRequest(requestToCall: AWSPutUserConnection(targetUserID: self.user.userID, connection: "block"), delegate: self as AWSRequestDelegate).prepRequest()
         }
         alertController.addAction(cancelAction)
         alertController.addAction(confirmAction)
         alertController.show()
     }
-    
     
     
     // MARK: DATA METHODS
@@ -284,6 +293,15 @@ class UserViewController: UIViewController, AWSRequestDelegate, RequestDelegate
                 case _ as AWSPutUserConnection:
                     if success
                     {
+                        // Add the user to the block list
+                        Constants.Data.allUserBlockList.append(self.user.userID)
+                        
+                        // Notify the parent view that the AWS method completed and the view will return
+                        if let parentVC = self.userDelegate
+                        {
+                            parentVC.updateData()
+                        }
+                        
                         self.popViewController()
                     }
                     else

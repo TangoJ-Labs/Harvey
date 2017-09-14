@@ -666,6 +666,9 @@ class AWSGetUsers: AWSRequestObject, RequestDelegate
 //                            Constants.Data.allUsers.append(dUser)
 //                        }
                         
+                        // Refresh the user connections
+                        UtilityFunctions().updateUserConnections()
+                        
                         // Notify the parent view that the AWS call completed successfully
                         if let parentVC = self.awsRequestDelegate
                         {
@@ -756,7 +759,7 @@ class AWSGetUserConnections: AWSRequestObject
                             {
                                 if let connection = responseJson["connection"] as? String
                                 {
-                                    if connection == "blocked"
+                                    if connection == "block"
                                     {
                                         blockedUserIDs.append(responseJson["target_user_id"] as! String)
                                     }
@@ -769,6 +772,7 @@ class AWSGetUserConnections: AWSRequestObject
                         
                         // Refresh the user connections
                         UtilityFunctions().updateUserConnections()
+                        UtilityFunctions().removeBlockedUsersFromGlobalSpotArray()
                         
                         // Notify the parent view that the AWS call completed successfully
                         if let parentVC = self.awsRequestDelegate
@@ -915,41 +919,57 @@ class AWSGetSpotData : AWSRequestObject
                                 {
                                     if let spotID = spotRaw["spot_id"]
                                     {
-                                        // First extract the SpotContent data
-                                        // Create an empty array to hold the SpotContent Objects
-                                        var spotContent = [SpotContent]()
-                                        if let spotContentArray = spotRaw["spot_content"] as? [Any]
+                                        // First check whether the user is blocked
+                                        let userID = spotRaw["user_id"] as! String
+                                        
+                                        var userBlocked = false
+                                        blockLoop: for blockedID in Constants.Data.allUserBlockList
                                         {
-                                            for spotContentObject in spotContentArray
+                                            if blockedID == userID
                                             {
-                                                if let spotContentRaw = spotContentObject as? [String: AnyObject]
+                                                userBlocked = true
+                                                
+                                                break blockLoop
+                                            }
+                                        }
+                                        if !userBlocked
+                                        {
+                                            // Extract the SpotContent data
+                                            // Create an empty array to hold the SpotContent Objects
+                                            var spotContent = [SpotContent]()
+                                            if let spotContentArray = spotRaw["spot_content"] as? [Any]
+                                            {
+                                                for spotContentObject in spotContentArray
                                                 {
-                                                    if let contentID = spotContentRaw["content_id"]
+                                                    if let spotContentRaw = spotContentObject as? [String: AnyObject]
                                                     {
-                                                        let addSpotContent = SpotContent()
-                                                        addSpotContent.contentID = contentID as! String
-                                                        addSpotContent.spotID = spotContentRaw["spot_id"] as! String
-                                                        addSpotContent.datetime = Date(timeIntervalSince1970: spotContentRaw["timestamp"] as! Double)
-                                                        addSpotContent.type = Constants().contentType(spotContentRaw["type"] as! Int)
-                                                        addSpotContent.status = spotContentRaw["status"] as! String
-                                                        addSpotContent.lat = spotContentRaw["lat"] as! Double
-                                                        addSpotContent.lng = spotContentRaw["lng"] as! Double
-                                                        spotContent.append(addSpotContent)
+                                                        if let contentID = spotContentRaw["content_id"]
+                                                        {
+                                                            let addSpotContent = SpotContent()
+                                                            addSpotContent.contentID = contentID as! String
+                                                            addSpotContent.spotID = spotContentRaw["spot_id"] as! String
+                                                            addSpotContent.datetime = Date(timeIntervalSince1970: spotContentRaw["timestamp"] as! Double)
+                                                            addSpotContent.type = Constants().contentType(spotContentRaw["type"] as! Int)
+                                                            addSpotContent.status = spotContentRaw["status"] as! String
+                                                            addSpotContent.lat = spotContentRaw["lat"] as! Double
+                                                            addSpotContent.lng = spotContentRaw["lng"] as! Double
+                                                            spotContent.append(addSpotContent)
+                                                        }
                                                     }
                                                 }
                                             }
+                                            
+                                            let addSpot = Spot()
+                                            addSpot.spotID = spotID as! String
+                                            addSpot.datetime = Date(timeIntervalSince1970: spotRaw["timestamp"] as! Double)
+                                            addSpot.userID = userID
+                                            addSpot.status = spotRaw["status"] as! String
+                                            addSpot.lat = spotRaw["lat"] as! Double
+                                            addSpot.lng = spotRaw["lng"] as! Double
+                                            addSpot.spotContent = spotContent
+                                            Constants.Data.allSpot.append(addSpot)
+//                                            print("AC-GSD - ADDED SPOT DATA: \(addSpot.spotID)")
                                         }
-                                        
-                                        let addSpot = Spot()
-                                        addSpot.spotID = spotID as! String
-                                        addSpot.datetime = Date(timeIntervalSince1970: spotRaw["timestamp"] as! Double)
-                                        addSpot.userID = spotRaw["user_id"] as! String
-                                        addSpot.status = spotRaw["status"] as! String
-                                        addSpot.lat = spotRaw["lat"] as! Double
-                                        addSpot.lng = spotRaw["lng"] as! Double
-                                        addSpot.spotContent = spotContent
-                                        Constants.Data.allSpot.append(addSpot)
-//                                    print("AC-GSD - ADDED SPOT DATA: \(addSpot.spotID)")
                                     }
                                 }
                             }
@@ -981,6 +1001,9 @@ class AWSGetSpotData : AWSRequestObject
                             }
                         }
                     }
+                    
+//                    // Refresh the spots based on user connection
+//                    UtilityFunctions().removeBlockedUsersFromGlobalSpotArray()
                     
                     // Notify the parent view that the AWS call completed successfully
                     if let parentVC = self.awsRequestDelegate

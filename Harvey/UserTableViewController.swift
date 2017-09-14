@@ -197,8 +197,8 @@ class UserTableViewController: UIViewController, UITableViewDataSource, UITableV
         var blockTitle = "BLOCK"
         var alertTitle = "BLOCK USER"
         var alertMessage = "Are you sure you want to block \(String(describing: userSelect.name))?"
-        var connectionUpdateValue = "blocked"
-        if userSelect.connection == "blocked"
+        var connectionUpdateValue = "block"
+        if userSelect.connection == "block"
         {
             blockTitle = "Unblock"
             alertTitle = "Unblock User"
@@ -221,7 +221,7 @@ class UserTableViewController: UIViewController, UITableViewDataSource, UITableV
                     {
                         if user.userID == userSelect.userID
                         {
-                            user.connection = "blocked"
+                            user.connection = "block"
                         }
                     }
                 }

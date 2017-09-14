@@ -9,7 +9,7 @@
 import FBSDKLoginKit
 import UIKit
 
-class ProfileViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, FBSDKLoginButtonDelegate, AWSRequestDelegate, RequestDelegate
+class ProfileViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, FBSDKLoginButtonDelegate, SpotTableViewControllerDelegate, AWSRequestDelegate, RequestDelegate
 {
     var user: User = Constants.Data.currentUser
     
@@ -292,23 +292,21 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         
         if indexPath.row == 0
         {
-            var mySpotContent = [SpotContent]()
+            var mySpots = [Spot]()
             for spot in Constants.Data.allSpot
             {
                 if spot.userID == Constants.Data.currentUser.userID
                 {
-                    for spotContent in spot.spotContent
-                    {
-                        print("PVC - PREP ACTIVITIES - SPOT CONTENT: \(spotContent.contentID)")
-                        mySpotContent.append(spotContent)
-                    }
+                    print("PVC - PREP ACTIVITIES - SPOT: \(spot.spotID)")
+                    mySpots.append(spot)
                 }
             }
             
             // Instantiate the Spot View Controller
             ncTitleText.text = "My Photos"
             
-            let spotTableVC = SpotTableViewController(spotContent: mySpotContent, allowDelete: true)
+            let spotTableVC = SpotTableViewController(spots: mySpots, allowDelete: true)
+            spotTableVC.spotTableDelegate = self
             spotTableVC.navigationItem.setLeftBarButton(backButtonItem, animated: true)
             spotTableVC.navigationItem.titleView = ncTitle
             
@@ -332,7 +330,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             // Instantiate the Activity View Controller
             ncTitleText.text = "My Photo Requests"
             
-            let spotRequestTableVC = ActivityTableViewController(spotRequests: mySpotRequests)
+            let spotRequestTableVC = ActivityViewController(spotRequests: mySpotRequests)
             spotRequestTableVC.navigationItem.setLeftBarButton(backButtonItem, animated: true)
             spotRequestTableVC.navigationItem.titleView = ncTitle
             
@@ -356,7 +354,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             // Instantiate the Activity View Controller
             ncTitleText.text = "My Hazard Reports"
             
-            let activityTableVC = ActivityTableViewController(hazards: myHazards)
+            let activityTableVC = ActivityViewController(hazards: myHazards)
             activityTableVC.navigationItem.setLeftBarButton(backButtonItem, animated: true)
             activityTableVC.navigationItem.titleView = ncTitle
             
@@ -365,6 +363,9 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                 navController.pushViewController(activityTableVC, animated: true)
             }
         }
+        
+        // Unhighlight the cell
+        tableView.deselectRow(at: indexPath, animated: false)
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath)
@@ -429,6 +430,10 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     
     
     // MARK: DATA METHODS
+    
+    func reloadData()
+    {
+    }
     
     func refreshUserFeatures()
     {

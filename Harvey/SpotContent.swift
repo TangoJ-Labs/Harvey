@@ -22,6 +22,7 @@ class SpotContent
     var imageFilePath: String?
     
     var imageDownloading: Bool = false
+    var deletePending: Bool = false
     
     convenience init(contentID: String!, spotID: String!, datetime: Date!, type: Constants.ContentType!, lat: Double!, lng: Double!)
     {

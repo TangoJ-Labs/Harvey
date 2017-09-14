@@ -15,7 +15,7 @@ import UIKit
 
 protocol CameraViewControllerDelegate
 {
-    func reloadMapData()
+    func reloadData()
 }
 
 class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, MKMapViewDelegate, AWSRequestDelegate
@@ -1020,7 +1020,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                         // Notify the parent view that the AWS Put completed
                         if let parentVC = self.cameraDelegate
                         {
-                            parentVC.reloadMapData()
+                            parentVC.reloadData()
                         }
                         
                         // Stop the activity indicator and shoow the send image

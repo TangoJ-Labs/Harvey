@@ -357,12 +357,12 @@ struct Constants
         
         static let spotTableViewCellReuseIdentifier = "spotTableViewCell"
         static let userTableViewCellReuseIdentifier = "userTableViewCell"
-        static let activityTableViewCellReuseIdentifier = "activityTableViewCell"
         
         static let imageHarvey = "Harvey.png"
         static let iconAccountGray = "icon_account_gray.png"
         static let iconAccountWhite = "icon_account_white.png"
         static let iconCamera = "icon_camera.png"
+        static let iconCheckHazard = "icon_check_hazard.png"
         static let iconCheckOrange = "icon_check_orange.png"
         static let iconCloseOrange = "icon_close_orange.png"
         static let iconCheckYellow = "icon_check_yellow.png"
@@ -376,7 +376,7 @@ struct Constants
         static let iconShareArrow = "icon_share_arrow.png"
         static let iconTraffic = "icon_traffic.png"
         static let iconHazard = "icon_hazard.png"
-        static let iconPinsMulti = "icon_pins_multi.png"
+        static let iconPinsMulti = "icon_pins_multi2.png"
         static let markerIconCamera = "marker_icon_camera_yellow.png"
         static let markerIconCameraTemp = "marker_icon_camera_temp_yellow.png"
         static let markerIconGauge = "marker_icon_gauge_blue_opaque.png"

@@ -9,18 +9,38 @@
 import FBSDKShareKit
 import UIKit
 
-class SpotTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIGestureRecognizerDelegate, AWSRequestDelegate, RequestDelegate
+
+protocol SpotTableViewControllerDelegate
 {
-    var spotContent: [SpotContent]!
-    var allowDelete: Bool!
+    func reloadData()
+}
+
+class SpotTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, UIGestureRecognizerDelegate, UserViewControllerDelegate, AWSRequestDelegate, RequestDelegate
+{
+    var spots = [Spot]()
+    var spotContent = [SpotContent]()
+    var allowDelete: Bool = false
     
-    convenience init(spotContent: [SpotContent], allowDelete: Bool)
+    convenience init(spots: [Spot], allowDelete: Bool)
     {
         self.init(nibName:nil, bundle:nil)
         
-        self.spotContent = spotContent
+        self.spots = spots
         self.allowDelete = allowDelete
+        
+        // Create an array of only the content
+        for spot in self.spots
+        {
+            if spot.spotContent.count > 0
+            {
+                self.spotContent = self.spotContent + spot.spotContent
+            }
+        }
     }
+    
+    var spotTableDelegate: SpotTableViewControllerDelegate?
+    
+    // MARK: PROPERTIES
     
     // Save device settings to adjust view if needed
     var screenSize: CGRect!
@@ -51,6 +71,8 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
     override func viewDidLoad()
     {
         super.viewDidLoad()
+        
+        print("STVC - CONTENT COUNT: \(spotContent.count)")
         
         prepVcLayout()
         self.automaticallyAdjustsScrollViewInsets = false
@@ -160,20 +182,17 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
     {
 //        print("STVC - CREATING CELL: \(indexPath.row)")
         let cell = tableView.dequeueReusableCell(withIdentifier: Constants.Strings.spotTableViewCellReuseIdentifier, for: indexPath) as! SpotTableViewCell
-//        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.Strings.spotTableViewCellReuseIdentifier, for: indexPath)
         
-//        cell.cellContainer.frame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: tableView.frame.width)
+        // Remove all subviews
+        for subview in cell.subviews
+        {
+            subview.removeFromSuperview()
+        }
         
         if spotContent.count > indexPath.row
         {
             // Store the spotContent for this cell for reference
             let cellSpotContent = spotContent[indexPath.row]
-            
-            // Remove all subviews
-            for subview in cell.subviews
-            {
-                subview.removeFromSuperview()
-            }
             
             cell.cellContainer = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: tableView.frame.width + 50))
             cell.addSubview(cell.cellContainer)
@@ -301,7 +320,21 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                 cell.deleteButtonImage.textColor = Constants.Colors.colorTextLight
                 cell.deleteButtonImage.font = UIFont(name: Constants.Strings.fontAlt, size: 12)
                 cell.deleteButtonImage.textAlignment = .center
-                cell.deleteButtonView.addSubview(cell.deleteButtonImage)
+                
+                // Add a loading indicator in case the content is waiting to be deleted
+                // Give it the same size and location as the delete button
+                cell.deleteButtonActivityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: cell.deleteButtonView.frame.width, height: cell.deleteButtonView.frame.height))
+                cell.deleteButtonActivityIndicator.color = UIColor.white
+                
+                if cellSpotContent.deletePending
+                {
+                    cell.deleteButtonView.addSubview(cell.deleteButtonActivityIndicator)
+                    cell.deleteButtonActivityIndicator.startAnimating()
+                }
+                else
+                {
+                    cell.deleteButtonView.addSubview(cell.deleteButtonImage)
+                }
                 
                 // Show the current user's image in all the cells
                 if let image = Constants.Data.currentUser.image
@@ -481,6 +514,7 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                                         {
                                             print("STVC - USER TAP: \(user.userID)")
                                             let userVC = UserViewController(user: user)
+                                            userVC.userDelegate = self
                                             self.navigationController!.pushViewController(userVC, animated: true)
                                             break userLoop
                                         }
@@ -552,6 +586,33 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                         else
                         {
                             print("STVC - DELETE IMAGE: \(spotContent[tappedIndexPath.row].contentID)")
+                            
+                            // Ensure the user wants to delete the content
+                            let alertController = UIAlertController(title: "DELETE PHOTO", message: "Are you sure you want to delete this photo?", preferredStyle: UIAlertControllerStyle.alert)
+                            let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.default)
+                            { (result : UIAlertAction) -> Void in
+                                
+                                // Flag the image as objectionable
+                                let contentID = self.spotContent[tappedIndexPath.row].contentID
+                                let spotID = self.spotContent[tappedIndexPath.row].spotID
+                                print("STVC - DELETE FOR CONTENT: \(String(describing: contentID))")
+                                
+                                // Send the SpotContent update
+                                AWSPrepRequest(requestToCall: AWSUpdateSpotContentData(contentID: contentID, spotID: spotID, statusUpdate: "delete"), delegate: self as AWSRequestDelegate).prepRequest()
+                                
+                                // Update the content so that it displays as waiting for the delete command to complete
+                                self.spotContent[tappedIndexPath.row].deletePending = true
+                                
+                                // Update the tableview
+                                self.refreshSpotViewTable()
+                            }
+                            alertController.addAction(deleteAction)
+                            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default)
+                            { (result : UIAlertAction) -> Void in
+                                print("STVC - DELETE CANCELLED")
+                            }
+                            alertController.addAction(cancelAction)
+                            self.present(alertController, animated: true, completion: nil)
                         }
                     }
                 }
@@ -579,10 +640,59 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
             {
                 if self.spotContentTableView != nil
                 {
+                    //for index in 0..<self.spotContent.count
+                    //{
+                    //    let indexPath = IndexPath(row: index, section: 1)
+                    //    self.spotContentTableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
+                    //}
+                    
                     // Reload the TableView
-                    self.spotContentTableView.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: true)
+                    self.spotContentTableView.reloadData()
+//                    self.spotContentTableView.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: true)
                 }
         })
+    }
+    func updateData()
+    {
+        // Remove all banned user's data from the local list
+        // Create a new list with all non-blocked users' data (removing the data directly will fault out)
+        var nonBlockedSpots = [Spot]()
+        for spot in spots
+        {
+            print("STVC - CHECK USER: \(index): \(spot.userID)")
+            var userBlocked = false
+            for user in Constants.Data.allUserBlockList
+            {
+                print("STVC - BLOCKED USER: \(user)")
+                if user == spot.userID
+                {
+                    print("STVC - ALL SPOT COUNT: \(Constants.Data.allSpot.count)")
+                    print("STVC - REMOVE BLOCKED USER: \(index)")
+                    userBlocked = true
+                }
+            }
+            if !userBlocked
+            {
+                nonBlockedSpots.append(spot)
+            }
+        }
+        spots = nonBlockedSpots
+        
+        print("STVC - SPOT COUNT: \(spots.count)")
+        if spots.count > 0
+        {
+            refreshSpotViewTable()
+        }
+        else
+        {
+//            popViewController()
+            visibleCells = 1
+            refreshSpotViewTable()
+        }
+        
+        // Remove all banned user's data from the global list
+        UtilityFunctions().updateUserConnections()
+        UtilityFunctions().removeBlockedUsersFromGlobalSpotArray()
     }
     
     
@@ -663,7 +773,7 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                 case let awsUpdateSpotContentData as AWSUpdateSpotContentData:
                     if success
                     {
-                        // The flagging update was successful, so remove the image from the current view
+                        // The flagging / delete update was successful, so remove the image from the current view
                         // THE GLOBAL ARRAY WAS UPDATED IN THE AWS CLASS RESPONSE
                         localSpotContentLoop: for (index, spotContentObject) in self.spotContent.enumerated()
                         {

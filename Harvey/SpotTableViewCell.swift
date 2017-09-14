@@ -24,6 +24,7 @@ class SpotTableViewCell: UITableViewCell
     
     var deleteButtonView: UIView!
     var deleteButtonImage: UILabel!
+    var deleteButtonActivityIndicator: UIActivityIndicatorView!
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?)
     {

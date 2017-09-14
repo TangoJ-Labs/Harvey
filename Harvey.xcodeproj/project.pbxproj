@@ -38,8 +38,7 @@
 		B80B9C931F645252006583CE /* UserTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80B9C921F645252006583CE /* UserTableViewController.swift */; };
 		B80B9C951F645885006583CE /* UserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80B9C941F645885006583CE /* UserTableViewCell.swift */; };
 		B821A4651F681BE700997EE1 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821A4641F681BE700997EE1 /* ProfileViewController.swift */; };
-		B821A4671F69485E00997EE1 /* ActivityTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821A4661F69485E00997EE1 /* ActivityTableViewController.swift */; };
-		B821A4691F694C3D00997EE1 /* ActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821A4681F694C3D00997EE1 /* ActivityTableViewCell.swift */; };
+		B821A4671F69485E00997EE1 /* ActivityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821A4661F69485E00997EE1 /* ActivityViewController.swift */; };
 		B825BE0C1F551F7400C12722 /* style.json in Resources */ = {isa = PBXBuildFile; fileRef = B825BE0B1F551F7400C12722 /* style.json */; };
 		B825BE0E1F55221700C12722 /* UtilityFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825BE0D1F55221700C12722 /* UtilityFunctions.swift */; };
 		B825BE101F559C3400C12722 /* AWSClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825BE0F1F559C3400C12722 /* AWSClasses.swift */; };
@@ -147,6 +146,12 @@
 		B8DDEB291F5AE21000F0A623 /* LogUserflow+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB211F5AE21000F0A623 /* LogUserflow+CoreDataClass.swift */; };
 		B8DDEB2A1F5AE21000F0A623 /* LogUserflow+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB221F5AE21000F0A623 /* LogUserflow+CoreDataProperties.swift */; };
 		B8DDEB371F5B1D0300F0A623 /* icon_share_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = B8DDEB361F5B1D0200F0A623 /* icon_share_arrow.png */; };
+		B8E48C021F6A1F7D00F23F51 /* icon_pins_multi2.png in Resources */ = {isa = PBXBuildFile; fileRef = B8E48BFC1F6A1F7D00F23F51 /* icon_pins_multi2.png */; };
+		B8E48C031F6A1F7D00F23F51 /* icon_pins_multi2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B8E48BFD1F6A1F7D00F23F51 /* icon_pins_multi2@2x.png */; };
+		B8E48C041F6A1F7D00F23F51 /* icon_pins_multi2@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B8E48BFE1F6A1F7D00F23F51 /* icon_pins_multi2@3x.png */; };
+		B8E48C051F6A1F7D00F23F51 /* icon_check_hazard.png in Resources */ = {isa = PBXBuildFile; fileRef = B8E48BFF1F6A1F7D00F23F51 /* icon_check_hazard.png */; };
+		B8E48C061F6A1F7D00F23F51 /* icon_check_hazard@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B8E48C001F6A1F7D00F23F51 /* icon_check_hazard@2x.png */; };
+		B8E48C071F6A1F7D00F23F51 /* icon_check_hazard@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B8E48C011F6A1F7D00F23F51 /* icon_check_hazard@3x.png */; };
 		B8F9168D1F5C750600A268E1 /* Shelter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F9168C1F5C750600A268E1 /* Shelter.swift */; };
 		B8FC56A51F5E29110020A871 /* InfoWindowHydro.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8FC56A41F5E29110020A871 /* InfoWindowHydro.swift */; };
 		B8FC56A71F5E43300020A871 /* InfoWindowShelter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8FC56A61F5E43300020A871 /* InfoWindowShelter.swift */; };
@@ -192,8 +197,7 @@
 		B81D82D81F651D5700BC2A61 /* Harvey_DataModel_1.3.5.2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Harvey_DataModel_1.3.5.2.xcdatamodel; sourceTree = "<group>"; };
 		B821A4631F679A7400997EE1 /* Florida-Keys.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Florida-Keys.gpx"; sourceTree = "<group>"; };
 		B821A4641F681BE700997EE1 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
-		B821A4661F69485E00997EE1 /* ActivityTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityTableViewController.swift; sourceTree = "<group>"; };
-		B821A4681F694C3D00997EE1 /* ActivityTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityTableViewCell.swift; sourceTree = "<group>"; };
+		B821A4661F69485E00997EE1 /* ActivityViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityViewController.swift; sourceTree = "<group>"; };
 		B825BE0B1F551F7400C12722 /* style.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = style.json; sourceTree = "<group>"; };
 		B825BE0D1F55221700C12722 /* UtilityFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UtilityFunctions.swift; sourceTree = "<group>"; };
 		B825BE0F1F559C3400C12722 /* AWSClasses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSClasses.swift; sourceTree = "<group>"; };
@@ -310,6 +314,12 @@
 		B8DDEB2C1F5AF01100F0A623 /* Harvey_DataModel_1.1.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Harvey_DataModel_1.1.0.xcdatamodel; sourceTree = "<group>"; };
 		B8DDEB311F5AF3F100F0A623 /* Harvey_DataModel_1.1.1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Harvey_DataModel_1.1.1.xcdatamodel; sourceTree = "<group>"; };
 		B8DDEB361F5B1D0200F0A623 /* icon_share_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_share_arrow.png; sourceTree = "<group>"; };
+		B8E48BFC1F6A1F7D00F23F51 /* icon_pins_multi2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_pins_multi2.png; sourceTree = "<group>"; };
+		B8E48BFD1F6A1F7D00F23F51 /* icon_pins_multi2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_pins_multi2@2x.png"; sourceTree = "<group>"; };
+		B8E48BFE1F6A1F7D00F23F51 /* icon_pins_multi2@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_pins_multi2@3x.png"; sourceTree = "<group>"; };
+		B8E48BFF1F6A1F7D00F23F51 /* icon_check_hazard.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_check_hazard.png; sourceTree = "<group>"; };
+		B8E48C001F6A1F7D00F23F51 /* icon_check_hazard@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_check_hazard@2x.png"; sourceTree = "<group>"; };
+		B8E48C011F6A1F7D00F23F51 /* icon_check_hazard@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_check_hazard@3x.png"; sourceTree = "<group>"; };
 		B8F9168C1F5C750600A268E1 /* Shelter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Shelter.swift; path = Harvey/Shelter.swift; sourceTree = "<group>"; };
 		B8FC56A41F5E29110020A871 /* InfoWindowHydro.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoWindowHydro.swift; sourceTree = "<group>"; };
 		B8FC56A61F5E43300020A871 /* InfoWindowShelter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoWindowShelter.swift; sourceTree = "<group>"; };
@@ -404,8 +414,7 @@
 			isa = PBXGroup;
 			children = (
 				B895C5DC1F59E53F002D369E /* AboutViewController.swift */,
-				B821A4681F694C3D00997EE1 /* ActivityTableViewCell.swift */,
-				B821A4661F69485E00997EE1 /* ActivityTableViewController.swift */,
+				B821A4661F69485E00997EE1 /* ActivityViewController.swift */,
 				B8B4CA471F615519001CD74D /* AgreementViewController.swift */,
 				B87421741F54BD4F00E0981A /* AppDelegate.swift */,
 				B825BE0F1F559C3400C12722 /* AWSClasses.swift */,
@@ -447,6 +456,9 @@
 				B895C5A41F5917CD002D369E /* icon_camera.png */,
 				B895C5A51F5917CD002D369E /* icon_camera@2x.png */,
 				B895C5A61F5917CD002D369E /* icon_camera@3x.png */,
+				B8E48BFF1F6A1F7D00F23F51 /* icon_check_hazard.png */,
+				B8E48C001F6A1F7D00F23F51 /* icon_check_hazard@2x.png */,
+				B8E48C011F6A1F7D00F23F51 /* icon_check_hazard@3x.png */,
 				B895C5FC1F5A068E002D369E /* icon_check_orange.png */,
 				B895C5FD1F5A068E002D369E /* icon_check_orange@2x.png */,
 				B895C5FE1F5A068E002D369E /* icon_check_orange@3x.png */,
@@ -477,6 +489,9 @@
 				B85060351F675AD900BE25ED /* icon_pins_multi.png */,
 				B85060361F675AD900BE25ED /* icon_pins_multi@2x.png */,
 				B85060371F675AD900BE25ED /* icon_pins_multi@3x.png */,
+				B8E48BFC1F6A1F7D00F23F51 /* icon_pins_multi2.png */,
+				B8E48BFD1F6A1F7D00F23F51 /* icon_pins_multi2@2x.png */,
+				B8E48BFE1F6A1F7D00F23F51 /* icon_pins_multi2@3x.png */,
 				B895C5AD1F5917CD002D369E /* icon_profile.png */,
 				B895C5AE1F5917CD002D369E /* icon_profile@2x.png */,
 				B895C5AF1F5917CD002D369E /* icon_profile@3x.png */,
@@ -650,6 +665,7 @@
 				B895C5C81F5917CD002D369E /* icon_traffic@2x.png in Resources */,
 				B80B9C7A1F624126006583CE /* marker_icon_house@2x.png in Resources */,
 				B895C6171F5A068E002D369E /* marker_icon_camera_orange.png in Resources */,
+				B8E48C021F6A1F7D00F23F51 /* icon_pins_multi2.png in Resources */,
 				B85060401F675AD900BE25ED /* icon_pins_multi@3x.png in Resources */,
 				B895C60C1F5A068E002D369E /* icon_check_orange@2x.png in Resources */,
 				B895C5F71F5A0666002D369E /* marker_icon_camera_temp_yellow@2x.png in Resources */,
@@ -669,6 +685,7 @@
 				B895C60B1F5A068E002D369E /* icon_check_orange.png in Resources */,
 				B80B9C711F624126006583CE /* marker_icon_donation@2x.png in Resources */,
 				B80B9C671F624126006583CE /* marker_icon_shelter@2x.png in Resources */,
+				B8E48C051F6A1F7D00F23F51 /* icon_check_hazard.png in Resources */,
 				B8D05F4B1F587A5700D3CFAF /* Houston-Downtown2.gpx in Resources */,
 				B850602C1F66CF3D00BE25ED /* icon_hazard.png in Resources */,
 				B80B9C801F6242AB006583CE /* marker_icon_shelter@3x.png in Resources */,
@@ -687,7 +704,9 @@
 				B80B9C701F624126006583CE /* marker_icon_donation.png in Resources */,
 				B895C6101F5A068E002D369E /* icon_close_orange@3x.png in Resources */,
 				B895C55E1F59004F002D369E /* icon_check2.png in Resources */,
+				B8E48C031F6A1F7D00F23F51 /* icon_pins_multi2@2x.png in Resources */,
 				B895C5521F590018002D369E /* icon_account_gray.png in Resources */,
+				B8E48C061F6A1F7D00F23F51 /* icon_check_hazard@2x.png in Resources */,
 				B80B9C6D1F624126006583CE /* marker_icon_camera_yellow.png in Resources */,
 				B80B9C511F624011006583CE /* marker_icon_shelter.png in Resources */,
 				B895C5531F590018002D369E /* icon_account_gray@2x.png in Resources */,
@@ -696,6 +715,7 @@
 				B895C5BD1F5917CD002D369E /* icon_camera@2x.png in Resources */,
 				B895C5F91F5A0666002D369E /* marker_icon_gauge_blue.png in Resources */,
 				B895C5501F590018002D369E /* icon_menu@2x.png in Resources */,
+				B8E48C041F6A1F7D00F23F51 /* icon_pins_multi2@3x.png in Resources */,
 				B895C55F1F59004F002D369E /* icon_close2.png in Resources */,
 				B895C5601F59004F002D369E /* icon_location.png in Resources */,
 				B825BE0C1F551F7400C12722 /* style.json in Resources */,
@@ -713,6 +733,7 @@
 				B80B9C791F624126006583CE /* marker_icon_house.png in Resources */,
 				B895C5F01F5A0666002D369E /* icon_check_yellow.png in Resources */,
 				B8D05F4A1F587A5700D3CFAF /* Houston-Downtown.gpx in Resources */,
+				B8E48C071F6A1F7D00F23F51 /* icon_check_hazard@3x.png in Resources */,
 				B80B9C811F6242AB006583CE /* marker_icon_shelter.png in Resources */,
 				B895C5F21F5A0666002D369E /* icon_check_yellow@3x.png in Resources */,
 				B850603F1F675AD900BE25ED /* icon_pins_multi@2x.png in Resources */,
@@ -774,7 +795,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B821A4671F69485E00997EE1 /* ActivityTableViewController.swift in Sources */,
+				B821A4671F69485E00997EE1 /* ActivityViewController.swift in Sources */,
 				B87421771F54BD4F00E0981A /* MapViewController.swift in Sources */,
 				B80B9C931F645252006583CE /* UserTableViewController.swift in Sources */,
 				B8F9168D1F5C750600A268E1 /* Shelter.swift in Sources */,
@@ -802,7 +823,6 @@
 				B874217D1F54BD4F00E0981A /* Harvey.xcdatamodeld in Sources */,
 				B85060281F66CE5100BE25ED /* Hazard.swift in Sources */,
 				B86BCC891F64A29E003C667D /* CurrentUser+CoreDataProperties.swift in Sources */,
-				B821A4691F694C3D00997EE1 /* ActivityTableViewCell.swift in Sources */,
 				B825BE0E1F55221700C12722 /* UtilityFunctions.swift in Sources */,
 				B80B9C871F635EC8006583CE /* RequestClasses.swift in Sources */,
 				B8D05F451F57998400D3CFAF /* SpotRequest.swift in Sources */,
