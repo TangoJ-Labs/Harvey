@@ -19,7 +19,8 @@ class CoreDataFunctions: AWSRequestDelegate
         // Try to retrieve the Tutorial Views data from Core Data
         var tutorialViewArray = [TutorialView]()
         let moc = DataController().managedObjectContext
-        moc.mergePolicy = NSMergePolicy.overwrite
+//        moc.mergePolicy = NSMergePolicy.overwrite
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
         let tutorialViewFetch: NSFetchRequest<TutorialView> = TutorialView.fetchRequest()
         // Create an empty Tutorial Views list in case the Core Data request fails
         do
@@ -64,6 +65,7 @@ class CoreDataFunctions: AWSRequestDelegate
         // Access Core Data
         // Retrieve the Tutorial Views data from Core Data
         let moc = DataController().managedObjectContext
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
         let tutorialViewFetch: NSFetchRequest<TutorialView> = TutorialView.fetchRequest()
         
         // Create an empty Tutorial Views list in case the Core Data request fails
@@ -112,7 +114,8 @@ class CoreDataFunctions: AWSRequestDelegate
     {
         print("CD-CUS - USER NAME: \(String(describing: user.name))")
         let moc = DataController().managedObjectContext
-        moc.mergePolicy = NSMergePolicy.overwrite
+//        moc.mergePolicy = NSMergePolicy.overwrite
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
 //        // Delete the current data
 //        let deleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "CurrentUser")
 //        let deleteRequest = NSBatchDeleteRequest(fetchRequest: deleteFetch)
@@ -137,16 +140,6 @@ class CoreDataFunctions: AWSRequestDelegate
         {
             fatalError("Failed to fetch CurrentUser: \(error)")
         }
-        print("CD-CUS USER:")
-        print(user.userID)
-        print(user.facebookID)
-        print(user.type)
-        print(user.status)
-        print(user.datetime)
-        print(user.name)
-        print(user.thumbnail?.size)
-        print(user.image?.size)
-        print(user.connection)
         // If the user needs to be deleted, just leave the array empty
         if !deleteUser
         {
@@ -204,15 +197,6 @@ class CoreDataFunctions: AWSRequestDelegate
                 {
                     currentUserArray[0].thumbnail = UIImagePNGRepresentation(userThumbnail)! as NSData
                 }
-                print("CD-CUS - EXISTS-CHECK 1: \(currentUserArray[0].userID)")
-                print("CD-CUS - EXISTS-CHECK 2: \(currentUserArray[0].facebookID)")
-                print("CD-CUS - EXISTS-CHECK 3: \(currentUserArray[0].type)")
-                print("CD-CUS - EXISTS-CHECK 4: \(currentUserArray[0].status)")
-                print("CD-CUS - EXISTS-CHECK 5: \(currentUserArray[0].connection)")
-                print("CD-CUS - EXISTS-CHECK 6: \(currentUserArray[0].datetime)")
-                print("CD-CUS - EXISTS-CHECK 7: \(currentUserArray[0].name)")
-                print("CD-CUS - EXISTS-CHECK 8: \(currentUserArray[0].image?.length)")
-                print("CD-CUS - EXISTS-CHECK 9: \(currentUserArray[0].thumbnail?.length)")
             }
         }
         // Save the Entity
@@ -231,6 +215,7 @@ class CoreDataFunctions: AWSRequestDelegate
         // Access Core Data
         // Retrieve the Current User data from Core Data
         let moc = DataController().managedObjectContext
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
         let currentUserFetch: NSFetchRequest<CurrentUser> = CurrentUser.fetchRequest()
         
         // Create an empty CurrentUser list in case the Core Data request fails
@@ -252,7 +237,14 @@ class CoreDataFunctions: AWSRequestDelegate
             currentUser.facebookID = currentUserArray[0].facebookID
             currentUser.type = currentUserArray[0].type
             currentUser.status = currentUserArray[0].status
-            currentUser.connection = currentUserArray[0].connection!
+            if let connection = currentUserArray[0].connection
+            {
+                currentUser.connection = connection as String
+            }
+            else
+            {
+                currentUser.connection = "na"
+            }
             if let datetimeRaw = currentUserArray[0].datetime
             {
                 currentUser.datetime = datetimeRaw as Date
@@ -274,16 +266,6 @@ class CoreDataFunctions: AWSRequestDelegate
                 currentUser.thumbnail = UIImage(data: userThumbnail as Data)
             }
         }
-        print("CD-CUR: RETURNING: \(String(describing: currentUser.name))")
-        print("CD-CUR - RETURNING-CHECK 1: \(currentUser.userID)")
-        print("CD-CUR - RETURNING-CHECK 2: \(currentUser.facebookID)")
-        print("CD-CUR - RETURNING-CHECK 3: \(currentUser.type)")
-        print("CD-CUR - RETURNING-CHECK 4: \(currentUser.status)")
-        print("CD-CUR - RETURNING-CHECK 5: \(currentUser.connection)")
-        print("CD-CUR - RETURNING-CHECK 6: \(currentUser.datetime)")
-        print("CD-CUR - RETURNING-CHECK 7: \(currentUser.name)")
-        print("CD-CUR - RETURNING-CHECK 8: \(currentUser.image?.size)")
-        print("CD-CUR - RETURNING-CHECK 9: \(currentUser.thumbnail?.size)")
         return currentUser
     }
     
@@ -291,19 +273,10 @@ class CoreDataFunctions: AWSRequestDelegate
     // MARK: USER
     func userSave(user: User, deleteUser: Bool)
     {
-        print("CD-US USER: \(user.userID)")
-        print(user.facebookID)
-        print(user.type)
-        print(user.status)
-        print(user.datetime)
-        print(user.name)
-        print(user.thumbnail?.size)
-        print(user.image?.size)
-        print(user.connection)
         // Try to retrieve the User data from Core Data
         var userArray = [UserCD]()
         let moc = DataController().managedObjectContext
-//        moc.mergePolicy = NSMergePolicy.
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
         let userFetch: NSFetchRequest<UserCD> = UserCD.fetchRequest()
         // Create an empty User list in case the Core Data request fails
         do
@@ -354,15 +327,6 @@ class CoreDataFunctions: AWSRequestDelegate
                             userArray[uIndex].thumbnail = UIImagePNGRepresentation(userThumbnail)! as NSData
                         }
                         
-                        print("CD-US - EXISTS-CHECK 1: \(userArray[uIndex].userID)")
-                        print("CD-US - EXISTS-CHECK 2: \(userArray[uIndex].facebookID)")
-                        print("CD-US - EXISTS-CHECK 3: \(userArray[uIndex].type)")
-                        print("CD-US - EXISTS-CHECK 4: \(userArray[uIndex].status)")
-                        print("CD-US - EXISTS-CHECK 5: \(userArray[uIndex].connection)")
-                        print("CD-US - EXISTS-CHECK 6: \(userArray[uIndex].datetime)")
-                        print("CD-US - EXISTS-CHECK 7: \(userArray[uIndex].name)")
-                        print("CD-US - EXISTS-CHECK 8: \(userArray[uIndex].image?.length)")
-                        print("CD-US - EXISTS-CHECK 9: \(userArray[uIndex].thumbnail?.length)")
                         break userLoop
                     }
                 }
@@ -391,15 +355,6 @@ class CoreDataFunctions: AWSRequestDelegate
                     newUser.setValue(UIImagePNGRepresentation(userThumbnail)! as NSData, forKey: "thumbnail")
                 }
                 
-                print("CD-US - NEWUSER-CHECK 1: \(newUser.userID)")
-                print("CD-US - NEWUSER-CHECK 2: \(newUser.facebookID)")
-                print("CD-US - NEWUSER-CHECK 3: \(newUser.type)")
-                print("CD-US - NEWUSER-CHECK 4: \(newUser.status)")
-                print("CD-US - NEWUSER-CHECK 5: \(newUser.connection)")
-                print("CD-US - NEWUSER-CHECK 6: \(newUser.datetime)")
-                print("CD-US - NEWUSER-CHECK 7: \(newUser.name)")
-                print("CD-US - NEWUSER-CHECK 8: \(newUser.image?.length)")
-                print("CD-US - NEWUSER-CHECK 9: \(newUser.thumbnail?.length)")
                 userArray.append(newUser)
             }
         }
@@ -419,6 +374,7 @@ class CoreDataFunctions: AWSRequestDelegate
         // Access Core Data
         // Retrieve the Current User data from Core Data
         let moc = DataController().managedObjectContext
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
         let userFetch: NSFetchRequest<UserCD> = UserCD.fetchRequest()
         
         // Create an empty User list in case the Core Data request fails
@@ -458,15 +414,6 @@ class CoreDataFunctions: AWSRequestDelegate
                 user.thumbnail = UIImage(data: userThumbnail as Data)
             }
         }
-        print("CD-UR - RETURNING-CHECK 1: \(user.userID)")
-        print("CD-UR - RETURNING-CHECK 2: \(user.facebookID)")
-        print("CD-UR - RETURNING-CHECK 3: \(user.type)")
-        print("CD-UR - RETURNING-CHECK 4: \(user.status)")
-        print("CD-UR - RETURNING-CHECK 5: \(user.connection)")
-        print("CD-UR - RETURNING-CHECK 6: \(user.datetime)")
-        print("CD-UR - RETURNING-CHECK 7: \(user.name)")
-        print("CD-UR - RETURNING-CHECK 8: \(user.image?.size)")
-        print("CD-UR - RETURNING-CHECK 9: \(user.thumbnail?.size)")
         return user
     }
     
@@ -482,7 +429,8 @@ class CoreDataFunctions: AWSRequestDelegate
         // Try to retrieve the Map Settings data from Core Data
         var mapSettingArray = [MapSetting]()
         let moc = DataController().managedObjectContext
-        moc.mergePolicy = NSMergePolicy.overwrite
+//        moc.mergePolicy = NSMergePolicy.overwrite
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
         let mapSettingFetch: NSFetchRequest<MapSetting> = MapSetting.fetchRequest()
         do
         {
@@ -527,7 +475,8 @@ class CoreDataFunctions: AWSRequestDelegate
 //        // Try to retrieve the Map Settings data from Core Data
 //        var mapSettingArray = [MapSetting]()
 //        let moc = DataController().managedObjectContext
-//        moc.mergePolicy = NSMergePolicy.overwrite
+////        moc.mergePolicy = NSMergePolicy.overwrite
+//        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
 //        let mapSettingFetch: NSFetchRequest<MapSetting> = MapSetting.fetchRequest()
 //        // Create an empty Map Settings list in case the Core Data request fails
 //        do
@@ -595,6 +544,7 @@ class CoreDataFunctions: AWSRequestDelegate
     {
         // Try to retrieve the Map Setting setting from Core Data
         let moc = DataController().managedObjectContext
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
         let mapSettingFetch: NSFetchRequest<MapSetting> = MapSetting.fetchRequest()
         
         // Create an empty MapSetting list in case the Core Data request fails
@@ -620,6 +570,7 @@ class CoreDataFunctions: AWSRequestDelegate
 //        
 //        // Save a log entry for a function or AWS error
 //        let moc = DataController().managedObjectContext
+//        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
 //        let entity = NSEntityDescription.insertNewObject(forEntityName: "LogError", into: moc)
 //        entity.setValue(function, forKey: "function")
 //        entity.setValue(errorString, forKey: "errorString")
@@ -640,6 +591,7 @@ class CoreDataFunctions: AWSRequestDelegate
 //    {
 //        // Retrieve the Blob notification data from Core Data
 //        let moc = DataController().managedObjectContext
+//        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
 //        let logErrorFetch: NSFetchRequest<LogError> = LogError.fetchRequest()
 //        
 //        // Create an empty blobNotifications list in case the Core Data request fails
@@ -685,6 +637,7 @@ class CoreDataFunctions: AWSRequestDelegate
 //        
 //        // Save a log entry for a function or AWS error
 //        let moc = DataController().managedObjectContext
+//        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
 //        let entity = NSEntityDescription.insertNewObject(forEntityName: "LogUserflow", into: moc)
 //        entity.setValue(viewController, forKey: "viewController")
 //        entity.setValue(action, forKey: "action")

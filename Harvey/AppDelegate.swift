@@ -52,29 +52,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         {
             print(facebookToken.tokenString)
             
-            print("AD-CONSTANTS CURRENT USER:")
-            print(Constants.Data.currentUser.userID)
-            print(Constants.Data.currentUser.facebookID)
-            print(Constants.Data.currentUser.type)
-            print(Constants.Data.currentUser.status)
-            print(Constants.Data.currentUser.datetime)
-            print(Constants.Data.currentUser.name)
-            print(Constants.Data.currentUser.thumbnail?.size)
-            print(Constants.Data.currentUser.image?.size)
-            print(Constants.Data.currentUser.connection)
-            
             // Try to retrieve the current user from Core Data
             let currentUser = CoreDataFunctions().currentUserRetrieve()
-            print("AD-CDF CURRENT USER:")
-            print(currentUser.userID)
-            print(currentUser.facebookID)
-            print(currentUser.type)
-            print(currentUser.status)
-            print(currentUser.datetime)
-            print(currentUser.name)
-            print(currentUser.thumbnail?.size)
-            print(currentUser.image?.size)
-            print(currentUser.connection)
             if currentUser.userID != nil
             {
                 Constants.Data.currentUser = currentUser

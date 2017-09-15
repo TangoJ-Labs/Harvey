@@ -234,6 +234,7 @@
 		B874217E1F54BD4F00E0981A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Harvey/Assets.xcassets; sourceTree = "<group>"; };
 		B87421831F54BD4F00E0981A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = Harvey/Info.plist; sourceTree = "<group>"; };
 		B87421891F54CD2600E0981A /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		B891DB4A1F6C434E000B1CB5 /* Harvey_DataModel_1.4.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Harvey_DataModel_1.4.0.xcdatamodel; sourceTree = "<group>"; };
 		B895C5441F590018002D369E /* FB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FB.png; sourceTree = "<group>"; };
 		B895C5451F590018002D369E /* icon_menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_menu.png; sourceTree = "<group>"; };
 		B895C5461F590018002D369E /* icon_menu@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_menu@2x.png"; sourceTree = "<group>"; };
@@ -1004,6 +1005,7 @@
 		B874217B1F54BD4F00E0981A /* Harvey.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				B891DB4A1F6C434E000B1CB5 /* Harvey_DataModel_1.4.0.xcdatamodel */,
 				B81D82D81F651D5700BC2A61 /* Harvey_DataModel_1.3.5.2.xcdatamodel */,
 				B86BCC811F64A261003C667D /* Harvey_DataModel_1.3.5.xcdatamodel */,
 				B80B9C881F642655006583CE /* Harvey_DataModel_1.3.4.xcdatamodel */,
@@ -1017,7 +1019,7 @@
 				B8DDEB2B1F5AE2DF00F0A623 /* Harvey 1.1.0.xcdatamodel */,
 				B874217C1F54BD4F00E0981A /* Harvey.xcdatamodel */,
 			);
-			currentVersion = B81D82D81F651D5700BC2A61 /* Harvey_DataModel_1.3.5.2.xcdatamodel */;
+			currentVersion = B891DB4A1F6C434E000B1CB5 /* Harvey_DataModel_1.4.0.xcdatamodel */;
 			name = Harvey.xcdatamodeld;
 			path = Harvey/Harvey.xcdatamodeld;
 			sourceTree = "<group>";

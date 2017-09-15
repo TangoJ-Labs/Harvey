@@ -101,15 +101,11 @@ class UtilityFunctions: AWSRequestDelegate
         var nonBlockedSpots = [Spot]()
         for spot in Constants.Data.allSpot
         {
-            print("UF - CHECK USER: \(index): \(spot.userID)")
             var userBlocked = false
             for user in Constants.Data.allUserBlockList
             {
-                print("UF - BLOCKED USER: \(user)")
                 if user == spot.userID
                 {
-                    print("UF - ALL SPOT COUNT: \(Constants.Data.allSpot.count)")
-                    print("UF - REMOVE BLOCKED USER: \(index)")
                     userBlocked = true
                 }
             }

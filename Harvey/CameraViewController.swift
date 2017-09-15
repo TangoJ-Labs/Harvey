@@ -249,7 +249,34 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     {
         adjustMapAttributionLabel()
         
-        prepareSessionUseBackCamera(useBackCamera: true)
+        if AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo) ==  AVAuthorizationStatus.authorized
+        {
+            print("CVC - CAMERA ALREADY AUTHORIZED")
+            self.prepareSessionUseBackCamera(useBackCamera: true)
+        }
+        else
+        {
+            AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { (granted: Bool) -> Void in
+                if granted == true
+                {
+                    print("CVC - CAMERA NOW AUTHORIZED")
+                    self.prepareSessionUseBackCamera(useBackCamera: true)
+                }
+                else
+                {
+                    print("CVC - CAMERA NOT PERMISSIONED")
+                    // Show the popup message instructing the user to change the phone camera settings for the app
+                    let alertController = UIAlertController(title: "Camera Not Authorized", message: "Harveytown does not have permission to use your camera.  Please go to your phone settings to allow access.", preferredStyle: UIAlertControllerStyle.alert)
+                    let okAction = UIAlertAction(title: "Close", style: UIAlertActionStyle.default)
+                    { (result : UIAlertAction) -> Void in
+                        print("CVC - POPUP CLOSE")
+                        self.popViewController()
+                    }
+                    alertController.addAction(okAction)
+                    alertController.show()
+                }
+            })
+        }
     }
     
     override func didReceiveMemoryWarning()

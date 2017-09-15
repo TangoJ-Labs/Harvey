@@ -101,16 +101,13 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         setDefaultUserFeatures()
         refreshUserFeatures()
         
-//        // Request the large user image
-//        RequestPrep(requestToCall: FBDownloadUserImage(facebookID: user.facebookID, largeImage: true), delegate: self as RequestDelegate).prepRequest()
-        
         NotificationCenter.default.addObserver(self, selector: #selector(ProfileViewController.statusBarHeightChange(_:)), name: Notification.Name("UIApplicationWillChangeStatusBarFrameNotification"), object: nil)
     }
     
-//    override func viewWillAppear(_ animated: Bool)
-//    {
-//        print("PVC - VWA - HAZ COUNT: \(Constants.Data.allHazard.count)")
-//    }
+    override func viewWillAppear(_ animated: Bool)
+    {
+        self.refreshUserFeatures()
+    }
     
     override func didReceiveMemoryWarning()
     {
@@ -433,7 +430,6 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     
-    
     // MARK: DATA METHODS
     
     func reloadData()
@@ -442,6 +438,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func refreshUserFeatures()
     {
+        print("PVC - REFRESH USER FEATURES")
         // If the user info is available, load the user info features
         if let uName = user.name
         {
@@ -453,9 +450,16 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         {
             self.user.image = uImage
             userImage.image = uImage
+            
+            // If the user image is still the thumbnail, request the large one again
+            if uImage.size.width < 70
+            {
+                RequestPrep(requestToCall: FBDownloadUserImage(facebookID: Constants.Data.currentUser.facebookID, largeImage: true), delegate: self as RequestDelegate).prepRequest()
+            }
         }
         else
         {
+            // THIS MIGHT NOT EVER BE CALLED (image filled with thumbnail at minimum?)
             // Just use the thumbnail for now
             if let uThumbnail = user.thumbnail
             {

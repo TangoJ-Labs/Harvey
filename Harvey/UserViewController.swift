@@ -118,9 +118,6 @@ class UserViewController: UIViewController, AWSRequestDelegate, RequestDelegate
         setDefaultUserFeatures()
         refreshUserFeatures()
         
-        // Request the large user image
-        RequestPrep(requestToCall: FBDownloadUserImage(facebookID: user.facebookID, largeImage: true), delegate: self as RequestDelegate).prepRequest()
-        
         NotificationCenter.default.addObserver(self, selector: #selector(MapViewController.statusBarHeightChange(_:)), name: Notification.Name("UIApplicationWillChangeStatusBarFrameNotification"), object: nil)
     }
     
@@ -270,14 +267,24 @@ class UserViewController: UIViewController, AWSRequestDelegate, RequestDelegate
                 {
                     self.user.image = uImage
                     userImage.image = uImage
+                    
+                    // If the user image is still the thumbnail, request the large one again
+                    if uImage.size.width < 70
+                    {
+                        RequestPrep(requestToCall: FBDownloadUserImage(facebookID: Constants.Data.currentUser.facebookID, largeImage: true), delegate: self as RequestDelegate).prepRequest()
+                    }
                 }
                 else
                 {
+                    // THIS MIGHT NOT EVER BE CALLED (image filled with thumbnail at minimum?)
                     // Just use the thumbnail for now
                     if let uThumbnail = user.thumbnail
                     {
                         userImage.image = uThumbnail
                     }
+                    
+                    // Request the large image
+                    RequestPrep(requestToCall: FBDownloadUserImage(facebookID: user.facebookID, largeImage: true), delegate: self as RequestDelegate).prepRequest()
                 }
                 break userLoop
             }

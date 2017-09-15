@@ -92,23 +92,19 @@ class AWSPrepRequest
                 
                 if let parentVC = self.awsRequestDelegate
                 {
-                    print("AC-PREP-LOGIN - CHECK 1")
                     // Check to see if the parent viewcontroller is already the MapViewController.  If so, call the MVC showLoginScreen function
                     // Otherwise, launch a new MapViewController and show the login screen
                     if parentVC is MapViewController
                     {
-                        print("AC-PREP-LOGIN - CHECK 2")
                         // PARENT VC IS EQUAL TO MVC
                         parentVC.showLoginScreen()
                     }
                     else
                     {
-                        print("AC-PREP-LOGIN - CHECK 3")
                         // PARENT VC IS NOT EQUAL TO MVC
                         let newMapViewController = MapViewController()
                         if let rootNavController = UIApplication.shared.windows[0].rootViewController?.navigationController
                         {
-                            print("AC-PREP-LOGIN - CHECK 4")
                             rootNavController.pushViewController(newMapViewController, animated: true)
                         }
                     }
@@ -148,7 +144,7 @@ class AWSPrepRequest
                     
                     if (task.error != nil)
                     {
-//                        print("AC - AWS COGNITO GET IDENTITY ID - ERROR: " + task.error!.localizedDescription)
+                        print("AC - AWS COGNITO GET IDENTITY ID - ERROR: " + task.error!.localizedDescription)
 //                        CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: task.error!.localizedDescription)
                         
                         // Record the server request attempt
@@ -161,7 +157,7 @@ class AWSPrepRequest
                     {
                         // the task result will contain the identity id
                         let cognitoId = task.result
-//                        print("AC - AWS COGNITO GET IDENTITY ID - AWS COGNITO ID: \(String(describing: cognitoId))")
+                        print("AC - AWS COGNITO GET IDENTITY ID - AWS COGNITO ID: \(String(describing: cognitoId))")
 //                        print("AC - AWS COGNITO GET IDENTITY ID - CHECK IDENTITY ID: \(String(describing: Constants.credentialsProvider.identityId))")
                         
                         // Save the current time to mark when the last CognitoID was saved
@@ -1381,8 +1377,8 @@ class AWSGetHazardData : AWSRequestObject
                 }
                 else if (response != nil)
                 {
-                    print("AC-GH RESPONSE:")
-                    print(response)
+//                    print("AC-GH RESPONSE:")
+//                    print(response)
                     
                     // Convert the response to JSON with keys and AnyObject values
                     if let allData = response as? [String: AnyObject]
@@ -1434,7 +1430,7 @@ class AWSGetHazardData : AWSRequestObject
                                             // It does not exist, so add it to the list
                                             Constants.Data.allHazard.append(addHazard)
                                         }
-                                        print("AC-GH - ADDED/UPDATED HAZARD DATA: \(addHazard.hazardID)")
+                                        print("AC-GH - ADDED/UPDATED HAZARD DATA: \(String(describing: addHazard.hazardID))")
                                     }
                                 }
                             }
@@ -1499,8 +1495,8 @@ class AWSPutHazardData: AWSRequestObject
                     }
                     else if (response != nil)
                     {
-                        print("AC-PH RESPONSE:")
-                        print(response)
+//                        print("AC-PH RESPONSE:")
+//                        print(response)
                         
                         // Now add the new Hazard to the global array if it was not deleted
                         if self.hazard.status == "active"
@@ -1554,8 +1550,8 @@ class AWSGetSOSData : AWSRequestObject
                 }
                 else if (response != nil)
                 {
-                    print("AC-SOS RESPONSE:")
-                    print(response)
+//                    print("AC-SOS RESPONSE:")
+//                    print(response)
                     
                     // The data request was successful - reset the data array
                     Constants.Data.allSOS = [SOS]()
@@ -1650,8 +1646,8 @@ class AWSUpdateSOSData: AWSRequestObject
                 }
                 else if (response != nil)
                 {
-                    print("AC-USOS RESPONSE:")
-                    print(response)
+//                    print("AC-USOS RESPONSE:")
+//                    print(response)
                     
                     // Notify the parent view that the AWS call completed successfully
                     if let parentVC = self.awsRequestDelegate

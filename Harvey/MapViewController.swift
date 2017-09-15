@@ -539,6 +539,11 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         
         NotificationCenter.default.addObserver(self, selector: #selector(MapViewController.statusBarHeightChange(_:)), name: Notification.Name("UIApplicationWillChangeStatusBarFrameNotification"), object: nil)
     }
+    
+    override func viewWillAppear(_ animated: Bool)
+    {
+        reloadData()
+    }
 
     override func didReceiveMemoryWarning()
     {
@@ -738,7 +743,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         }
         else if let markerSpot = markerData as? Spot
         {
-            print(markerSpot.spotID)
             // Center the map on the tapped marker
             let markerCoords = CLLocationCoordinate2DMake(markerSpot.lat, markerSpot.lng)
             mapCameraPositionAdjust(target: markerCoords)
@@ -749,7 +753,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         }
         else if let markerSpotRequest = markerData as? SpotRequest
         {
-            print(markerSpotRequest.requestID)
             // Center the map on the tapped marker
             let markerCoords = CLLocationCoordinate2DMake(markerSpotRequest.lat, markerSpotRequest.lng)
             mapCameraPositionAdjust(target: markerCoords)
@@ -792,7 +795,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         }
         else if let markerHazard = markerData as? Hazard
         {
-            print("MVC - MARKER TAP HAZARD: \(markerHazard.hazardID)")
             // Center the map on the tapped marker
             let markerCoords = CLLocationCoordinate2DMake(markerHazard.lat, markerHazard.lng)
             mapCameraPositionAdjust(target: markerCoords)
@@ -1312,6 +1314,40 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     }
     func prepareMap()
     {
+        // Ensure that location services are enabled
+        if CLLocationManager.locationServicesEnabled()
+        {
+            switch(CLLocationManager.authorizationStatus())
+            {
+            case .notDetermined, .restricted, .denied:
+                print("MVC - LOCATION SERVICES - No access")
+                // Show the popup message instructing the user to change the phone location settings for the app
+                let alertController = UIAlertController(title: "Your Location Not Authorized", message: "Harveytown needs permission to determine your current location in order to provide all app features.  Please go to your phone settings to allow access.", preferredStyle: UIAlertControllerStyle.alert)
+                let okAction = UIAlertAction(title: "Close", style: UIAlertActionStyle.default)
+                { (result : UIAlertAction) -> Void in
+                    print("CVC - POPUP CLOSE")
+                    self.popViewController()
+                }
+                alertController.addAction(okAction)
+                alertController.show()
+            case .authorizedAlways, .authorizedWhenInUse:
+                print("MVC - LOCAITON SERVICES - Access")
+            }
+        }
+        else
+        {
+            print("MVC - Location services are not enabled")
+            // Show the popup message instructing the user to change the phone location settings for the app
+            let alertController = UIAlertController(title: "Your Location Not Authorized", message: "Harveytown needs permission to determine your current location in order to provide all app features.  Please go to your phone settings to allow access.", preferredStyle: UIAlertControllerStyle.alert)
+            let okAction = UIAlertAction(title: "Close", style: UIAlertActionStyle.default)
+            { (result : UIAlertAction) -> Void in
+                print("CVC - POPUP CLOSE")
+                self.popViewController()
+            }
+            alertController.addAction(okAction)
+            alertController.show()
+        }
+        
         // RECALL THE CORE DATA SETTINGS
         recallGlobalSettingsFromCoreData()
         
@@ -1513,6 +1549,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         let marker = GMSMarker(position: position)
         marker.groundAnchor = CGPoint(x: 0.5, y: 0.5)
         marker.zIndex = Constants.Settings.mapMarkerSpot
+        marker.userData = spot
         marker.iconView = markerView
         marker.tracksViewChanges = false
         marker.map = mapView
@@ -1729,11 +1766,9 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     }
     func addHazardMapFeatures()
     {
-        print("MVC - Hazard DATA:")
+//        print("MVC - Hazard DATA:")
         for hazard in Constants.Data.allHazard
         {
-            print("MVC - Hazard: \(hazard.hazardID)")
-            print("MVC - Hazard: \(hazard.status)")
             if hazard.status == "active"
             {
                 // Creates a marker at the Hazard location
@@ -1995,7 +2030,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         case let fbGetUserData as FBGetUserData:
             if success
             {
-                print("MVC-SUCCESS: FBGetUserData: \(fbGetUserData.facebookName)")
+                print("MVC-SUCCESS: FBGetUserData: \(String(describing: fbGetUserData.facebookName))")
             }
             else
             {

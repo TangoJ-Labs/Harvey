@@ -272,23 +272,23 @@ class UserTableViewController: UIViewController, UITableViewDataSource, UITableV
     
     func tableGesture(_ gesture: UITapGestureRecognizer)
     {
-        if gesture.state == UIGestureRecognizerState.ended
-        {
-            let tapLocation = gesture.location(in: self.userTableView)
-            print("UTVC - TAP LOCATION: \(tapLocation)")
-            if let tappedIndexPath = userTableView.indexPathForRow(at: tapLocation)
-            {
-                print("UTVC - TAPPED INDEX PATH: \(tappedIndexPath)")
-                if let tappedCell = self.userTableView.cellForRow(at: tappedIndexPath) as? UserTableViewCell
-                {
-                    let cellTapLocation = gesture.location(in: tappedCell)
-//                    if tappedCell.shareButtonView.frame.contains(cellTapLocation)
+//        if gesture.state == UIGestureRecognizerState.ended
+//        {
+//            let tapLocation = gesture.location(in: self.userTableView)
+//            print("UTVC - TAP LOCATION: \(tapLocation)")
+//            if let tappedIndexPath = userTableView.indexPathForRow(at: tapLocation)
+//            {
+//                print("UTVC - TAPPED INDEX PATH: \(tappedIndexPath)")
+//                if let tappedCell = self.userTableView.cellForRow(at: tappedIndexPath) as? UserTableViewCell
+//                {
+//                    let cellTapLocation = gesture.location(in: tappedCell)
+//                    if tappedCell.userImageView.frame.contains(cellTapLocation)
 //                    {
 //                        
 //                    }
-                }
-            }
-        }
+//                }
+//            }
+//        }
     }
     
     

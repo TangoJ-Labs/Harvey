@@ -89,7 +89,6 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        print("ATVC - CREATING TVC")
         prepVcLayout()
         self.automaticallyAdjustsScrollViewInsets = false
         
@@ -269,7 +268,6 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
     // MARK: GESTURE RECOGNIZERS
     func nextButtonTap(_ gesture: UITapGestureRecognizer)
     {
-        print("AVC - NEXT BUTTON TAP")
         let indexAttempt = currentIndex + 1
         if let requests = spotRequests
         {
@@ -290,7 +288,6 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
     }
     func lastButtonTap(_ gesture: UITapGestureRecognizer)
     {
-        print("AVC - LAST BUTTON TAP")
         let indexAttempt = currentIndex - 1
         if let requests = spotRequests
         {
@@ -315,7 +312,7 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
         {
             if requests.count > 0
             {
-                print("AVC - DELETE SPOT REQUEST: \(requests[currentIndex].requestID)")
+                print("AVC - DELETE SPOT REQUEST: \(String(describing: requests[currentIndex].requestID))")
                 // Ensure the user wants to delete the content
                 let alertController = UIAlertController(title: "DELETE PHOTO REQUEST", message: "Are you sure you want to delete this photo request?", preferredStyle: UIAlertControllerStyle.alert)
                 let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.default)
@@ -351,20 +348,15 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
                         self.deleteButton.removeFromSuperview()
                     }
                     
-                    print("AVC - PRE GLOBAL DELETE")
                     // Delete the spot request from the global list
                     if let thisSpotRequestID = requests[self.currentIndex].requestID
                     {
-                        print("AVC - GLOBAL DELETE CHECK 1")
                         requestLoop: for (index, request) in Constants.Data.allSpotRequest.enumerated()
                         {
-                            print("AVC - GLOBAL DELETE CHECK 2")
                             if let requestID = request.requestID
                             {
-                                print("AVC - GLOBAL DELETE CHECK 3")
                                 if requestID == thisSpotRequestID
                                 {
-                                    print("AVC - GLOBAL DELETE CHECK 4")
                                     Constants.Data.allSpotRequest.remove(at: index)
                                     
                                     break requestLoop
@@ -386,7 +378,6 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
         {
             if hazds.count > 0
             {
-                print("AVC - DELETE HAZARD: \(hazds[currentIndex].hazardID)")
                 // Ensure the user wants to delete the content
                 let alertController = UIAlertController(title: "DELETE HAZARD REPORT", message: "Are you sure you want to delete this hazard report?", preferredStyle: UIAlertControllerStyle.alert)
                 let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.default)
@@ -470,7 +461,6 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
         {
             if requests.count > index && index >= 0
             {
-                print("AVC - SHOW SPOT REQUEST: \(requests[index].requestID)")
                 showSpotRequestMarkerAt(lat: requests[index].lat, lng: requests[index].lng)
             }
         }
@@ -478,7 +468,6 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
         {
             if hazds.count > index && index >= 0
             {
-                print("AVC - SHOW HAZARD: \(hazds[index].hazardID)")
                 showHazardMarkerAt(lat: hazds[index].lat, lng: hazds[index].lng)
             }
         }
@@ -541,7 +530,7 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
                 // Process the return data based on the method used
                 switch objectType
                 {
-                case let awsGetSpotData as AWSPutSpotRequestData:
+                case _ as AWSPutSpotRequestData:
                     if success
                     {
                         print("AVC - AWSPutSpotRequestData SUCCESS")
@@ -561,7 +550,7 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
                         let alertController = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         self.present(alertController, animated: true, completion: nil)
                     }
-                case let awsGetSpotData as AWSPutHazardData:
+                case _ as AWSPutHazardData:
                     if success
                     {
                         print("AVC - AWSPutHazardData SUCCESS")

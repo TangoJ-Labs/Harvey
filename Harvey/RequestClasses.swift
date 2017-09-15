@@ -220,8 +220,7 @@ class FBDownloadUserImage: RequestObject
     // FBSDK METHOD - Get user data from FB before attempting to log in via AWS
     override func makeRequest()
     {
-        print("RC-FBI: \(facebookID)")
-        print("RC-FBI: \(sizeString)")
+        print("RC-FBI: \(facebookID) - \(sizeString)")
         // Download the user image
         // Create a session object with the default configuration
         if let url = URL(string: "http://graph.facebook.com/" + facebookID + "/picture?type=" + sizeString)
@@ -249,41 +248,29 @@ class FBDownloadUserImage: RequestObject
                         {
                             let userImage = UIImage(data: imageData)
                             
-                            print("RC-FBI GOT IMAGE, FINDING USER: \(self.facebookID)")
-                            print("RC-FBI USER LIST COUNT: \(Constants.Data.allUsers.count)")
                             // Add the user image to the proper user in the global array
                             // Go ahead and save each image in the other if the other is empty
                             userLoop: for user in Constants.Data.allUsers
                             {
-                                print("RC-FBI CHECK \(user.userID) FBID: \(user.facebookID)")
-                                print("RC-FBI CHECK \(user.userID) THUMBNAIL: \(user.thumbnail?.size)")
-                                print("RC-FBI CHECK \(user.userID) IMAGE: \(user.image?.size)")
                                 if user.facebookID == self.facebookID
                                 {
-                                    print("RC-FBI FOUND USER: \(self.facebookID)")
                                     // If the large image was requested, save it to the main user image, otherwise just save it to the thumbnail
                                     if self.large
                                     {
-                                        print("RC-FBI LARGE")
                                         user.image = userImage
                                         if user.thumbnail == nil
                                         {
-                                            print("RC-FBI USE LARGE FOR THUMBNAIL")
                                             user.thumbnail = userImage
                                         }
                                     }
                                     else
                                     {
-                                        print("RC-FBI SMALL")
                                         user.thumbnail = userImage
                                         if user.image == nil
                                         {
-                                            print("RC-FBI USE SMALL FOR IMAGE")
                                             user.image = userImage
                                         }
                                     }
-                                    print("RC-FBI POST CHECK USER THUMBNAIL: \(user.thumbnail?.size)")
-                                    print("RC-FBI POST CHECK USER IMAGE: \(user.image?.size)")
                                     
                                     // Save the new data to Core Data
                                     CoreDataFunctions().userSave(user: user, deleteUser: false)
@@ -294,37 +281,28 @@ class FBDownloadUserImage: RequestObject
                             // Modify the global current user - only assign if the fbID exists
                             // If the large image does not exist, save the small one in its place, and vice-versa
                             // request may have been made prior to assigning current user values
-                            print("RC-FBI CHECK CURRENT USER IMAGE")
                             if Constants.Data.currentUser.facebookID != nil
                             {
-                                print("RC-FBI CURRENT USER: \(Constants.Data.currentUser.facebookID)")
-                                print("RC-FBI USER ADDING: \(self.facebookID)")
                                 if Constants.Data.currentUser.facebookID == self.facebookID
                                 {
                                     // If the large image was requested, save it to the main user image, otherwise just save it to the thumbnail
                                     if self.large
                                     {
-                                        print("RC-FBI LARGE - CURRENT USER")
                                         Constants.Data.currentUser.image = userImage
                                         if Constants.Data.currentUser.thumbnail == nil
                                         {
-                                            print("RC-FBI USE LARGE FOR THUMBNAIL - CURRENT USER")
                                             Constants.Data.currentUser.thumbnail = userImage
                                         }
                                     }
                                     else
                                     {
-                                        print("RC-FBI SMALL - CURRENT USER")
                                         Constants.Data.currentUser.thumbnail = userImage
                                         if Constants.Data.currentUser.image == nil
                                         {
-                                            print("RC-FBI USE SMALL FOR IMAGE - CURRENT USER")
                                             Constants.Data.currentUser.image = userImage
                                         }
                                     }
                                     
-                                    print("RC-FBI POST CHECK CURRENT USER THUMBNAIL: \(Constants.Data.currentUser.thumbnail?.size)")
-                                    print("RC-FBI POST CHECK CURRENT USER IMAGE: \(Constants.Data.currentUser.image?.size)")
                                     // Save the new data to Core Data
                                     CoreDataFunctions().currentUserSave(user: Constants.Data.currentUser, deleteUser: false)
                                 }
@@ -333,7 +311,6 @@ class FBDownloadUserImage: RequestObject
                             // Notify the parent view that the request completed successfully
                             if let parentVC = self.requestDelegate
                             {
-                                print("RC-FBI - CALLED PARENT")
                                 parentVC.processRequestReturn(self, success: true)
                             }
                         }

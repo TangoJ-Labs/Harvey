@@ -371,14 +371,12 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                 // Show the current user's image in all the cells
                 if let image = Constants.Data.currentUser.image
                 {
-                    print("STVC - USER IMAGE ADDED")
                     cell.userImageView.image = image
                     cell.cellContainer.addSubview(cell.userImageView)
                     cell.userImageActivityIndicator.stopAnimating()
                 }
                 else if let image = Constants.Data.currentUser.thumbnail
                 {
-                    print("STVC - USER THUMBNAIL ADDED")
                     cell.userImageView.image = image
                     cell.cellContainer.addSubview(cell.userImageView)
                     cell.userImageActivityIndicator.stopAnimating()
@@ -395,28 +393,14 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                 // Find the associated user and assign the image, if available (if not, don't show the user imageview)
                 spotLoop: for spot in Constants.Data.allSpot
                 {
-                    print("STVC-SPOT CHECK: \(spot.spotID)")
                     if spot.spotID == cellSpotContent.spotID
                     {
-                        print("STVC-SPOT FOUND: \(spot.spotID)")
                         userLoop: for user in Constants.Data.allUsers
                         {
-                            print("STVC-USER CHECK: \(user.userID)")
                             if user.userID == spot.userID
                             {
-                                print("STVC-USER FOUND: \(user.userID)")
-                                print("STVC - USER-CHECK 1: \(user.userID)")
-                                print("STVC - FBID-CHECK 2: \(user.facebookID)")
-                                print("STVC - TYPE-CHECK 3: \(user.type)")
-                                print("STVC - STATUS-CHECK 4: \(user.status)")
-                                print("STVC - CONN-CHECK 5: \(user.connection)")
-                                print("STVC - DATETIME-CHECK 6: \(user.datetime)")
-                                print("STVC - NAME-CHECK 7: \(user.name)")
-                                print("STVC - THUMBNAIL-CHECK 8: \(user.image?.size)")
-                                print("STVC - IMAGE-CHECK 9: \(user.thumbnail?.size)")
                                 if let image = user.thumbnail
                                 {
-                                    print("STVC - USER IMAGE ADDED")
                                     cell.userImageView.image = image
                                     cell.cellContainer.addSubview(cell.userImageView)
                                     cell.userImageActivityIndicator.stopAnimating()
@@ -437,7 +421,6 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
             // Add the content image, if available - otherwise download and indicate as being downloaded so it does not fire again
             if let contentImage = cellSpotContent.image
             {
-                print("STVC - ADDING IMAGE: \(contentImage)")
                 cell.cellImageView.image = contentImage
                 
                 // Stop animating the activity indicator
@@ -445,10 +428,8 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
             }
             else
             {
-                print("STVC - NO IMAGE")
                 if !spotContent[indexPath.row].imageDownloading
                 {
-                    print("STVC - DOWNLOADING IMAGE")
                     // Get the missing image
                     AWSPrepRequest(requestToCall: AWSGetMediaImage(spotContent: cellSpotContent), delegate: self as AWSRequestDelegate).prepRequest()
                     

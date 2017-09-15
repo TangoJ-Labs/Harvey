@@ -127,7 +127,7 @@ class AboutViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
-        var cell: UITableViewCell = attrTableView.dequeueReusableCell(withIdentifier: "about_cell") as! UITableViewCell
+        let cell: UITableViewCell = attrTableView.dequeueReusableCell(withIdentifier: "about_cell") as! UITableViewCell
         
         let cellHeight: CGFloat = 120
         var cellText: String = ""
