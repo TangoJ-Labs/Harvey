@@ -103,7 +103,16 @@ class UserViewController: UIViewController, AWSRequestDelegate, RequestDelegate
         
         blockButtonTapGesture = UITapGestureRecognizer(target: self, action: #selector(UserViewController.blockButtonTap(_:)))
         blockButtonTapGesture.numberOfTapsRequired = 1  // add single tap
-        blockButton.addGestureRecognizer(blockButtonTapGesture)
+        
+        // Only add the block tap gesture if the user being shown is not the current user - if so, just change the button text
+        if user.userID != Constants.Data.currentUser.userID
+        {
+            blockButton.addGestureRecognizer(blockButtonTapGesture)
+        }
+        else
+        {
+            blockButtonLabel.text = "This is you!"
+        }
         
         // Prepare the data and features
         setDefaultUserFeatures()
@@ -247,7 +256,15 @@ class UserViewController: UIViewController, AWSRequestDelegate, RequestDelegate
                     self.user.name = uName
                     userName.text = uName
                     ncTitleText.text = uName
-                    blockButtonLabel.text = "Block \(uName)"
+                    
+                    if user.userID != Constants.Data.currentUser.userID
+                    {
+                        blockButtonLabel.text = "Block \(uName)"
+                    }
+                    else
+                    {
+                        blockButtonLabel.text = "This is you!"
+                    }
                 }
                 if let uImage = user.image
                 {

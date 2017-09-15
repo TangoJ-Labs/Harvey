@@ -792,7 +792,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         }
         else if let markerHazard = markerData as? Hazard
         {
-            print(markerHazard.hazardID)
+            print("MVC - MARKER TAP HAZARD: \(markerHazard.hazardID)")
             // Center the map on the tapped marker
             let markerCoords = CLLocationCoordinate2DMake(markerHazard.lat, markerHazard.lng)
             mapCameraPositionAdjust(target: markerCoords)
@@ -1067,7 +1067,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             }
             
             // Hide the pin container
-            UIView.animate(withDuration: 0.5, animations:
+            UIView.animate(withDuration: 0.2, animations:
                 {
                     self.addPinContainer.frame = CGRect(x: self.mapContainer.frame.width - 66, y: self.mapContainer.frame.height - 198, width: 56, height: 56)
                     self.addSpotRequestButton.frame = CGRect(x: self.mapContainer.frame.width - 66, y: self.mapContainer.frame.height - 198, width: 56, height: 56)
@@ -1084,7 +1084,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             self.pinContainerVisible = true
             
             // Expand the container to show the pin selection buttons
-            UIView.animate(withDuration: 0.5, animations:
+            UIView.animate(withDuration: 0.2, animations:
                 {
                     self.addPinContainer.frame = CGRect(x: self.mapContainer.frame.width - 66, y: self.mapContainer.frame.height - (198 + 56 * 2), width: 56, height: 56 * 3)
                     self.addSpotRequestButton.frame = CGRect(x: self.mapContainer.frame.width - 66, y: self.mapContainer.frame.height - (198 + 56), width: 56, height: 56)
@@ -1526,12 +1526,18 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     // This version is used when the top VC is popped from a Nav Bar button
     func popViewController(_ sender: UIBarButtonItem)
     {
+        print("MVC - POPVC BUTTON")
+        reloadData()
+        
         self.navigationController!.popViewController(animated: true)
     }
     
     // Dismiss the latest View Controller presented from this VC
     func popViewController()
     {
+        print("MVC - POPVC")
+        reloadData()
+        
         self.navigationController!.popViewController(animated: true)
     }
     func loadProfileVC(_ sender: UIBarButtonItem)
@@ -1561,7 +1567,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         if menuVisible
         {
             // Hide the menu
-            UIView.animate(withDuration: 0.5, animations:
+            UIView.animate(withDuration: 0.4, animations:
                 {
                     self.mapContainer.frame = CGRect(x: 0, y: 0, width: self.viewContainer.frame.width, height: self.viewContainer.frame.height)
             }, completion:
@@ -1573,7 +1579,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         else
         {
             // Move the mapContainer to reveal the menu
-            UIView.animate(withDuration: 0.5, animations:
+            UIView.animate(withDuration: 0.4, animations:
                 {
                     self.mapContainer.frame = CGRect(x: self.menuWidth, y: 0, width: self.viewContainer.frame.width, height: self.viewContainer.frame.height)
             }, completion:
@@ -1726,7 +1732,9 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         print("MVC - Hazard DATA:")
         for hazard in Constants.Data.allHazard
         {
-            if hazard.status != "inactive"
+            print("MVC - Hazard: \(hazard.hazardID)")
+            print("MVC - Hazard: \(hazard.status)")
+            if hazard.status == "active"
             {
                 // Creates a marker at the Hazard location
                 let marker = GMSMarker()
@@ -2032,23 +2040,30 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             viewContainer.addSubview(holeView)
             
         case 2:
-            // Show users how to add photos to fulfill requests
+            // Show users how to add photo requests (SpotRequests)
             print("MVC-CHECK TUTORIAL 2")
-            let holeView = HoleView(holeViewPosition: 3, frame: viewContainer.bounds, circleOffsetX: viewContainer.frame.width - 38, circleOffsetY: viewContainer.frame.height - 105, circleRadius: 40, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 100, textWidth: 260, textFontSize: 24, text: "Add a photo when you are near a photo request location to automatically fulfill the request.")
+            let holeView = HoleView(holeViewPosition: 3, frame: viewContainer.bounds, circleOffsetX: viewContainer.frame.width - 38, circleOffsetY: viewContainer.frame.height - 170, circleRadius: 40, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 50, textWidth: 260, textFontSize: 24, text: "Add a hazard marker to warn others of potentially dangerous areas.\n\nRemember to contact the proper authorities if you observe any safety issues.")
+            holeView.holeViewDelegate = self
+            viewContainer.addSubview(holeView)
+            
+        case 3:
+            // Show users how to add photos to fulfill requests
+            print("MVC-CHECK TUTORIAL 3")
+            let holeView = HoleView(holeViewPosition: 4, frame: viewContainer.bounds, circleOffsetX: viewContainer.frame.width - 38, circleOffsetY: viewContainer.frame.height - 105, circleRadius: 40, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 100, textWidth: 260, textFontSize: 24, text: "Add a photo when you are near a photo request location to automatically fulfill the request.")
             holeView.holeViewDelegate = self
             viewContainer.addSubview(holeView)
         
-        case 3:
+        case 4:
             // Conclude the tutorial
-            print("MVC-CHECK TUTORIAL 3")
-            let holeView = HoleView(holeViewPosition: 4, frame: viewContainer.bounds, circleOffsetX: 0, circleOffsetY: 0, circleRadius: 0, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: (viewContainer.bounds.height / 2) - 130, textWidth: 260, textFontSize: 24, text: "Check out other map pins for additional data.\n\nMore features and data are in development.")
+            print("MVC-CHECK TUTORIAL 4")
+            let holeView = HoleView(holeViewPosition: 5, frame: viewContainer.bounds, circleOffsetX: 0, circleOffsetY: 0, circleRadius: 0, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: (viewContainer.bounds.height / 2) - 130, textWidth: 260, textFontSize: 24, text: "Check out other map pins for additional data.\n\nMore features and data are in development.")
             holeView.holeViewDelegate = self
             viewContainer.addSubview(holeView)
             
         default:
             // The tutorial has ended - prepare the app for use
             prepareMap()
-            print("MVC-CHECK TUTORIAL 4")
+            print("MVC-CHECK TUTORIAL 5")
             // Record the Tutorial View in Core Data
             let moc = DataController().managedObjectContext
             let tutorialView = NSEntityDescription.insertNewObject(forEntityName: "TutorialView", into: moc) as! TutorialView

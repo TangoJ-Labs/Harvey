@@ -247,12 +247,12 @@ class UserTableViewController: UIViewController, UITableViewDataSource, UITableV
                 // Upload the change
                 AWSPrepRequest(requestToCall: AWSPutUserConnection(targetUserID: userSelect.userID, connection: connectionUpdateValue), delegate: self as AWSRequestDelegate).prepRequest()
             }
-            alertController.addAction(yesAction)
             let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default)
             { (result : UIAlertAction) -> Void in
                 print("UTVC - BLOCK / UNBLOCK CANCELLED")
             }
             alertController.addAction(cancelAction)
+            alertController.addAction(yesAction)
             self.present(alertController, animated: true, completion: nil)
         }
         block.backgroundColor = Constants.Colors.colorGrayDark

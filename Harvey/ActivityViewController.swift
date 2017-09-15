@@ -350,13 +350,35 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
                         self.mapContainer.removeFromSuperview()
                         self.deleteButton.removeFromSuperview()
                     }
+                    
+                    print("AVC - PRE GLOBAL DELETE")
+                    // Delete the spot request from the global list
+                    if let thisSpotRequestID = requests[self.currentIndex].requestID
+                    {
+                        print("AVC - GLOBAL DELETE CHECK 1")
+                        requestLoop: for (index, request) in Constants.Data.allSpotRequest.enumerated()
+                        {
+                            print("AVC - GLOBAL DELETE CHECK 2")
+                            if let requestID = request.requestID
+                            {
+                                print("AVC - GLOBAL DELETE CHECK 3")
+                                if requestID == thisSpotRequestID
+                                {
+                                    print("AVC - GLOBAL DELETE CHECK 4")
+                                    Constants.Data.allSpotRequest.remove(at: index)
+                                    
+                                    break requestLoop
+                                }
+                            }
+                        }
+                    }
                 }
-                alertController.addAction(deleteAction)
                 let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default)
                 { (result : UIAlertAction) -> Void in
                     print("AVC - DELETE CANCELLED")
                 }
                 alertController.addAction(cancelAction)
+                alertController.addAction(deleteAction)
                 self.present(alertController, animated: true, completion: nil)
             }
         }
@@ -399,13 +421,30 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
                         self.mapContainer.removeFromSuperview()
                         self.deleteButton.removeFromSuperview()
                     }
+                    
+                    // Delete the hazard from the global list
+                    if let thisHazID = hazds[self.currentIndex].hazardID
+                    {
+                        hazLoop: for (index, haz) in Constants.Data.allHazard.enumerated()
+                        {
+                            if let hazID = haz.hazardID
+                            {
+                                if hazID == thisHazID
+                                {
+                                    Constants.Data.allHazard.remove(at: index)
+                                    
+                                    break hazLoop
+                                }
+                            }
+                        }
+                    }
                 }
-                alertController.addAction(deleteAction)
                 let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default)
                 { (result : UIAlertAction) -> Void in
                     print("AVC - DELETE CANCELLED")
                 }
                 alertController.addAction(cancelAction)
+                alertController.addAction(deleteAction)
                 self.present(alertController, animated: true, completion: nil)
             }
         }
@@ -506,6 +545,14 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
                     if success
                     {
                         print("AVC - AWSPutSpotRequestData SUCCESS")
+                        
+                        if let sRequests = self.spotRequests
+                        {
+                            if sRequests.count == 0
+                            {
+                                self.popViewController()
+                            }
+                        }
                     }
                     else
                     {
@@ -518,6 +565,14 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
                     if success
                     {
                         print("AVC - AWSPutHazardData SUCCESS")
+                        
+                        if let hazs = self.hazards
+                        {
+                            if hazs.count == 0
+                            {
+                                self.popViewController()
+                            }
+                        }
                     }
                     else
                     {

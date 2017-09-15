@@ -172,7 +172,7 @@ struct Constants
         case 2:
             return Constants.MenuMapTraffic.yes
         default:
-            return Constants.MenuMapTraffic.yes
+            return Constants.MenuMapTraffic.no
         }
     }
     enum MenuMapTimeFilter: Int
@@ -331,7 +331,7 @@ struct Constants
         
         static var menuMapHydro: Constants.MenuMapHydro = Constants.MenuMapHydro.yes
         static var menuMapSpot: Constants.MenuMapSpot = Constants.MenuMapSpot.yes
-        static var menuMapTraffic: Constants.MenuMapTraffic = Constants.MenuMapTraffic.yes
+        static var menuMapTraffic: Constants.MenuMapTraffic = Constants.MenuMapTraffic.no
         static var menuMapShelter: Constants.MenuMapShelter = Constants.MenuMapShelter.yes
         static var menuMapHazard: Constants.MenuMapHazard = Constants.MenuMapHazard.yes
         static var menuMapSOS: Constants.MenuMapSOS = Constants.MenuMapSOS.yes

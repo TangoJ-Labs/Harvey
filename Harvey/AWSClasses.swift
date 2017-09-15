@@ -1205,7 +1205,7 @@ class AWSPutSpotRequestData : AWSRequestObject
                 if (err != nil)
                 {
                     print("SENDING DATA TO LAMBDA ERROR: \(String(describing: err))")
-                    //                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
                     
                     // Record the server request attempt
                     Constants.Data.serverTries += 1
@@ -1218,8 +1218,11 @@ class AWSPutSpotRequestData : AWSRequestObject
                 }
                 else if (response != nil)
                 {
-                    // Now that the SpotRequest has been created, add it to the global array
-                    Constants.Data.allSpotRequest.append(self.spotRequest)
+                    // Now that the SpotRequest has been created, add it to the global array if it is active
+                    if self.spotRequest.status == "active"
+                    {
+                        Constants.Data.allSpotRequest.append(self.spotRequest)
+                    }
                     
                     // Notify the parent view that the AWS call completed successfully
                     if let parentVC = self.awsRequestDelegate
@@ -1499,8 +1502,11 @@ class AWSPutHazardData: AWSRequestObject
                         print("AC-PH RESPONSE:")
                         print(response)
                         
-                        // Now add the new Hazard to the global array
-                        Constants.Data.allHazard.append(self.hazard)
+                        // Now add the new Hazard to the global array if it was not deleted
+                        if self.hazard.status == "active"
+                        {
+                            Constants.Data.allHazard.append(self.hazard)
+                        }
                         
                         // Notify the parent view that the AWS call completed successfully
                         if let parentVC = self.awsRequestDelegate

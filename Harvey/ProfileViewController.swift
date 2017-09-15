@@ -107,6 +107,11 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         NotificationCenter.default.addObserver(self, selector: #selector(ProfileViewController.statusBarHeightChange(_:)), name: Notification.Name("UIApplicationWillChangeStatusBarFrameNotification"), object: nil)
     }
     
+//    override func viewWillAppear(_ animated: Bool)
+//    {
+//        print("PVC - VWA - HAZ COUNT: \(Constants.Data.allHazard.count)")
+//    }
+    
     override func didReceiveMemoryWarning()
     {
         super.didReceiveMemoryWarning()

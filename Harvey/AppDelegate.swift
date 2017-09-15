@@ -59,21 +59,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate
             print(Constants.Data.currentUser.status)
             print(Constants.Data.currentUser.datetime)
             print(Constants.Data.currentUser.name)
-            print(Constants.Data.currentUser.thumbnail)
-            print(Constants.Data.currentUser.image)
+            print(Constants.Data.currentUser.thumbnail?.size)
+            print(Constants.Data.currentUser.image?.size)
             print(Constants.Data.currentUser.connection)
             
             // Try to retrieve the current user from Core Data
             let currentUser = CoreDataFunctions().currentUserRetrieve()
-            print("AD-CD CURRENT USER:")
+            print("AD-CDF CURRENT USER:")
             print(currentUser.userID)
             print(currentUser.facebookID)
             print(currentUser.type)
             print(currentUser.status)
             print(currentUser.datetime)
             print(currentUser.name)
-            print(currentUser.thumbnail)
-            print(currentUser.image)
+            print(currentUser.thumbnail?.size)
+            print(currentUser.image?.size)
             print(currentUser.connection)
             if currentUser.userID != nil
             {

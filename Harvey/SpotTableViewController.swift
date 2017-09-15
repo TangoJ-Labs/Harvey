@@ -20,6 +20,8 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
     var spots = [Spot]()
     var spotContent = [SpotContent]()
     var allowDelete: Bool = false
+    var visibleCells: Int = 0
+    var backgroundText: String = ""
     
     convenience init(spots: [Spot], allowDelete: Bool)
     {
@@ -34,6 +36,21 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
             if spot.spotContent.count > 0
             {
                 self.spotContent = self.spotContent + spot.spotContent
+            }
+        }
+        print("STVC - CONTENT INIT COUNT: \(self.spotContent.count)")
+        if self.spotContent.count > 5
+        {
+            visibleCells = 5
+        }
+        else
+        {
+            visibleCells = self.spotContent.count
+            
+            if self.spotContent.count == 0
+            {
+                print("STVC - SHOW BG TEXT")
+                backgroundText = "No content exists here.  Go to the main map to add some!"
             }
         }
     }
@@ -53,6 +70,7 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
     // The views to hold major components of the view controller
     var statusBarView: UIView!
     var viewContainer: UIView!
+    var backgroundLabel: UILabel!
     
     var spotContentTableView: UITableView!
     var tableGestureRecognizer: UITapGestureRecognizer!
@@ -66,7 +84,6 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
     // Settings to increment the number of cells displayed as the user scrolls content into view
     // Prevents all content being displayed at once and overloading the app with content and downloading
     let visibleIncrementSize: Int = 5
-    var visibleCells: Int = 5
     
     override func viewDidLoad()
     {
@@ -87,6 +104,15 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
         viewContainer.backgroundColor = Constants.Colors.standardBackgroundGrayUltraLight
         self.view.addSubview(viewContainer)
         
+        backgroundLabel = UILabel(frame: CGRect(x: 50, y: 5, width: viewContainer.frame.width - 100, height: viewContainer.frame.height / 2))
+        backgroundLabel.textColor = Constants.Colors.colorTextDark
+        backgroundLabel.text = backgroundText
+        backgroundLabel.numberOfLines = 3
+        backgroundLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
+        backgroundLabel.textAlignment = .center
+        backgroundLabel.font = UIFont(name: "HelveticaNeue-UltraLight", size: 20)
+        viewContainer.addSubview(backgroundLabel)
+        
         // Set the main cell standard dimensions
         spotCellWidth = viewContainer.frame.width
         spotMediaSize = viewContainer.frame.width
@@ -97,7 +123,7 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
         spotContentTableView.delegate = self
         spotContentTableView.register(SpotTableViewCell.self, forCellReuseIdentifier: Constants.Strings.spotTableViewCellReuseIdentifier)
         spotContentTableView.separatorStyle = .none
-        spotContentTableView.backgroundColor = Constants.Colors.standardBackground
+        spotContentTableView.backgroundColor = UIColor.clear //Constants.Colors.standardBackground
         spotContentTableView.isScrollEnabled = true
         spotContentTableView.bounces = true
         spotContentTableView.alwaysBounceVertical = true
@@ -118,6 +144,12 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
         spotContent.sort {
             $0.datetime > $1.datetime
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool)
+    {
+        print("STVC - viewWillAppear")
+        refreshSpotViewTable()
     }
     
     
@@ -494,125 +526,128 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
             if let tappedIndexPath = spotContentTableView.indexPathForRow(at: tapLocation)
             {
                 print("STVC - TAPPED INDEX PATH: \(tappedIndexPath)")
-                if let tappedCell = self.spotContentTableView.cellForRow(at: tappedIndexPath) as? SpotTableViewCell
+                if spotContent.count > 0
                 {
-                    let cellTapLocation = gesture.location(in: tappedCell)
-                    if tappedCell.userImageView.frame.contains(cellTapLocation)
+                    if let tappedCell = self.spotContentTableView.cellForRow(at: tappedIndexPath) as? SpotTableViewCell
                     {
-                        // Load the UserVC
-                        print("STVC - SPOT CONTENT COUNT: \(spotContent.count)")
-                        if spotContent.count > tappedIndexPath.row
+                        let cellTapLocation = gesture.location(in: tappedCell)
+                        if tappedCell.userImageView.frame.contains(cellTapLocation)
                         {
-                            let spotID = spotContent[tappedIndexPath.row].spotID
-                            spotLoop: for spot in Constants.Data.allSpot
+                            // Load the UserVC
+                            print("STVC - SPOT CONTENT COUNT: \(spotContent.count)")
+                            if spotContent.count > tappedIndexPath.row
                             {
-                                if spot.spotID == spotID
+                                let spotID = spotContent[tappedIndexPath.row].spotID
+                                spotLoop: for spot in Constants.Data.allSpot
                                 {
-                                    userLoop: for user in Constants.Data.allUsers
+                                    if spot.spotID == spotID
                                     {
-                                        if user.userID == spot.userID
+                                        userLoop: for user in Constants.Data.allUsers
                                         {
-                                            print("STVC - USER TAP: \(user.userID)")
-                                            let userVC = UserViewController(user: user)
-                                            userVC.userDelegate = self
-                                            self.navigationController!.pushViewController(userVC, animated: true)
-                                            break userLoop
+                                            if user.userID == spot.userID
+                                            {
+                                                print("STVC - USER TAP: \(user.userID)")
+                                                let userVC = UserViewController(user: user)
+                                                userVC.userDelegate = self
+                                                self.navigationController!.pushViewController(userVC, animated: true)
+                                                break userLoop
+                                            }
                                         }
+                                        break spotLoop
                                     }
-                                    break spotLoop
                                 }
                             }
                         }
-                    }
-                    if tappedCell.shareButtonView.frame.contains(cellTapLocation)
-                    {
-                        // Share the image on Facebook
-//                        print("STVC - SHARE CONTAINS")
-                        if let image = spotContent[tappedIndexPath.row].image
+                        if tappedCell.shareButtonView.frame.contains(cellTapLocation)
                         {
-                            let photo : FBSDKSharePhoto = FBSDKSharePhoto()
-                            photo.image = image
-                            photo.isUserGenerated = true
-                            let fbShareContent : FBSDKSharePhotoContent = FBSDKSharePhotoContent()
-                            fbShareContent.photos = [photo]
-
-                            let shareDialog = FBSDKShareDialog()
-                            shareDialog.shareContent = fbShareContent
-                            shareDialog.mode = .native
-                            if let fbShareResponse = try? shareDialog.show()
+                            // Share the image on Facebook
+                            //                        print("STVC - SHARE CONTAINS")
+                            if let image = spotContent[tappedIndexPath.row].image
                             {
-                                print("STVC - FB SHARE RESPONSE: \(fbShareResponse)")
+                                let photo : FBSDKSharePhoto = FBSDKSharePhoto()
+                                photo.image = image
+                                photo.isUserGenerated = true
+                                let fbShareContent : FBSDKSharePhotoContent = FBSDKSharePhotoContent()
+                                fbShareContent.photos = [photo]
+                                
+                                let shareDialog = FBSDKShareDialog()
+                                shareDialog.shareContent = fbShareContent
+                                shareDialog.mode = .native
+                                if let fbShareResponse = try? shareDialog.show()
+                                {
+                                    print("STVC - FB SHARE RESPONSE: \(fbShareResponse)")
+                                }
                             }
                         }
-                    }
-                    else if tappedCell.flagButtonView.frame.contains(cellTapLocation)
-                    {
-                        // If delete isn't allowed, the user is tapping on the user image, if it is, the user is tapping on the delete button
-                        if !allowDelete
+                        else if tappedCell.flagButtonView.frame.contains(cellTapLocation)
                         {
-                            // Ensure the user wants to flag the content "Are you sure you want to report this image as objectionable or inaccurate?"
-                            let alertController = UIAlertController(title: "REPORT IMAGE", message: "", preferredStyle: UIAlertControllerStyle.alert)
-                            let objectionableAction = UIAlertAction(title: "Inappropriate", style: UIAlertActionStyle.default)
-                            { (result : UIAlertAction) -> Void in
-                                
-                                // Flag the image as objectionable
-                                let contentID = self.spotContent[tappedIndexPath.row].contentID
-                                let spotID = self.spotContent[tappedIndexPath.row].spotID
-                                print("STVC - FLAG 00 FOR CONTENT: \(String(describing: contentID))")
-                                
-                                // Send the SpotContent update
-                                AWSPrepRequest(requestToCall: AWSUpdateSpotContentData(contentID: contentID, spotID: spotID, statusUpdate: "flag-00"), delegate: self as AWSRequestDelegate).prepRequest()
+                            // If delete isn't allowed, the user is tapping on the user image, if it is, the user is tapping on the delete button
+                            if !allowDelete
+                            {
+                                // Ensure the user wants to flag the content "Are you sure you want to report this image as objectionable or inaccurate?"
+                                let alertController = UIAlertController(title: "REPORT IMAGE", message: "", preferredStyle: UIAlertControllerStyle.alert)
+                                let objectionableAction = UIAlertAction(title: "Inappropriate", style: UIAlertActionStyle.default)
+                                { (result : UIAlertAction) -> Void in
+                                    
+                                    // Flag the image as objectionable
+                                    let contentID = self.spotContent[tappedIndexPath.row].contentID
+                                    let spotID = self.spotContent[tappedIndexPath.row].spotID
+                                    print("STVC - FLAG 00 FOR CONTENT: \(String(describing: contentID))")
+                                    
+                                    // Send the SpotContent update
+                                    AWSPrepRequest(requestToCall: AWSUpdateSpotContentData(contentID: contentID, spotID: spotID, statusUpdate: "flag-00"), delegate: self as AWSRequestDelegate).prepRequest()
+                                }
+                                let inaccurateAction = UIAlertAction(title: "Inaccurate", style: UIAlertActionStyle.default)
+                                { (result : UIAlertAction) -> Void in
+                                    
+                                    // Flag the image as objectionable
+                                    let contentID = self.spotContent[tappedIndexPath.row].contentID
+                                    let spotID = self.spotContent[tappedIndexPath.row].spotID
+                                    print("STVC - FLAG 01 FOR CONTENT: \(String(describing: contentID))")
+                                    
+                                    // Send the SpotContent update
+                                    AWSPrepRequest(requestToCall: AWSUpdateSpotContentData(contentID: contentID, spotID: spotID, statusUpdate: "flag-01"), delegate: self as AWSRequestDelegate).prepRequest()
+                                }
+                                let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default)
+                                { (result : UIAlertAction) -> Void in
+                                    print("STVC - FLAG CANCELLED")
+                                }
+                                alertController.addAction(objectionableAction)
+                                alertController.addAction(inaccurateAction)
+                                alertController.addAction(cancelAction)
+                                self.present(alertController, animated: true, completion: nil)
                             }
-                            alertController.addAction(objectionableAction)
-                            let inaccurateAction = UIAlertAction(title: "Inaccurate", style: UIAlertActionStyle.default)
-                            { (result : UIAlertAction) -> Void in
+                            else
+                            {
+                                print("STVC - DELETE IMAGE: \(spotContent[tappedIndexPath.row].contentID)")
                                 
-                                // Flag the image as objectionable
-                                let contentID = self.spotContent[tappedIndexPath.row].contentID
-                                let spotID = self.spotContent[tappedIndexPath.row].spotID
-                                print("STVC - FLAG 01 FOR CONTENT: \(String(describing: contentID))")
-                                
-                                // Send the SpotContent update
-                                AWSPrepRequest(requestToCall: AWSUpdateSpotContentData(contentID: contentID, spotID: spotID, statusUpdate: "flag-01"), delegate: self as AWSRequestDelegate).prepRequest()
+                                // Ensure the user wants to delete the content
+                                let alertController = UIAlertController(title: "DELETE PHOTO", message: "Are you sure you want to delete this photo?", preferredStyle: UIAlertControllerStyle.alert)
+                                let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.default)
+                                { (result : UIAlertAction) -> Void in
+                                    
+                                    // Flag the image as objectionable
+                                    let contentID = self.spotContent[tappedIndexPath.row].contentID
+                                    let spotID = self.spotContent[tappedIndexPath.row].spotID
+                                    print("STVC - DELETE FOR CONTENT: \(String(describing: contentID))")
+                                    
+                                    // Send the SpotContent update
+                                    AWSPrepRequest(requestToCall: AWSUpdateSpotContentData(contentID: contentID, spotID: spotID, statusUpdate: "delete"), delegate: self as AWSRequestDelegate).prepRequest()
+                                    
+                                    // Update the content so that it displays as waiting for the delete command to complete
+                                    self.spotContent[tappedIndexPath.row].deletePending = true
+                                    
+                                    // Update the tableview
+                                    self.refreshSpotViewTable()
+                                }
+                                let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default)
+                                { (result : UIAlertAction) -> Void in
+                                    print("STVC - DELETE CANCELLED")
+                                }
+                                alertController.addAction(cancelAction)
+                                alertController.addAction(deleteAction)
+                                self.present(alertController, animated: true, completion: nil)
                             }
-                            alertController.addAction(inaccurateAction)
-                            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default)
-                            { (result : UIAlertAction) -> Void in
-                                print("STVC - FLAG CANCELLED")
-                            }
-                            alertController.addAction(cancelAction)
-                            self.present(alertController, animated: true, completion: nil)
-                        }
-                        else
-                        {
-                            print("STVC - DELETE IMAGE: \(spotContent[tappedIndexPath.row].contentID)")
-                            
-                            // Ensure the user wants to delete the content
-                            let alertController = UIAlertController(title: "DELETE PHOTO", message: "Are you sure you want to delete this photo?", preferredStyle: UIAlertControllerStyle.alert)
-                            let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.default)
-                            { (result : UIAlertAction) -> Void in
-                                
-                                // Flag the image as objectionable
-                                let contentID = self.spotContent[tappedIndexPath.row].contentID
-                                let spotID = self.spotContent[tappedIndexPath.row].spotID
-                                print("STVC - DELETE FOR CONTENT: \(String(describing: contentID))")
-                                
-                                // Send the SpotContent update
-                                AWSPrepRequest(requestToCall: AWSUpdateSpotContentData(contentID: contentID, spotID: spotID, statusUpdate: "delete"), delegate: self as AWSRequestDelegate).prepRequest()
-                                
-                                // Update the content so that it displays as waiting for the delete command to complete
-                                self.spotContent[tappedIndexPath.row].deletePending = true
-                                
-                                // Update the tableview
-                                self.refreshSpotViewTable()
-                            }
-                            alertController.addAction(deleteAction)
-                            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default)
-                            { (result : UIAlertAction) -> Void in
-                                print("STVC - DELETE CANCELLED")
-                            }
-                            alertController.addAction(cancelAction)
-                            self.present(alertController, animated: true, completion: nil)
                         }
                     }
                 }
@@ -640,11 +675,7 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
             {
                 if self.spotContentTableView != nil
                 {
-                    //for index in 0..<self.spotContent.count
-                    //{
-                    //    let indexPath = IndexPath(row: index, section: 1)
-                    //    self.spotContentTableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
-                    //}
+                    print("STVC - REFRESH SPOT VIEW TABLE")
                     
                     // Reload the TableView
                     self.spotContentTableView.reloadData()
@@ -652,11 +683,30 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                 }
         })
     }
+    func reloadSpotViewTable()
+    {
+        if self.spotContentTableView != nil
+        {
+            print("STVC - RELOAD SPOT VIEW TABLE")
+            if self.spotContent.count > 5
+            {
+                visibleCells = 5
+            }
+            else
+            {
+                visibleCells = self.spotContent.count
+            }
+            
+//            self.spotContentTableView.reloadData()
+            self.spotContentTableView.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: true)
+        }
+    }
     func updateData()
     {
         // Remove all banned user's data from the local list
         // Create a new list with all non-blocked users' data (removing the data directly will fault out)
         var nonBlockedSpots = [Spot]()
+        var nonBlockedSpotContent = [SpotContent]()
         for spot in spots
         {
             print("STVC - CHECK USER: \(index): \(spot.userID)")
@@ -674,20 +724,24 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
             if !userBlocked
             {
                 nonBlockedSpots.append(spot)
+                for spotContent in spot.spotContent
+                {
+                    nonBlockedSpotContent.append(spotContent)
+                }
             }
         }
         spots = nonBlockedSpots
+        spotContent = nonBlockedSpotContent
         
         print("STVC - SPOT COUNT: \(spots.count)")
-        if spots.count > 0
+        if spotContent.count > 0
         {
-            refreshSpotViewTable()
+            reloadSpotViewTable()
         }
         else
         {
-//            popViewController()
-            visibleCells = 1
-            refreshSpotViewTable()
+            reloadSpotViewTable()
+            popViewController()
         }
         
         // Remove all banned user's data from the global list
