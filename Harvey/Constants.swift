@@ -217,6 +217,28 @@ struct Constants
         }
     }
     
+    enum Experience: Int
+    {
+        case none = 0
+        case some = 1
+        case expert = 2
+    }
+    func experience(_ experienceInt: Int) -> Constants.Experience
+    {
+        // Evaluate the experienceInt Integer received and convert it to the appropriate Experience
+        switch experienceInt
+        {
+        case 0:
+            return Constants.Experience.none
+        case 1:
+            return Constants.Experience.some
+        case 2:
+            return Constants.Experience.expert
+        default:
+            return Constants.Experience.none
+        }
+    }
+    
     struct Colors
     {
         static let standardBackground = UIColor.white
@@ -294,6 +316,9 @@ struct Constants
         static var currentUser = User()
         static var allUsers = [User]()
         static var allUserBlockList = [String]()
+        
+        static var skills = [Skill]()
+        static var repairs = [Repair]()
     }
     
     struct Dim
@@ -302,6 +327,8 @@ struct Constants
         static let cameraViewImageCellSize: CGFloat = 60
         
         static let userTableCellHeight: CGFloat = 50
+        static let damageCellHeight: CGFloat = 100
+        static let skillCellHeight: CGFloat = 100
         
         static let spotRadius: Double = 50 // in meters - see radius in Spot
         static let dotRadius: CGFloat = 5
@@ -357,6 +384,8 @@ struct Constants
         
         static let spotTableViewCellReuseIdentifier = "spotTableViewCell"
         static let userTableViewCellReuseIdentifier = "userTableViewCell"
+        static let profileDamageTableViewCellReuseIdentifier = "profileDamageTableViewCell"
+        static let profileSkillTableViewCellReuseIdentifier = "profileSkillTableViewCell"
         
         static let imageHarvey = "Harvey.png"
         static let iconAccountGray = "icon_account_gray.png"
@@ -373,6 +402,7 @@ struct Constants
         static let iconMenu = "icon_menu.png"
         static let iconProfile = "icon_profile.png"
         static let iconSearch = "icon_search.png"
+        static let iconSettings = "icon_settings.png"
         static let iconShareArrow = "icon_share_arrow.png"
         static let iconTraffic = "icon_traffic.png"
         static let iconHazard = "icon_hazard.png"
@@ -380,6 +410,7 @@ struct Constants
         static let markerIconCamera = "marker_icon_camera_yellow.png"
         static let markerIconCameraTemp = "marker_icon_camera_temp_yellow.png"
         static let markerIconGauge = "marker_icon_gauge_blue_opaque.png"
+        static let markerIconHouse = "marker_icon_house.png"
         static let markerIconShelter = "marker_icon_shelter.png"
         static let markerIconSOS = "marker_icon_flag_red.png"
     }

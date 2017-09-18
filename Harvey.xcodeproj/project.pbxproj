@@ -63,6 +63,10 @@
 		B850603E1F675AD900BE25ED /* icon_pins_multi.png in Resources */ = {isa = PBXBuildFile; fileRef = B85060351F675AD900BE25ED /* icon_pins_multi.png */; };
 		B850603F1F675AD900BE25ED /* icon_pins_multi@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B85060361F675AD900BE25ED /* icon_pins_multi@2x.png */; };
 		B85060401F675AD900BE25ED /* icon_pins_multi@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B85060371F675AD900BE25ED /* icon_pins_multi@3x.png */; };
+		B866B1041F6F3D8F00321116 /* RepairCD+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866B1001F6F3D8F00321116 /* RepairCD+CoreDataClass.swift */; };
+		B866B1051F6F3D8F00321116 /* RepairCD+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866B1011F6F3D8F00321116 /* RepairCD+CoreDataProperties.swift */; };
+		B866B1061F6F3D8F00321116 /* SkillCD+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866B1021F6F3D8F00321116 /* SkillCD+CoreDataClass.swift */; };
+		B866B1071F6F3D8F00321116 /* SkillCD+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866B1031F6F3D8F00321116 /* SkillCD+CoreDataProperties.swift */; };
 		B86BCC861F64A29E003C667D /* UserCD+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BCC821F64A29E003C667D /* UserCD+CoreDataClass.swift */; };
 		B86BCC871F64A29E003C667D /* UserCD+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BCC831F64A29E003C667D /* UserCD+CoreDataProperties.swift */; };
 		B86BCC881F64A29E003C667D /* CurrentUser+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BCC841F64A29E003C667D /* CurrentUser+CoreDataClass.swift */; };
@@ -72,6 +76,15 @@
 		B874217D1F54BD4F00E0981A /* Harvey.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B874217B1F54BD4F00E0981A /* Harvey.xcdatamodeld */; };
 		B874217F1F54BD4F00E0981A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B874217E1F54BD4F00E0981A /* Assets.xcassets */; };
 		B874218A1F54CD2600E0981A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B87421891F54CD2600E0981A /* Constants.swift */; };
+		B891DB551F6C5889000B1CB5 /* icon_settings.png in Resources */ = {isa = PBXBuildFile; fileRef = B891DB521F6C5889000B1CB5 /* icon_settings.png */; };
+		B891DB561F6C5889000B1CB5 /* icon_settings@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B891DB531F6C5889000B1CB5 /* icon_settings@2x.png */; };
+		B891DB571F6C5889000B1CB5 /* icon_settings@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B891DB541F6C5889000B1CB5 /* icon_settings@3x.png */; };
+		B891DB591F6C5C6F000B1CB5 /* ProfileTabVolunteerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB581F6C5C6F000B1CB5 /* ProfileTabVolunteerViewController.swift */; };
+		B891DB5B1F6C60E2000B1CB5 /* ProfileTabHouseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB5A1F6C60E2000B1CB5 /* ProfileTabHouseViewController.swift */; };
+		B891DB5D1F6C757D000B1CB5 /* ProfileSkillTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB5C1F6C757D000B1CB5 /* ProfileSkillTableViewCell.swift */; };
+		B891DB5F1F6D8993000B1CB5 /* ProfileDamageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB5E1F6D8992000B1CB5 /* ProfileDamageTableViewCell.swift */; };
+		B891DB611F6E0200000B1CB5 /* Skill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB601F6E0200000B1CB5 /* Skill.swift */; };
+		B891DB631F6E0570000B1CB5 /* Repair.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB621F6E0570000B1CB5 /* Repair.swift */; };
 		B895C54E1F590018002D369E /* FB.png in Resources */ = {isa = PBXBuildFile; fileRef = B895C5441F590018002D369E /* FB.png */; };
 		B895C54F1F590018002D369E /* icon_menu.png in Resources */ = {isa = PBXBuildFile; fileRef = B895C5451F590018002D369E /* icon_menu.png */; };
 		B895C5501F590018002D369E /* icon_menu@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B895C5461F590018002D369E /* icon_menu@2x.png */; };
@@ -222,6 +235,10 @@
 		B85060351F675AD900BE25ED /* icon_pins_multi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_pins_multi.png; sourceTree = "<group>"; };
 		B85060361F675AD900BE25ED /* icon_pins_multi@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_pins_multi@2x.png"; sourceTree = "<group>"; };
 		B85060371F675AD900BE25ED /* icon_pins_multi@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_pins_multi@3x.png"; sourceTree = "<group>"; };
+		B866B1001F6F3D8F00321116 /* RepairCD+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "RepairCD+CoreDataClass.swift"; sourceTree = "<group>"; };
+		B866B1011F6F3D8F00321116 /* RepairCD+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "RepairCD+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B866B1021F6F3D8F00321116 /* SkillCD+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SkillCD+CoreDataClass.swift"; sourceTree = "<group>"; };
+		B866B1031F6F3D8F00321116 /* SkillCD+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SkillCD+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B86BCC811F64A261003C667D /* Harvey_DataModel_1.3.5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Harvey_DataModel_1.3.5.xcdatamodel; sourceTree = "<group>"; };
 		B86BCC821F64A29E003C667D /* UserCD+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UserCD+CoreDataClass.swift"; sourceTree = "<group>"; };
 		B86BCC831F64A29E003C667D /* UserCD+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UserCD+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -235,6 +252,16 @@
 		B87421831F54BD4F00E0981A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = Harvey/Info.plist; sourceTree = "<group>"; };
 		B87421891F54CD2600E0981A /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		B891DB4A1F6C434E000B1CB5 /* Harvey_DataModel_1.4.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Harvey_DataModel_1.4.0.xcdatamodel; sourceTree = "<group>"; };
+		B891DB4B1F6C549A000B1CB5 /* Harvey_DataModel_2.0.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Harvey_DataModel_2.0.0.xcdatamodel; sourceTree = "<group>"; };
+		B891DB521F6C5889000B1CB5 /* icon_settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_settings.png; sourceTree = "<group>"; };
+		B891DB531F6C5889000B1CB5 /* icon_settings@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_settings@2x.png"; sourceTree = "<group>"; };
+		B891DB541F6C5889000B1CB5 /* icon_settings@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_settings@3x.png"; sourceTree = "<group>"; };
+		B891DB581F6C5C6F000B1CB5 /* ProfileTabVolunteerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTabVolunteerViewController.swift; sourceTree = "<group>"; };
+		B891DB5A1F6C60E2000B1CB5 /* ProfileTabHouseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTabHouseViewController.swift; sourceTree = "<group>"; };
+		B891DB5C1F6C757D000B1CB5 /* ProfileSkillTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileSkillTableViewCell.swift; sourceTree = "<group>"; };
+		B891DB5E1F6D8992000B1CB5 /* ProfileDamageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileDamageTableViewCell.swift; sourceTree = "<group>"; };
+		B891DB601F6E0200000B1CB5 /* Skill.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Skill.swift; sourceTree = "<group>"; };
+		B891DB621F6E0570000B1CB5 /* Repair.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Repair.swift; sourceTree = "<group>"; };
 		B895C5441F590018002D369E /* FB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FB.png; sourceTree = "<group>"; };
 		B895C5451F590018002D369E /* icon_menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_menu.png; sourceTree = "<group>"; };
 		B895C5461F590018002D369E /* icon_menu@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_menu@2x.png"; sourceTree = "<group>"; };
@@ -363,7 +390,9 @@
 			children = (
 				B8D97E191F56A166006D9782 /* DataHydro.swift */,
 				B85060271F66CE5100BE25ED /* Hazard.swift */,
+				B891DB621F6E0570000B1CB5 /* Repair.swift */,
 				B8F9168C1F5C750600A268E1 /* Shelter.swift */,
+				B891DB601F6E0200000B1CB5 /* Skill.swift */,
 				B85060251F665DB200BE25ED /* SOS.swift */,
 				B832412A1F573366008709B4 /* Spot.swift */,
 				B832412C1F5733DA008709B4 /* SpotContent.swift */,
@@ -429,6 +458,10 @@
 				B8FC56A61F5E43300020A871 /* InfoWindowShelter.swift */,
 				B825BE191F55FBFC00C12722 /* LoginViewController.swift */,
 				B87421761F54BD4F00E0981A /* MapViewController.swift */,
+				B891DB5E1F6D8992000B1CB5 /* ProfileDamageTableViewCell.swift */,
+				B891DB5C1F6C757D000B1CB5 /* ProfileSkillTableViewCell.swift */,
+				B891DB5A1F6C60E2000B1CB5 /* ProfileTabHouseViewController.swift */,
+				B891DB581F6C5C6F000B1CB5 /* ProfileTabVolunteerViewController.swift */,
 				B821A4641F681BE700997EE1 /* ProfileViewController.swift */,
 				B80B9C861F635EC8006583CE /* RequestClasses.swift */,
 				B8D05F501F5887D400D3CFAF /* SpotTableViewCell.swift */,
@@ -497,6 +530,9 @@
 				B895C5AE1F5917CD002D369E /* icon_profile@2x.png */,
 				B895C5AF1F5917CD002D369E /* icon_profile@3x.png */,
 				B895C55C1F59004F002D369E /* icon_search.png */,
+				B891DB521F6C5889000B1CB5 /* icon_settings.png */,
+				B891DB531F6C5889000B1CB5 /* icon_settings@2x.png */,
+				B891DB541F6C5889000B1CB5 /* icon_settings@3x.png */,
 				B8DDEB361F5B1D0200F0A623 /* icon_share_arrow.png */,
 				B895C5B81F5917CD002D369E /* icon_traffic.png */,
 				B895C5B01F5917CD002D369E /* icon_traffic@2x.png */,
@@ -564,6 +600,10 @@
 				B8DDEB221F5AE21000F0A623 /* LogUserflow+CoreDataProperties.swift */,
 				B8FC56A91F5E50DB0020A871 /* MapSetting+CoreDataClass.swift */,
 				B8FC56AA1F5E50DB0020A871 /* MapSetting+CoreDataProperties.swift */,
+				B866B1001F6F3D8F00321116 /* RepairCD+CoreDataClass.swift */,
+				B866B1011F6F3D8F00321116 /* RepairCD+CoreDataProperties.swift */,
+				B866B1021F6F3D8F00321116 /* SkillCD+CoreDataClass.swift */,
+				B866B1031F6F3D8F00321116 /* SkillCD+CoreDataProperties.swift */,
 				B8DDEB1B1F5AE21000F0A623 /* TutorialView+CoreDataClass.swift */,
 				B8DDEB1C1F5AE21000F0A623 /* TutorialView+CoreDataProperties.swift */,
 				B86BCC821F64A29E003C667D /* UserCD+CoreDataClass.swift */,
@@ -722,12 +762,14 @@
 				B825BE0C1F551F7400C12722 /* style.json in Resources */,
 				B895C5571F590018002D369E /* icon_account_white@3x.png in Resources */,
 				B8D05F4C1F587A5700D3CFAF /* Sugar_Land-Trailbrook_Back.gpx in Resources */,
+				B891DB571F6C5889000B1CB5 /* icon_settings@3x.png in Resources */,
 				B80B9C731F624126006583CE /* marker_icon_flag_red.png in Resources */,
 				B80B9C721F624126006583CE /* marker_icon_donation@3x.png in Resources */,
 				B895C5C51F5917CD002D369E /* icon_profile.png in Resources */,
 				B895C60E1F5A068E002D369E /* icon_close_orange.png in Resources */,
 				B895C6131F5A068E002D369E /* marker_icon_camera_temp_orange@3x.png in Resources */,
 				B895C5F11F5A0666002D369E /* icon_check_yellow@2x.png in Resources */,
+				B891DB551F6C5889000B1CB5 /* icon_settings.png in Resources */,
 				B895C5F61F5A0666002D369E /* marker_icon_camera_temp_yellow.png in Resources */,
 				B8B4CA5B1F619C46001CD74D /* eula.txt in Resources */,
 				B850603E1F675AD900BE25ED /* icon_pins_multi.png in Resources */,
@@ -735,6 +777,7 @@
 				B895C5F01F5A0666002D369E /* icon_check_yellow.png in Resources */,
 				B8D05F4A1F587A5700D3CFAF /* Houston-Downtown.gpx in Resources */,
 				B8E48C071F6A1F7D00F23F51 /* icon_check_hazard@3x.png in Resources */,
+				B891DB561F6C5889000B1CB5 /* icon_settings@2x.png in Resources */,
 				B80B9C811F6242AB006583CE /* marker_icon_shelter.png in Resources */,
 				B895C5F21F5A0666002D369E /* icon_check_yellow@3x.png in Resources */,
 				B850603F1F675AD900BE25ED /* icon_pins_multi@2x.png in Resources */,
@@ -796,10 +839,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B891DB5F1F6D8993000B1CB5 /* ProfileDamageTableViewCell.swift in Sources */,
+				B866B1051F6F3D8F00321116 /* RepairCD+CoreDataProperties.swift in Sources */,
 				B821A4671F69485E00997EE1 /* ActivityViewController.swift in Sources */,
+				B891DB5B1F6C60E2000B1CB5 /* ProfileTabHouseViewController.swift in Sources */,
 				B87421771F54BD4F00E0981A /* MapViewController.swift in Sources */,
+				B891DB5D1F6C757D000B1CB5 /* ProfileSkillTableViewCell.swift in Sources */,
 				B80B9C931F645252006583CE /* UserTableViewController.swift in Sources */,
 				B8F9168D1F5C750600A268E1 /* Shelter.swift in Sources */,
+				B866B1071F6F3D8F00321116 /* SkillCD+CoreDataProperties.swift in Sources */,
 				B86BCC871F64A29E003C667D /* UserCD+CoreDataProperties.swift in Sources */,
 				B825BE161F55A48E00C12722 /* Extensions.swift in Sources */,
 				B8B4CA481F615519001CD74D /* AgreementViewController.swift in Sources */,
@@ -814,6 +862,8 @@
 				B8D05F4F1F58865600D3CFAF /* SpotTableViewController.swift in Sources */,
 				B8B4CA5E1F61AEF1001CD74D /* InfoWindowAgreement.swift in Sources */,
 				B8DDEB231F5AE21000F0A623 /* TutorialView+CoreDataClass.swift in Sources */,
+				B891DB611F6E0200000B1CB5 /* Skill.swift in Sources */,
+				B866B1041F6F3D8F00321116 /* RepairCD+CoreDataClass.swift in Sources */,
 				B8FC56A71F5E43300020A871 /* InfoWindowShelter.swift in Sources */,
 				B80B9C951F645885006583CE /* UserTableViewCell.swift in Sources */,
 				B8FC56A51F5E29110020A871 /* InfoWindowHydro.swift in Sources */,
@@ -821,6 +871,7 @@
 				B8DDEB131F5AD2EE00F0A623 /* HoleView.swift in Sources */,
 				B85060261F665DB200BE25ED /* SOS.swift in Sources */,
 				B86BCC861F64A29E003C667D /* UserCD+CoreDataClass.swift in Sources */,
+				B891DB591F6C5C6F000B1CB5 /* ProfileTabVolunteerViewController.swift in Sources */,
 				B874217D1F54BD4F00E0981A /* Harvey.xcdatamodeld in Sources */,
 				B85060281F66CE5100BE25ED /* Hazard.swift in Sources */,
 				B86BCC891F64A29E003C667D /* CurrentUser+CoreDataProperties.swift in Sources */,
@@ -836,11 +887,13 @@
 				B874218A1F54CD2600E0981A /* Constants.swift in Sources */,
 				B8DDEB2A1F5AE21000F0A623 /* LogUserflow+CoreDataProperties.swift in Sources */,
 				B832412B1F573366008709B4 /* Spot.swift in Sources */,
+				B866B1061F6F3D8F00321116 /* SkillCD+CoreDataClass.swift in Sources */,
 				B825BE121F559F2700C12722 /* User.swift in Sources */,
 				B8DDEB1A1F5ADE8300F0A623 /* CoreDataFunctions.swift in Sources */,
 				B8FC56AC1F5E50DB0020A871 /* MapSetting+CoreDataProperties.swift in Sources */,
 				B821A4651F681BE700997EE1 /* ProfileViewController.swift in Sources */,
 				B825BE1A1F55FBFC00C12722 /* LoginViewController.swift in Sources */,
+				B891DB631F6E0570000B1CB5 /* Repair.swift in Sources */,
 				B832412D1F5733DA008709B4 /* SpotContent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1005,6 +1058,7 @@
 		B874217B1F54BD4F00E0981A /* Harvey.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				B891DB4B1F6C549A000B1CB5 /* Harvey_DataModel_2.0.0.xcdatamodel */,
 				B891DB4A1F6C434E000B1CB5 /* Harvey_DataModel_1.4.0.xcdatamodel */,
 				B81D82D81F651D5700BC2A61 /* Harvey_DataModel_1.3.5.2.xcdatamodel */,
 				B86BCC811F64A261003C667D /* Harvey_DataModel_1.3.5.xcdatamodel */,
@@ -1019,7 +1073,7 @@
 				B8DDEB2B1F5AE2DF00F0A623 /* Harvey 1.1.0.xcdatamodel */,
 				B874217C1F54BD4F00E0981A /* Harvey.xcdatamodel */,
 			);
-			currentVersion = B891DB4A1F6C434E000B1CB5 /* Harvey_DataModel_1.4.0.xcdatamodel */;
+			currentVersion = B891DB4B1F6C549A000B1CB5 /* Harvey_DataModel_2.0.0.xcdatamodel */;
 			name = Harvey.xcdatamodeld;
 			path = Harvey/Harvey.xcdatamodeld;
 			sourceTree = "<group>";

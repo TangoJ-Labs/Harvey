@@ -15,7 +15,7 @@ import GoogleMaps
 import UIKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate
+class AppDelegate: UIResponder, UIApplicationDelegate, AWSRequestDelegate
 {
     var window: UIWindow?
     let navController = UINavigationController()
@@ -51,6 +51,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         if let facebookToken = FBSDKAccessToken.current()
         {
             print(facebookToken.tokenString)
+            // Request the global app settings
+            AWSPrepRequest(requestToCall: AWSGetSettings(), delegate: self as AWSRequestDelegate).prepRequest()
             
             // Try to retrieve the current user from Core Data
             let currentUser = CoreDataFunctions().currentUserRetrieve()
@@ -198,6 +200,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate
             }
         }
     }
-
+    
+    
+    // MARK: AWS DELEGATE METHODS
+    
+    func showLoginScreen()
+    {
+        print("AD - SHOW LOGIN SCREEN")
+    }
+    
+    func processAwsReturn(_ objectType: AWSRequestObject, success: Bool)
+    {
+        DispatchQueue.main.async(execute:
+            {
+                // Process the return data based on the method used
+                switch objectType
+                {
+                case _ as AWSGetSettings:
+                    if success
+                    {
+                        print("AD - SETTINGS RETURN - SUCCESS")
+                    }
+                    else
+                    {
+                        print("AD - SETTINGS RETURN - FAILURE")
+                    }
+                default:
+                    print("AD-DEFAULT: THERE WAS AN ISSUE WITH THE DATA RETURNED FROM AWS")
+                }
+        })
+    }
 }
 

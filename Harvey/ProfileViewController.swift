@@ -34,7 +34,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     
     var activityTableView: UITableView!
     
-    let cellHeight: CGFloat = 70
+    let cellHeight: CGFloat = 50
     
     override func viewDidLoad()
     {
@@ -77,15 +77,15 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         currentUserContainer.addSubview(fbLoginButton)
         
         // Create a table to show selection options for viewing user activity history
-        activityTableView = UITableView(frame: CGRect(x: 0, y: viewContainer.frame.height * (3/4) - 105, width: viewContainer.frame.width, height: 210))
+        activityTableView = UITableView(frame: CGRect(x: 0, y: viewContainer.frame.height * (3/4) - 100, width: viewContainer.frame.width, height: 200))
         activityTableView.dataSource = self
         activityTableView.delegate = self
         activityTableView.register(UITableViewCell.self, forCellReuseIdentifier: "activityCell")
         activityTableView.separatorStyle = .none
         activityTableView.backgroundColor = Constants.Colors.standardBackground
-        activityTableView.isScrollEnabled = true
-        activityTableView.bounces = true
-        activityTableView.alwaysBounceVertical = true
+        activityTableView.isScrollEnabled = false
+        activityTableView.bounces = false
+        activityTableView.alwaysBounceVertical = false
         activityTableView.showsVerticalScrollIndicator = false
         activityTableView.isUserInteractionEnabled = true
         activityTableView.allowsSelection = true
@@ -218,7 +218,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
-        return 3
+        return 4
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
@@ -240,16 +240,16 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         let cellContainer = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: cellHeight))
         cell.addSubview(cellContainer)
         
-        let cellImageView = UIImageView(frame: CGRect(x: (cellContainer.frame.width / 2) - 25, y: 10, width: 50, height: 50))
+        let cellImageView = UIImageView(frame: CGRect(x: (cellContainer.frame.width / 2) - 20, y: 5, width: 40, height: 40))
         cellImageView.contentMode = UIViewContentMode.scaleAspectFit
         cellImageView.clipsToBounds = true
         cellContainer.addSubview(cellImageView)
         
-        let cellArrow = UILabel(frame: CGRect(x: cellContainer.frame.width - 60, y: 10, width: 50, height: 50))
+        let cellArrow = UILabel(frame: CGRect(x: cellContainer.frame.width - 50, y: 5, width: 40, height: 40))
         cellArrow.backgroundColor = UIColor.clear
         cellArrow.textAlignment = .center
-        cellArrow.font = UIFont(name: "HelveticaNeue-UltraLight", size: 40)
-        cellArrow.text = ">" //"\u{2192}"
+        cellArrow.font = UIFont(name: "HelveticaNeue-UltraLight", size: 18)
+        cellArrow.text = "\u{25BA}" //"\u{2192}"
         cellContainer.addSubview(cellArrow)
         
         let border1 = CALayer()
@@ -259,13 +259,17 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         
         if indexPath.row == 0
         {
-            cellImageView.image = UIImage(named: Constants.Strings.iconCamera)
+            cellImageView.image = UIImage(named: Constants.Strings.iconSettings)
         }
         else if indexPath.row == 1
         {
-            cellImageView.image = UIImage(named: Constants.Strings.markerIconCamera)
+            cellImageView.image = UIImage(named: Constants.Strings.iconCamera)
         }
         else if indexPath.row == 2
+        {
+            cellImageView.image = UIImage(named: Constants.Strings.markerIconCamera)
+        }
+        else if indexPath.row == 3
         {
             cellImageView.image = UIImage(named: Constants.Strings.iconHazard)
         }
@@ -294,6 +298,61 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         
         if indexPath.row == 0
         {
+            print("PVC - LAUNCH PROFILE SETTINGS VC")
+            
+            let tab1VC = ProfileTabVolunteerViewController()
+            tab1VC.tabBarItem = UITabBarItem(title: "Volunteer", image: nil, selectedImage: nil)
+            
+            
+//            let leftButtonItem = UIBarButtonItem(title: "\u{2190}",
+//                                                 style: UIBarButtonItemStyle.plain,
+//                                                 target: self,
+//                                                 action: #selector(UserViewController.popViewController(_:)))
+//            leftButtonItem.tintColor = Constants.Colors.colorTextNavBar
+//            
+//            let rightButtonItem = UIBarButtonItem(title: "",
+//                                                  style: UIBarButtonItemStyle.plain,
+//                                                  target: self,
+//                                                  action: #selector(UserViewController.blankFunc(_:)))
+//            rightButtonItem.tintColor = Constants.Colors.colorTextNavBar
+//            
+//            let ncTitle = UIView(frame: CGRect(x: screenSize.width / 2 - 100, y: 10, width: 200, height: 40))
+//            ncTitleText = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 40))
+//            ncTitleText.text = "My Volunteer Profile"
+//            if let name = Constants.Data.currentUser.name
+//            {
+//                ncTitleText.text = name
+//            }
+//            
+//            ncTitleText.textColor = Constants.Colors.colorTextNavBar
+//            ncTitleText.font = UIFont(name: Constants.Strings.fontAlt, size: 22)
+//            ncTitleText.textAlignment = .center
+//            ncTitle.addSubview(ncTitleText)
+//            
+//            // Assign the created Nav Bar settings to the Tab Bar Controller
+//            self.navigationItem.titleView = ncTitle
+//            self.navigationItem.hidesBackButton = true
+//            self.navigationItem.setLeftBarButton(leftButtonItem, animated: false)
+            
+            
+            
+            let tab2VC = ProfileTabHouseViewController()
+            tab2VC.tabBarItem = UITabBarItem(title: "My House", image: nil, selectedImage: nil)
+            
+            
+            // Navigation Bar settings
+            let profileTabBarController = UITabBarController()
+//            if let navCon = profileTabBarController.navigationController
+//            {
+//                navCon.isNavigationBarHidden = false
+//                navCon.navigationBar.barTintColor = Constants.Colors.colorOrangeOpaque
+//            }
+            let controllers = [tab1VC,tab2VC]
+            profileTabBarController.viewControllers = controllers
+            self.navigationController!.pushViewController(profileTabBarController, animated: true)
+        }
+        else if indexPath.row == 1
+        {
             var mySpots = [Spot]()
             for spot in Constants.Data.allSpot
             {
@@ -317,7 +376,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                 navController.pushViewController(spotTableVC, animated: true)
             }
         }
-        else if indexPath.row == 1
+        else if indexPath.row == 2
         {
             var mySpotRequests = [SpotRequest]()
             for sRequest in Constants.Data.allSpotRequest
@@ -341,7 +400,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                 navController.pushViewController(spotRequestTableVC, animated: true)
             }
         }
-        else if indexPath.row == 2
+        else if indexPath.row == 3
         {
             var myHazards = [Hazard]()
             for hazard in Constants.Data.allHazard

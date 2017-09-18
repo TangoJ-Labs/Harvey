@@ -306,6 +306,7 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
             if let datetime = cellSpotContent.datetime
             {
                 // Capture the number of hours it has been since the Spot was created (as a positive integer)
+//                print("STVC - CURRENT TIME: \(Date().timeIntervalSince1970), CONTENT TIME: \(datetime), CONTENT AGE: \(datetime.timeIntervalSinceNow), AGE ROUNDED: \(Date(timeIntervalSince1970: Double(Int(datetime.timeIntervalSinceNow / 3600))))")
                 let dateAgeHrs: Int = -1 * Int(datetime.timeIntervalSinceNow / 3600)
                 
                 // Set the datetime label.  If the Spot's recency is less than 5 days (120 hours), just show the day and time.

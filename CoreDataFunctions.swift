@@ -369,10 +369,10 @@ class CoreDataFunctions: AWSRequestDelegate
         }
     }
     
-    func userRetrieve() -> User
+    func usersRetrieveAll() -> [User]
     {
         // Access Core Data
-        // Retrieve the Current User data from Core Data
+        // Retrieve User data from Core Data
         let moc = DataController().managedObjectContext
         moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
         let userFetch: NSFetchRequest<UserCD> = UserCD.fetchRequest()
@@ -387,34 +387,135 @@ class CoreDataFunctions: AWSRequestDelegate
         {
             fatalError("Failed to fetch CurrentUser: \(error)")
         }
-        // Create a new User object
-        let user = User()
-        if userArray.count > 0
+        // Create a User list
+        var users = [User]()
+        for userObj in userArray
         {
-            // Use the first object - only one should be saved
-            user.userID = userArray[0].userID
-            user.facebookID = userArray[0].facebookID
-            user.type = userArray[0].type
-            user.status = userArray[0].status
-            user.datetime = userArray[0].datetime! as Date
-            if let userConnection = userArray[0].connection
+            let user = User()
+            user.userID = userObj.userID
+            user.facebookID = userObj.facebookID
+            user.type = userObj.type
+            user.status = userObj.status
+            user.datetime = userObj.datetime! as Date
+            if let userConnection = userObj.connection
             {
                 user.connection = userConnection
             }
-            if let userName = userArray[0].name
+            if let userName = userObj.name
             {
                 user.name = userName
             }
-            if let userImage = userArray[0].image
+            if let userImage = userObj.image
             {
                 user.image = UIImage(data: userImage as Data)
             }
-            if let userThumbnail = userArray[0].thumbnail
+            if let userThumbnail = userObj.thumbnail
             {
                 user.thumbnail = UIImage(data: userThumbnail as Data)
             }
+            users.append(user)
         }
-        return user
+        return users
+    }
+    
+    
+    // MARK: USER SKILLS
+    func skillSave(skill: Skill, deleteSkill: Bool)
+    {
+        // Try to retrieve the User data from Core Data
+        var skillArray = [SkillCD]()
+        let moc = DataController().managedObjectContext
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        let skillFetch: NSFetchRequest<SkillCD> = SkillCD.fetchRequest()
+        // Create an empty Skill list in case the Core Data request fails
+        do
+        {
+            skillArray = try moc.fetch(skillFetch)
+        }
+        catch
+        {
+            fatalError("CD-SS - Failed to fetch Skill: \(error)")
+        }
+        // If the user needs to be deleted, just leave the array empty
+        if !deleteSkill
+        {
+            // Check whether the skill exists, otherwise add the skill
+            var skillExists = false
+            skillLoop: for (sIndex, skillCheck) in skillArray.enumerated()
+            {
+                if let checkSkillID = skillCheck.skillID
+                {
+                    if checkSkillID == skill.skillID
+                    {
+                        // The skill exists, so update the Core Data
+                        skillExists = true
+                        // Replace the Skill data to ensure that the latest data is used
+                        skillArray[sIndex].skillID = skill.skillID
+                        skillArray[sIndex].skill = skill.skill
+                        skillArray[sIndex].userID = skill.userID
+                        skillArray[sIndex].level = Int32(skill.level.rawValue)
+                        skillArray[sIndex].order = Int32(skill.order)
+                        
+                        break skillLoop
+                    }
+                }
+            }
+            // If the user does not exist, add a new entity
+            if !skillExists
+            {
+                print("CD-SS - NOT EXIST: \(skill.skillID)")
+                let newSkill = NSEntityDescription.insertNewObject(forEntityName: "SkillCD", into: moc) as! SkillCD
+                newSkill.setValue(skill.skillID, forKey: "skillID")
+                newSkill.setValue(skill.skill, forKey: "skill")
+                newSkill.setValue(skill.userID, forKey: "userID")
+                newSkill.setValue(skill.level.rawValue, forKey: "level")
+                newSkill.setValue(skill.order, forKey: "order")
+                
+                skillArray.append(newSkill)
+            }
+        }
+        // Save the Entity
+        do
+        {
+            try moc.save()
+        }
+        catch
+        {
+            fatalError("Failure to save context: \(error)")
+        }
+    }
+    
+    func skillRetrieveForUser(userID: String!) -> [Skill]
+    {
+        // Access Core Data
+        // Retrieve the Skill data for the passed user from Core Data
+        let moc = DataController().managedObjectContext
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        let skillFetch: NSFetchRequest<SkillCD> = SkillCD.fetchRequest()
+        
+        // Create an empty Skill list in case the Core Data request fails
+        var skillArray = [SkillCD]()
+        do
+        {
+            skillArray = try moc.fetch(skillFetch)
+        }
+        catch
+        {
+            fatalError("Failed to fetch CurrentUser: \(error)")
+        }
+        // Create a new Skill object
+        var skills = [Skill]()
+        for skillObj in skillArray
+        {
+            let skill = Skill()
+            skill.skillID = skillObj.skillID
+            skill.userID = skillObj.userID
+            skill.skill = skillObj.skill
+            skill.level = Constants().experience(Int(skillObj.level))
+            skill.order = Int(skillObj.order)
+            skills.append(skill)
+        }
+        return skills
     }
     
     
@@ -470,75 +571,6 @@ class CoreDataFunctions: AWSRequestDelegate
             fatalError("Failure to save context: \(error)")
         }
     }
-//    func mapSettingSave(mapSetting: MapSetting)
-//    {
-//        // Try to retrieve the Map Settings data from Core Data
-//        var mapSettingArray = [MapSetting]()
-//        let moc = DataController().managedObjectContext
-////        moc.mergePolicy = NSMergePolicy.overwrite
-//        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
-//        let mapSettingFetch: NSFetchRequest<MapSetting> = MapSetting.fetchRequest()
-//        // Create an empty Map Settings list in case the Core Data request fails
-//        do
-//        {
-//            mapSettingArray = try moc.fetch(mapSettingFetch)
-//        }
-//        catch
-//        {
-//            fatalError("Failed to fetch MapSetting: \(error)")
-//        }
-//        // If the return has no content, no Map Settings have been saved
-//        if mapSettingArray.count == 0
-//        {
-//            // Save the Map Setting data in Core Data
-//            let entity = NSEntityDescription.insertNewObject(forEntityName: "MapSetting", into: moc) as! MapSetting
-//            if let menuMapHydro = mapSetting.menuMapHydro
-//            {
-//                entity.setValue(menuMapHydro, forKey: "menuMapHydro")
-//            }
-//            if let menuMapSpot = mapSetting.menuMapSpot
-//            {
-//                entity.setValue(menuMapSpot, forKey: "menuMapSpot")
-//            }
-//            if let menuMapTraffic = mapSetting.menuMapTraffic
-//            {
-//                entity.setValue(menuMapTraffic, forKey: "menuMapTraffic")
-//            }
-//            if let menuMapTimeFilter = mapSetting.menuMapTimeFilter
-//            {
-//                entity.setValue(menuMapTimeFilter, forKey: "menuMapTimeFilter")
-//            }
-//        }
-//        else
-//        {
-//            // Replace the Map Setting data to ensure that the latest data is used
-//            if let menuMapHydro = mapSetting.menuMapHydro
-//            {
-//                mapSettingArray[0].menuMapHydro = menuMapHydro
-//            }
-//            if let menuMapSpot = mapSetting.menuMapSpot
-//            {
-//                mapSettingArray[0].menuMapSpot = menuMapSpot
-//            }
-//            if let menuMapTraffic = mapSetting.menuMapTraffic
-//            {
-//                mapSettingArray[0].menuMapTraffic = menuMapTraffic
-//            }
-//            if let menuMapTimeFilter = mapSetting.menuMapTimeFilter
-//            {
-//                mapSettingArray[0].menuMapTimeFilter = menuMapTimeFilter
-//            }
-//        }
-//        // Save the Entity
-//        do
-//        {
-//            try moc.save()
-//        }
-//        catch
-//        {
-//            fatalError("Failure to save context: \(error)")
-//        }
-//    }
     
     func mapSettingRetrieve() -> [MapSetting]
     {

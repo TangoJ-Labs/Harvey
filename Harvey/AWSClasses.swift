@@ -217,6 +217,91 @@ class AWSRequestObject
 }
 
 
+class AWSGetSettings : AWSRequestObject
+{
+    // Use this request function when a Blob is within range of the user's location and the extra Blob data is needed
+    override func makeRequest()
+    {
+        print("AC-GS: SENDING REQUEST")
+        
+        // Create a JSON object with the passed Blob ID and an indicator of whether or not the Blob data should be filtered (0 for no, 1 for yes)
+        var json = [String : Any]()
+        json["app_version"] = Constants.Settings.appVersion
+        
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-GetSettings", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("AC-GS: GET DATA ERROR: \(String(describing: err))")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+                    print("AC-GS RESPONSE:")
+                    print(response)
+                    
+                    // Convert the response to JSON with keys and AnyObject values
+                    if let responseJson = response as? [String: AnyObject]
+                    {
+                        if let settings = responseJson["settings"] as? [String: AnyObject]
+                        {
+                            print("AC-GS - SETTINGS: \(settings)")
+//                            // The skill list should be in the format "skill" : order (Int)
+//                            if let skillList = settings["skill_list"] as? [String: AnyObject]
+//                            {
+//                                var addSkillList = [Skill]()
+//                                for skill in skillList
+//                                {
+//                                    let addSkill = Skill(skill: skill.key, userID: Constants.Data.currentUser.userID)
+//                                    if let skillOrder = skill.value as? Int
+//                                    {
+//                                        addSkill.order = skillOrder
+//                                    }
+//                                    addSkillList.append(addSkill)
+//                                }
+//                                Constants.Data.skills = addSkillList
+//                            }
+//                            // The repair list should be in the format "repair type" : order (Int)
+//                            if let repairList = settings["repair_list"] as? [String: AnyObject]
+//                            {
+//                                var addRepairList = [Repair]()
+//                                for repair in repairList
+//                                {
+//                                    let addRepair = Repair(repair: repair.key, userID: Constants.Data.currentUser.userID)
+//                                    if let repairOrder = repair.value as? Int
+//                                    {
+//                                        addRepair.order = repairOrder
+//                                    }
+//                                    addRepairList.append(addRepair)
+//                                }
+//                                Constants.Data.repairs = addRepairList
+//                            }
+                            
+                            // Notify the parent view that the AWS call completed successfully
+                            if let parentVC = self.awsRequestDelegate
+                            {
+                                print("AC-GS - CALLED PARENT")
+                                parentVC.processAwsReturn(self, success: true)
+                            }
+                        }
+                    }
+                }
+        })
+    }
+}
+
+
 /**
  Properties:
  - secondaryAwsRequestObject- An optional property that allows the original request to be carried by the login request, when the login request is fired by the prepRequest class due to no user being logged in.  This property should not be used for AWSLoginUser calls based directly on user interaction
@@ -342,6 +427,13 @@ class AWSLoginUser: AWSRequestObject, RequestDelegate
                                             {
                                                 self.newUser = true
                                             }
+                                        }
+                                        
+                                        // SETTINGS MUST BE SENT HERE TOO - IF NOT LOGGED IN WHEN APP STARTS, APP DELEGATE WILL NOT CALL SETTINGS
+                                        // Save the passed settings
+                                        if let settings = responseJson["settings"] as? [String: AnyObject]
+                                        {
+                                            print("AC-LU - SETTINGS: \(settings)")
                                         }
                                         
                                         // If the secondary request object is not nil, process the carried (second) request; no need to
@@ -2070,6 +2162,209 @@ class AWSGetRandomID : AWSRequestObject
                         {
                             parentVC.processAwsReturn(self, success: true)
                         }
+                    }
+                }
+        })
+    }
+}
+
+
+class AWSGetSkills : AWSRequestObject
+{
+    var userID: String!
+    
+    required init(userID: String!)
+    {
+        self.userID = userID
+    }
+    
+    // Use this request function to recall the user's data for skills, tools, and house volunteer / assistance
+    override func makeRequest()
+    {
+        print("AC-GSK: SENDING REQUEST")
+        // Create a JSON object with the passed Blob ID and an indicator of whether or not the Blob data should be filtered (0 for no, 1 for yes)
+        var json = [String : Any]()
+        json["app_version"] = Constants.Settings.appVersion
+        json["user_id"] = userID
+        
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-GetSkills", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("AC-GSK: GET DATA ERROR: \(String(describing: err))")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+//                    print("AC-GSK RESPONSE:")
+//                    print(response)
+                    
+                    // Convert the response from JSON to dict with keys and AnyObject values
+                    if let responseJson = response as? [String: AnyObject]
+                    {
+                        if let settings = responseJson["skills"] as? [String: AnyObject]
+                        {
+                            // Unwrap the general list of skills that should exist - use these to set default values since the user
+                            // might not have a saved history of all of these skills - default to 'no experience' (0)
+                            if let skillSettings = settings["skill_settings"] as? [String: AnyObject]
+                            {
+                                // Unwrap the settings' sibling json block - this will hold the user's saved skill settings
+                                if let skillLevels = settings["skill_levels"] as? [AnyObject]
+                                {
+                                    // FIRST, loop through all saved skill settings and add the user's saved skill
+                                    // This skill list only includes the skill type and this user's level - the settings list will have the 'order' property
+                                    var skillObjects = [Skill]()
+                                    for skillJson in skillLevels
+                                    {
+                                        // Each skill object is in json format
+                                        if let skill = skillJson as? [String: AnyObject]
+                                        {
+                                            let skillID = skill["skill_id"] as! String
+                                            let skillType = skill["skill"] as! String
+                                            let skillLevel = skill["level"] as! Int
+                                            
+                                            // Default the order to 0 if it does not exist in the settings list
+                                            var order: Int = 0
+                                            orderLoop: for orderEnt in skillSettings
+                                            {
+                                                // Once the skill type setting is found, convert the value to Int (the order value)
+                                                if orderEnt.key == skillType
+                                                {
+                                                    if let orderValue = orderEnt.value as? Int
+                                                    {
+                                                        order = orderValue
+                                                        break orderLoop
+                                                    }
+                                                }
+                                            }
+                                            
+                                            // Create the Skill object
+                                            let addSkill = Skill(skillID: skillID, skill: skillType, userID: Constants.Data.currentUser.userID)
+                                            addSkill.order = order
+                                            addSkill.level = Constants().experience(skillLevel)
+                                            skillObjects.append(addSkill)
+                                            
+                                            // Save the updated / new skill to Core Data
+                                            CoreDataFunctions().skillSave(skill: addSkill, deleteSkill: false)
+                                        }
+                                    }
+                                    
+                                    // Now check the reverse - loop through the settings and ensure that all passed settings are saved
+                                    // If not, save the missing setting with the default setting of 'no experience' (0)
+                                    for skillSetting in skillSettings
+                                    {
+                                        var skillExists = false
+                                        userSkillLoop: for userSkill in skillObjects
+                                        {
+                                            if userSkill.skill == skillSetting.key
+                                            {
+                                                skillExists = true
+                                                break userSkillLoop
+                                            }
+                                        }
+                                        if !skillExists
+                                        {
+                                            // Cast the skill Setting value to Int - this is the skill order value
+                                            // Then create a skill Object using the default level value (0)
+                                            // The skillID is created using the userID and the skill type concatenated with a "-"
+                                            let skillType = skillSetting.key
+                                            let skillID = Constants.Data.currentUser.userID + "-" + skillType
+                                            let addSkill = Skill(skillID: skillID, skill: skillType, userID: Constants.Data.currentUser.userID)
+                                            addSkill.level = Constants().experience(0)
+                                            if let skillOrder = skillSetting.value as? Int
+                                            {
+                                                addSkill.order = skillOrder
+                                            }
+                                            skillObjects.append(addSkill)
+                                            
+                                            // Save the updated / new skill to Core Data
+                                            CoreDataFunctions().skillSave(skill: addSkill, deleteSkill: false)
+                                        }
+                                    }
+                                    // Now replace the global skill list with the updated version
+                                    Constants.Data.skills = skillObjects
+                                }
+                            }
+                            
+                            // Notify the parent view that the AWS call completed successfully
+                            if let parentVC = self.awsRequestDelegate
+                            {
+                                print("AC-GSK - CALLED PARENT")
+                                parentVC.processAwsReturn(self, success: true)
+                            }
+                        }
+                    }
+                }
+        })
+    }
+}
+
+class AWSPutSkills : AWSRequestObject
+{
+    var skills: [Skill]!
+    
+    required init(skills: [Skill]!)
+    {
+        self.skills = skills
+    }
+    
+    // Upload data to Lambda for transfer to DynamoDB
+    override func makeRequest()
+    {
+        print("AC-PSK - SENDING DATA TO LAMBDA")
+        // Create some JSON to send the Skill data
+        // This method is only used to send the current user's skills to the db
+        var skillDict = [Any]()
+        for skill in skills
+        {
+            var skillObj = [String: Any]()
+            skillObj["skill"] = skill.skill
+            skillObj["user_id"] = skill.userID
+            skillObj["level"] = String(describing: skill.level.rawValue)
+            skillDict.append(skillObj)
+        }
+        
+        var json = [String: Any]()
+        json["app_version"] = Constants.Settings.appVersion
+        json["user_id"] = Constants.Data.currentUser.userID
+        json["skills"] = skillDict
+        
+        let lambdaInvoker = AWSLambdaInvoker.default()
+        lambdaInvoker.invokeFunction("Harvey-PutSkills", jsonObject: json, completionHandler:
+            { (response, err) -> Void in
+                
+                if (err != nil)
+                {
+                    print("AC-PSK - SENDING DATA TO LAMBDA ERROR: \(String(describing: err))")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if (response != nil)
+                {
+                    print("AC-PSK - UPLOAD SUCCESS")
+                    // Notify the parent view that the AWS call completed successfully
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: true)
                     }
                 }
         })

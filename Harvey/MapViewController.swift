@@ -1101,9 +1101,11 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     func addHazardButtonTap(_ gesture: UITapGestureRecognizer)
     {
         print("MVC - addHazardButtonTap: \(newHazardPrepInProgress)")
+        // Ensure that a Hazard report is not already in the process of submission
         if !newHazardPrepInProgress
         {
-            if addHazardActive
+            // Ensure that the Hazard report option has been selected and that the Hazard Object is not nil (that the map has been tapped)
+            if addHazardActive && newHazard != nil
             {
                 print("MVC - addHazardButtonTap 2")
                 // The addHazard process is already active, so a second tap means the user clicked the check mark
@@ -1128,9 +1130,11 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     func addSpotRequestButtonTap(_ gesture: UITapGestureRecognizer)
     {
         print("MVC - addHazardButtonTap: \(newSpotRequestPrepInProgress)")
+        // Ensure that a Spot Request is not already in the process of submission
         if !newSpotRequestPrepInProgress
         {
-            if addSpotRequestActive
+            // Ensure that the Spot Request option has been selected and that the Spot Request Object is not nil (that the map has been tapped)
+            if addSpotRequestActive && newSpotRequest != nil
             {
                 print("MVC - addSpotRequestButtonTap 2")
                 // The addSpotRequest process is already active, so a second tap means the user clicked the check mark
@@ -1172,7 +1176,9 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         if self.newHazardMarker != nil
         {
             self.newHazardMarker!.map = nil
+            self.newHazardMarker = nil
         }
+        self.newHazard = nil
         
         // Show the icon and hide the spinner
         addHazardButtonImage.image = UIImage(named: Constants.Strings.iconHazard)
@@ -1199,7 +1205,9 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         if self.newSpotRequestMarker != nil
         {
             self.newSpotRequestMarker!.map = nil
+            self.newSpotRequestMarker = nil
         }
+        self.newSpotRequest = nil
         
         // Show the icon and hide the spinner
         addSpotRequestButtonImage.image = UIImage(named: Constants.Strings.markerIconCamera)
@@ -1482,16 +1490,16 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         // if low enough, remove the markers (or don't add them)
         
         // Ensure that the zoom is low enough (far enough away), and add the markers (if not already visible)
-//        print("MVC - TSM - MAP ZOOM: \(mapView.camera.zoom)")
-//        print("MVC - TSM - spotMarkersVisible: \(spotMarkersVisible)")
         if mapView.camera.zoom < Constants.Settings.mapViewAngledZoom && !spotMarkersVisible
         {
-//            print("MVC - ALL SPOT COUNT: \(Constants.Data.allSpot.count)")
             for spot in Constants.Data.allSpot
             {
-                addSpotMarker(spot)
+                // Ensure the spot datetime falls within the filter setting
+                if spot.datetime.timeIntervalSince1970 >= Date().timeIntervalSince1970 - Constants().menuMapTimeFilterSeconds(Constants.Settings.menuMapTimeFilter)
+                {
+                    addSpotMarker(spot)
+                }
             }
-//            print("MVC - TOGGLING spotMarkersVisible TRUE")
             // Toggle the indicator
             spotMarkersVisible = true
         }
@@ -1504,7 +1512,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             }
             Constants.Data.spotMarkers = [GMSMarker]()
             
-//            print("MVC - TOGGLING spotMarkersVisible FALSE")
             // Toggle the indicator
             spotMarkersVisible = false
         }
@@ -1523,7 +1530,11 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
 //            print("MVC - ALL SPOT COUNT: \(Constants.Data.allSpot.count)")
             for spot in Constants.Data.allSpot
             {
-                addSpotMarker(spot)
+                // Ensure the spot datetime falls within the filter setting
+                if spot.datetime.timeIntervalSince1970 >= Date().timeIntervalSince1970 - Constants().menuMapTimeFilterSeconds(Constants.Settings.menuMapTimeFilter)
+                {
+                    addSpotMarker(spot)
+                }
             }
         }
         else if mapView.camera.zoom >= Constants.Settings.mapViewAngledZoom
@@ -1585,9 +1596,9 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     }
     func loadProfileVC()
     {
-        // Load the LoginVC
-        let loginVC = LoginViewController()
-        self.navigationController!.pushViewController(loginVC, animated: true)
+        // Load the ProfileVC
+        let profileVC = ProfileViewController()
+        self.navigationController!.pushViewController(profileVC, animated: true)
     }
     
     func toggleMenu(_ sender: UIBarButtonItem)
@@ -1830,7 +1841,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     func showLoginScreen()
     {
 //        print("MVC - SHOW LOGIN SCREEN")
-        loadProfileVC()
         
         // Load the LoginVC
         let loginVC = LoginViewController()

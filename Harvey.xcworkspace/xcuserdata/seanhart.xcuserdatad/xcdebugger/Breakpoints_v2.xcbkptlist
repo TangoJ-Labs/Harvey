@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Harvey/MapViewController.swift"
-            timestampString = "527189655.684139"
+            timestampString = "527253061.217114"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1707"
-            endingLineNumber = "1707"
+            startingLineNumber = "1718"
+            endingLineNumber = "1718"
             landmarkName = "addSpotMapFeatures()"
             landmarkType = "7">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Harvey/MapViewController.swift"
-            timestampString = "527188923.376116"
+            timestampString = "527253061.217114"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1296"
-            endingLineNumber = "1296"
+            startingLineNumber = "1304"
+            endingLineNumber = "1304"
             landmarkName = "requestMapData(userLocation:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Harvey/AWSClasses.swift"
-            timestampString = "527171056.702203"
+            timestampString = "527382791.026403"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1401"
-            endingLineNumber = "1401"
+            startingLineNumber = "1493"
+            endingLineNumber = "1493"
             landmarkName = "makeRequest()"
             landmarkType = "7">
          </BreakpointContent>
