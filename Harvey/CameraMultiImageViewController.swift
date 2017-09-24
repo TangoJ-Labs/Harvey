@@ -1,9 +1,9 @@
 //
-//  CameraViewController.swift
+//  CameraMultiImageViewController.swift
 //  Harvey
 //
 //  Created by Sean Hart on 8/29/17.
-//  Copyright © 2017 tangojlabs. All rights reserved.
+//  Copyright © 2017 TangoJ Labs, LLC. All rights reserved.
 //
 
 import AVFoundation
@@ -18,7 +18,7 @@ protocol CameraViewControllerDelegate
     func reloadData()
 }
 
-class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, MKMapViewDelegate, AWSRequestDelegate
+class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, MKMapViewDelegate, AWSRequestDelegate
 {
     var cameraDelegate: CameraViewControllerDelegate?
     
@@ -490,7 +490,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         {
             for controller in viewControllers
             {
-                if controller is CameraViewController
+                if controller is CameraMultiImageViewController
                 {
                     self.navigationController!.popViewController(animated: true)
                     
@@ -575,7 +575,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
 //        let backButtonItem = UIBarButtonItem(title: "\u{2190}",
 //                                             style: UIBarButtonItemStyle.plain,
 //                                             target: self,
-//                                             action: #selector(CameraViewController.popViewController(_:)))
+//                                             action: #selector(CameraMultiImageViewController.popViewController(_:)))
 //        backButtonItem.tintColor = Constants.Colors.colorTextNavBar
         
 //        let ncTitle = UIView(frame: CGRect(x: screenSize.width / 2 - 50, y: 10, width: 100, height: 40))
@@ -711,7 +711,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             }
             catch _
             {
-                print("error: \(String(describing: err?.localizedDescription))")
+                print("CMIVC - error: \(String(describing: err?.localizedDescription))")
             }
             
             previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
@@ -738,12 +738,12 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     
     func capture(_ captureOutput: AVCaptureFileOutput!, didStartRecordingToOutputFileAt fileURL: URL!, fromConnections connections: [Any]!)
     {
-        print("Capture Delegate: Did START Recording to Output File")
+        print("CMIVC - Capture Delegate: Did START Recording to Output File")
     }
     
     func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!, error: Error!)
     {
-        print("Capture Delegate: Did FINISH Recording to Output File")
+        print("CMIVC - Capture Delegate: Did FINISH Recording to Output File")
     }
     
     func switchCamera()

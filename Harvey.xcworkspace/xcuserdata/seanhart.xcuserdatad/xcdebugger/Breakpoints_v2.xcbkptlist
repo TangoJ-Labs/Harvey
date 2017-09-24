@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Harvey/AWSClasses.swift"
-            timestampString = "527382791.026403"
+            timestampString = "527909436.821657"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1493"
-            endingLineNumber = "1493"
+            startingLineNumber = "1648"
+            endingLineNumber = "1648"
             landmarkName = "makeRequest()"
             landmarkType = "7">
          </BreakpointContent>

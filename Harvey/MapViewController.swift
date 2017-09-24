@@ -3,7 +3,7 @@
 //  Harvey
 //
 //  Created by Sean Hart on 8/28/17.
-//  Copyright © 2017 tangojlabs. All rights reserved.
+//  Copyright © 2017 TangoJ Labs, LLC. All rights reserved.
 //
 
 import CoreData
@@ -1035,7 +1035,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     func addImageButtonTap(_ gesture: UITapGestureRecognizer)
     {
         // Load the CameraVC
-        let cameraVC = CameraViewController()
+        let cameraVC = CameraMultiImageViewController()
         cameraVC.cameraDelegate = self
         self.navigationController!.pushViewController(cameraVC, animated: true)
 //        self.present(cameraVC, animated: true, completion: nil)

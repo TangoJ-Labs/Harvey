@@ -3,7 +3,7 @@
 //  Harvey
 //
 //  Created by Sean Hart on 9/8/17.
-//  Copyright © 2017 tangojlabs. All rights reserved.
+//  Copyright © 2017 TangoJ Labs, LLC. All rights reserved.
 //
 
 import FBSDKLoginKit
@@ -336,6 +336,69 @@ class FBDownloadUserImage: RequestObject
                 }
             }
             getFbImage.resume()
+        }
+    }
+}
+
+class APITest: RequestObject
+{
+    let url = URL(string: "http://192.168.1.5:5000/api/app/test")
+    
+    override func makeRequest()
+    {
+        if let facebookToken = FBSDKAccessToken.current()
+        {
+            var json = [String: Any]()
+            json["app_version"] = Constants.Settings.appVersion
+            json["identity_id"] = Constants.credentialsProvider.identityId
+            json["login_provider"] = "graph.facebook.com"
+            json["login_token"] = facebookToken.tokenString
+            let jsonData = try? JSONSerialization.data(withJSONObject: json)
+            
+            print("RC-API TEST")
+            var request = URLRequest(url: url!)
+            request.httpMethod = "POST"
+            request.httpBody = jsonData
+            request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+            let session = URLSession(configuration: .default)
+            let apiTest = session.dataTask(with: request)
+            { (data, response, error) in
+                if let res = response as? HTTPURLResponse
+                {
+                    print("RC-API TEST - RESPONSE CODE: \(res.statusCode)")
+                }
+                if let e = error
+                {
+                    print("RC-API TEST: \(e)")
+                    
+                    // Notify the parent view that the request completed with an error
+                    if let parentVC = self.requestDelegate
+                    {
+                        parentVC.processRequestReturn(self, success: false)
+                    }
+                }
+                else
+                {
+                    if let returnData = String(data: data as! Data, encoding: .utf8)
+                    {
+                        print("RC-API TEST - RETURN DATA: \(returnData)")
+                    }
+                    else
+                    {
+                        print("RC-API TEST - RETURN DATA ERROR")
+                        // Notify the parent view that the request completed with an error
+                        if let parentVC = self.requestDelegate
+                        {
+                            parentVC.processRequestReturn(self, success: false)
+                        }
+                    }
+                }
+            }
+            apiTest.resume()
+        }
+        else
+        {
+            
         }
     }
 }

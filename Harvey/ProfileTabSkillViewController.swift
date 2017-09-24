@@ -1,15 +1,15 @@
 //
-//  ProfileTabVolunteerViewController.swift
+//  ProfileTabSkillViewController.swift
 //  Harvey
 //
 //  Created by Sean Hart on 9/15/17.
-//  Copyright © 2017 tangojlabs. All rights reserved.
+//  Copyright © 2017 TangoJ Labs, LLC. All rights reserved.
 //
 
 import UIKit
 
 
-class ProfileTabVolunteerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, AWSRequestDelegate
+class ProfileTabSkillViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, AWSRequestDelegate
 {
     // Save device settings to adjust view if needed
     var screenSize: CGRect!
@@ -164,16 +164,16 @@ class ProfileTabVolunteerViewController: UIViewController, UITableViewDataSource
         if let tabCon = self.tabBarController
         {
             tabBarHeight = tabCon.tabBar.frame.height
-            print("PTVVC - STATUS BAR HEIGHT: \(statusBarHeight)")
-            print("PTVVC - TAB BAR HEIGHT: \(tabBarHeight)")
+            print("PTSKVC - STATUS BAR HEIGHT: \(statusBarHeight)")
+            print("PTSKVC - TAB BAR HEIGHT: \(tabBarHeight)")
             tabCon.navigationItem.titleView = ncTitle
             tabCon.navigationItem.hidesBackButton = true
             tabCon.navigationItem.setLeftBarButton(leftButtonItem, animated: false)
             
-            print("PTVVC - TAB CON: \(tabCon)")
+            print("PTSKVC - TAB CON: \(tabCon)")
             if let navCon = tabCon.navigationController
             {
-                print("PTVVC - NAV CON: \(navCon)")
+                print("PTSKVC - NAV CON: \(navCon)")
                 navBarHeight = navCon.navigationBar.frame.height
                 navCon.isNavigationBarHidden = false
                 navCon.navigationBar.barTintColor = Constants.Colors.colorOrangeOpaque
@@ -188,7 +188,7 @@ class ProfileTabVolunteerViewController: UIViewController, UITableViewDataSource
         {
             vcOffsetY = navBarHeight + 20
         }
-        print("PTVVC - CHECK DIMS: \(screenSize), \(vcHeight), \(statusBarHeight), \(navBarHeight), \(tabBarHeight)")
+        print("PTSKVC - CHECK DIMS: \(screenSize), \(vcHeight), \(statusBarHeight), \(navBarHeight), \(tabBarHeight)")
     }
     
     
@@ -236,7 +236,7 @@ class ProfileTabVolunteerViewController: UIViewController, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
-        print("PTVVC - CREATING CELL: \(indexPath.row)")
+        print("PTSKVC - CREATING CELL: \(indexPath.row)")
         let cell = tableView.dequeueReusableCell(withIdentifier: Constants.Strings.profileSkillTableViewCellReuseIdentifier, for: indexPath) as! ProfileSkillTableViewCell
         cell.selectionStyle = .none
         
@@ -269,12 +269,12 @@ class ProfileTabVolunteerViewController: UIViewController, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
     {
-        print("PTVVC - WILL DISPLAY CELL: \(indexPath.row)")
+        print("PTSKVC - WILL DISPLAY CELL: \(indexPath.row)")
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
-        print("PTVVC - SELECTED CELL: \(indexPath.row)")
+        print("PTSKVC - SELECTED CELL: \(indexPath.row)")
         
 //        // Unhighlight the cell
 //        tableView.deselectRow(at: indexPath, animated: false)
@@ -342,7 +342,7 @@ class ProfileTabVolunteerViewController: UIViewController, UITableViewDataSource
             {
                 if self.skillTableView != nil
                 {
-                    print("PTVVC - REFRESH SKILL TABLE")
+                    print("PTSKVC - REFRESH SKILL TABLE")
                     
                     // Reload the TableView
                     self.skillTableView.reloadData()
@@ -373,7 +373,7 @@ class ProfileTabVolunteerViewController: UIViewController, UITableViewDataSource
     
     func showLoginScreen()
     {
-        print("PTVVC - SHOW LOGIN SCREEN")
+        print("PTSKVC - SHOW LOGIN SCREEN")
         
         // Load the LoginVC
         let loginVC = LoginViewController()
@@ -390,14 +390,14 @@ class ProfileTabVolunteerViewController: UIViewController, UITableViewDataSource
                 case _ as AWSGetSkills:
                     if success
                     {
-                        print("PTVVC - AWS GET SKILLS - SUCCESS")
+                        print("PTSKVC - AWS GET SKILLS - SUCCESS")
                         self.reloadSkillTable()
                         self.titleSpinner.stopAnimating()
                         self.titleContainer.addSubview(self.titleText)
                     }
                     else
                     {
-                        print("PTVVC - AWS GET SKILLS - FAILURE")
+                        print("PTSKVC - AWS GET SKILLS - FAILURE")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
@@ -405,17 +405,17 @@ class ProfileTabVolunteerViewController: UIViewController, UITableViewDataSource
                 case _ as AWSPutSkills:
                     if success
                     {
-                        print("PTVVC - AWS PUT SKILLS - SUCCESS")
+                        print("PTSKVC - AWS PUT SKILLS - SUCCESS")
                     }
                     else
                     {
-                        print("PTVVC - AWS PUT SKILLS - FAILURE")
+                        print("PTSKVC - AWS PUT SKILLS - FAILURE")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
                     }
                 default:
-                    print("PTVVC-DEFAULT: THERE WAS AN ISSUE WITH THE DATA RETURNED FROM AWS")
+                    print("PTSKVC-DEFAULT: THERE WAS AN ISSUE WITH THE DATA RETURNED FROM AWS")
                     
                     // Show the error message
                     let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")

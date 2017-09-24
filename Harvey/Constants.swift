@@ -3,7 +3,7 @@
 //  Harvey
 //
 //  Created by Sean Hart on 8/28/17.
-//  Copyright © 2017 tangojlabs. All rights reserved.
+//  Copyright © 2017 TangoJ Labs, LLC. All rights reserved.
 //
 
 import AWSCore
@@ -26,6 +26,7 @@ struct Constants
         case random_sos_id = "random_sos_id"
         case random_spot_id = "random_spot_id"
         case random_media_id = "random_media_id"
+        case random_structure_id = "random_structure_id"
     }
     
     enum ContentType: Int
@@ -239,6 +240,81 @@ struct Constants
         }
     }
     
+    enum Structure: Int
+    {
+        case residence = 0
+        case retail = 1
+        case office = 2
+        case other = 3
+    }
+    func structure(_ structureInt: Int) -> Constants.Structure
+    {
+        // Evaluate the structureInt Integer received and convert it to the appropriate Structure
+        switch structureInt
+        {
+        case 0:
+            return Constants.Structure.residence
+        case 1:
+            return Constants.Structure.retail
+        case 2:
+            return Constants.Structure.office
+        case 3:
+            return Constants.Structure.other
+        default:
+            return Constants.Structure.other
+        }
+    }
+    
+    enum StructureStage: Int
+    {
+        case waiting = 0
+        case repairing = 1
+        case complete = 2
+        case other = 3
+    }
+    func structureStage(_ structureStageInt: Int) -> Constants.StructureStage
+    {
+        // Evaluate the structureStageInt Integer received and convert it to the appropriate StructureStage
+        switch structureStageInt
+        {
+        case 0:
+            return Constants.StructureStage.waiting
+        case 1:
+            return Constants.StructureStage.repairing
+        case 2:
+            return Constants.StructureStage.complete
+        case 3:
+            return Constants.StructureStage.other
+        default:
+            return Constants.StructureStage.waiting
+        }
+    }
+    
+    enum RepairStage: Int
+    {
+        case waiting = 0
+        case repairing = 1
+        case complete = 2
+        case other = 3
+    }
+    func repairStage(_ repairStageInt: Int) -> Constants.RepairStage
+    {
+        // Evaluate the repairStageInt Integer received and convert it to the appropriate RepairStage
+        switch repairStageInt
+        {
+        case 0:
+            return Constants.RepairStage.waiting
+        case 1:
+            return Constants.RepairStage.repairing
+        case 2:
+            return Constants.RepairStage.complete
+        case 3:
+            return Constants.RepairStage.other
+        default:
+            return Constants.RepairStage.waiting
+        }
+    }
+    
     struct Colors
     {
         static let standardBackground = UIColor.white
@@ -318,6 +394,7 @@ struct Constants
         static var allUserBlockList = [String]()
         
         static var skills = [Skill]()
+        static var structures = [Structure]()
         static var repairs = [Repair]()
     }
     
@@ -327,7 +404,7 @@ struct Constants
         static let cameraViewImageCellSize: CGFloat = 60
         
         static let userTableCellHeight: CGFloat = 50
-        static let damageCellHeight: CGFloat = 100
+        static let structureCellHeight: CGFloat = 100
         static let skillCellHeight: CGFloat = 100
         
         static let spotRadius: Double = 50 // in meters - see radius in Spot
@@ -384,7 +461,7 @@ struct Constants
         
         static let spotTableViewCellReuseIdentifier = "spotTableViewCell"
         static let userTableViewCellReuseIdentifier = "userTableViewCell"
-        static let profileDamageTableViewCellReuseIdentifier = "profileDamageTableViewCell"
+        static let profileStructureTableViewCellReuseIdentifier = "profileStructureTableViewCell"
         static let profileSkillTableViewCellReuseIdentifier = "profileSkillTableViewCell"
         
         static let imageHarvey = "Harvey.png"

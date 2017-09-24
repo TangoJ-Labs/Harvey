@@ -3,7 +3,7 @@
 //  Harvey
 //
 //  Created by Sean Hart on 9/12/17.
-//  Copyright © 2017 tangojlabs. All rights reserved.
+//  Copyright © 2017 TangoJ Labs, LLC. All rights reserved.
 //
 
 import FBSDKLoginKit
@@ -102,6 +102,8 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         refreshUserFeatures()
         
         NotificationCenter.default.addObserver(self, selector: #selector(ProfileViewController.statusBarHeightChange(_:)), name: Notification.Name("UIApplicationWillChangeStatusBarFrameNotification"), object: nil)
+        
+        RequestPrep(requestToCall: APITest(), delegate: self as RequestDelegate).prepRequest()
     }
     
     override func viewWillAppear(_ animated: Bool)
@@ -300,7 +302,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         {
             print("PVC - LAUNCH PROFILE SETTINGS VC")
             
-            let tab1VC = ProfileTabVolunteerViewController()
+            let tab1VC = ProfileTabSkillViewController()
             tab1VC.tabBarItem = UITabBarItem(title: "Volunteer", image: nil, selectedImage: nil)
             
             
@@ -336,7 +338,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             
             
             
-            let tab2VC = ProfileTabHouseViewController()
+            let tab2VC = ProfileTabStructureViewController()
             tab2VC.tabBarItem = UITabBarItem(title: "My House", image: nil, selectedImage: nil)
             
             

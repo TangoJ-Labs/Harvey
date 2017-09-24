@@ -3,7 +3,7 @@
 //  Harvey
 //
 //  Created by Sean Hart on 9/2/17.
-//  Copyright © 2017 tangojlabs. All rights reserved.
+//  Copyright © 2017 TangoJ Labs, LLC. All rights reserved.
 //
 
 import CoreData
@@ -422,7 +422,7 @@ class CoreDataFunctions: AWSRequestDelegate
     // MARK: USER SKILLS
     func skillSave(skill: Skill, deleteSkill: Bool)
     {
-        // Try to retrieve the User data from Core Data
+        // Try to retrieve the Skill data from Core Data
         var skillArray = [SkillCD]()
         let moc = DataController().managedObjectContext
         moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
@@ -434,9 +434,9 @@ class CoreDataFunctions: AWSRequestDelegate
         }
         catch
         {
-            fatalError("CD-SS - Failed to fetch Skill: \(error)")
+            fatalError("CD-SSK - Failed to fetch entity: \(error)")
         }
-        // If the user needs to be deleted, just leave the array empty
+        // If the skill needs to be deleted, just leave the array empty
         if !deleteSkill
         {
             // Check whether the skill exists, otherwise add the skill
@@ -460,10 +460,10 @@ class CoreDataFunctions: AWSRequestDelegate
                     }
                 }
             }
-            // If the user does not exist, add a new entity
+            // If the skill does not exist, add a new entity
             if !skillExists
             {
-                print("CD-SS - NOT EXIST: \(skill.skillID)")
+                print("CD-SSK - NOT EXIST: \(skill.skillID)")
                 let newSkill = NSEntityDescription.insertNewObject(forEntityName: "SkillCD", into: moc) as! SkillCD
                 newSkill.setValue(skill.skillID, forKey: "skillID")
                 newSkill.setValue(skill.skill, forKey: "skill")
@@ -481,7 +481,7 @@ class CoreDataFunctions: AWSRequestDelegate
         }
         catch
         {
-            fatalError("Failure to save context: \(error)")
+            fatalError("CD-SSK - Failure to save context: \(error)")
         }
     }
     
@@ -501,7 +501,7 @@ class CoreDataFunctions: AWSRequestDelegate
         }
         catch
         {
-            fatalError("Failed to fetch CurrentUser: \(error)")
+            fatalError("CD-SKR - Failed to fetch entity: \(error)")
         }
         // Create a new Skill object
         var skills = [Skill]()
@@ -516,6 +516,227 @@ class CoreDataFunctions: AWSRequestDelegate
             skills.append(skill)
         }
         return skills
+    }
+    
+    // MARK: STRUCTURE REPAIRS
+    func repairSave(repair: Repair, deleteRepair: Bool)
+    {
+        // Try to retrieve the Repair data from Core Data
+        var repairArray = [RepairCD]()
+        let moc = DataController().managedObjectContext
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        let repairFetch: NSFetchRequest<RepairCD> = RepairCD.fetchRequest()
+        // Create an empty Repair list in case the Core Data request fails
+        do
+        {
+            repairArray = try moc.fetch(repairFetch)
+        }
+        catch
+        {
+            fatalError("CD-RS - Failed to fetch entity: \(error)")
+        }
+        // If the repair needs to be deleted, just leave the array empty
+        if !deleteRepair
+        {
+            // Check whether the repair exists, otherwise add the repair
+            var repairExists = false
+            repairLoop: for (rIndex, repairCheck) in repairArray.enumerated()
+            {
+                if let checkRepairID = repairCheck.repairID
+                {
+                    if checkRepairID == repair.repairID
+                    {
+                        // The repair exists, so update the Core Data
+                        repairExists = true
+                        // Replace the Repair data to ensure that the latest data is used
+                        repairArray[rIndex].repairID = repair.repairID
+                        repairArray[rIndex].structureID = repair.structureID
+                        repairArray[rIndex].repair = repair.repair
+                        repairArray[rIndex].datetime = repair.datetime as! NSDate
+                        repairArray[rIndex].stage = Int32(repair.stage.rawValue)
+                        repairArray[rIndex].order = Int32(repair.order)
+                        
+                        break repairLoop
+                    }
+                }
+            }
+            // If the repair does not exist, add a new entity
+            if !repairExists
+            {
+                print("CD-RS - NOT EXIST: \(repair.repairID)")
+                let newRepair = NSEntityDescription.insertNewObject(forEntityName: "RepairCD", into: moc) as! RepairCD
+                newRepair.setValue(repair.repairID, forKey: "repairID")
+                newRepair.setValue(repair.structureID, forKey: "structureID")
+                newRepair.setValue(repair.repair, forKey: "repair")
+                newRepair.setValue(repair.datetime, forKey: "datetime")
+                newRepair.setValue(repair.stage.rawValue, forKey: "stage")
+                newRepair.setValue(repair.order, forKey: "order")
+                
+                repairArray.append(newRepair)
+            }
+        }
+        // Save the Entity
+        do
+        {
+            try moc.save()
+        }
+        catch
+        {
+            fatalError("CD-RS - Failure to save context: \(error)")
+        }
+    }
+    
+    func repairRetrieveForStructure(structureID: String!) -> [Repair]
+    {
+        // Access Core Data
+        // Retrieve the Repair data for the passed structure from Core Data
+        let moc = DataController().managedObjectContext
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        let repairFetch: NSFetchRequest<RepairCD> = RepairCD.fetchRequest()
+        
+        // Create an empty Repair list in case the Core Data request fails
+        var repairArray = [RepairCD]()
+        do
+        {
+            repairArray = try moc.fetch(repairFetch)
+        }
+        catch
+        {
+            fatalError("CD-RR - Failed to fetch entity: \(error)")
+        }
+        // Create a new Repair object
+        var repairs = [Repair]()
+        for repairObj in repairArray
+        {
+            let repair = Repair()
+            repair.repairID = repairObj.repairID
+            repair.structureID = repairObj.structureID
+            repair.repair = repairObj.repair
+            repair.datetime = repairObj.datetime as! Date
+            repair.stage = Constants().repairStage(Int(repairObj.stage))
+            repair.order = Int(repairObj.order)
+            repairs.append(repair)
+        }
+        return repairs
+    }
+    
+    // MARK: STRUCTURE
+    func structureSave(structure: Structure, deleteStructure: Bool)
+    {
+        // Try to retrieve the Structure data from Core Data
+        var structureArray = [StructureCD]()
+        let moc = DataController().managedObjectContext
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        let structureFetch: NSFetchRequest<StructureCD> = StructureCD.fetchRequest()
+        // Create an empty Structure list in case the Core Data request fails
+        do
+        {
+            structureArray = try moc.fetch(structureFetch)
+        }
+        catch
+        {
+            fatalError("CD-STS - Failed to fetch entity: \(error)")
+        }
+        // If the structure needs to be deleted, just leave the array empty
+        if !deleteStructure
+        {
+            // Check whether the structure exists, otherwise add the entity
+            var structureExists = false
+            structureLoop: for (sIndex, structureCheck) in structureArray.enumerated()
+            {
+                if let checkStructureID = structureCheck.structureID
+                {
+                    if checkStructureID == structure.structureID
+                    {
+                        // The structure exists, so update the Core Data
+                        structureExists = true
+                        // Replace the Structure data to ensure that the latest data is used
+                        structureArray[sIndex].structureID = structure.structureID
+// FIX - SAVE STRUCTURE USER IDs IN SEPARATE ARRAY?
+//                        structureArray[sIndex].userIDs.values = structure.userIDs
+                        structureArray[sIndex].lat = structure.lat
+                        structureArray[sIndex].lng = structure.lng
+                        structureArray[sIndex].datetime = structure.datetime as! NSDate
+                        structureArray[sIndex].type = Int32(structure.type.rawValue)
+                        structureArray[sIndex].stage = Int32(structure.stage.rawValue)
+                        if let structureImage = structure.image
+                        {
+                            structureArray[sIndex].image = UIImagePNGRepresentation(structureImage)! as NSData
+                        }
+                        
+                        break structureLoop
+                    }
+                }
+            }
+            // If the structure does not exist, add a new entity
+            if !structureExists
+            {
+                print("CD-STS - NOT EXIST: \(structure.structureID)")
+                let newStructure = NSEntityDescription.insertNewObject(forEntityName: "StructureCD", into: moc) as! StructureCD
+                newStructure.setValue(structure.structureID, forKey: "structureID")
+// FIX - SEE ABOVE
+//                newStructure.setValue(structure.userIDs.values, forKey: "userIDs")
+                newStructure.setValue(structure.lat, forKey: "lat")
+                newStructure.setValue(structure.lng, forKey: "lng")
+                newStructure.setValue(structure.datetime, forKey: "datetime")
+                newStructure.setValue(structure.type.rawValue, forKey: "type")
+                newStructure.setValue(structure.stage.rawValue, forKey: "stage")
+                if let structureImage = structure.image
+                {
+                    newStructure.setValue(UIImagePNGRepresentation(structureImage)! as NSData, forKey: "image")
+                }
+                
+                structureArray.append(newStructure)
+            }
+        }
+        // Save the Entity
+        do
+        {
+            try moc.save()
+        }
+        catch
+        {
+            fatalError("CD-STS - Failure to save context: \(error)")
+        }
+    }
+    
+    func structureRetrieveAll() -> [Structure]
+    {
+        // Access Core Data
+        // Retrieve all Structure entities from Core Data
+        let moc = DataController().managedObjectContext
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        let structureFetch: NSFetchRequest<StructureCD> = StructureCD.fetchRequest()
+        
+        // Create an empty Structure list in case the Core Data request fails
+        var structureArray = [StructureCD]()
+        do
+        {
+            structureArray = try moc.fetch(structureFetch)
+        }
+        catch
+        {
+            fatalError("CD-STR - Failed to fetch entity: \(error)")
+        }
+        // Create a new Structure object
+        var structures = [Structure]()
+        for structureObj in structureArray
+        {
+            let structure = Structure()
+            structure.structureID = structureObj.structureID
+            structure.userIDs = structureObj.userIDs as? [String]
+            structure.lat = structureObj.lat
+            structure.lng = structureObj.lng
+            structure.datetime = structureObj.datetime as! Date
+            structure.type = Constants().structure(Int(structureObj.type))
+            structure.stage = Constants().structureStage(Int(structureObj.stage))
+            if let structureImage = structureObj.image
+            {
+                structure.image = UIImage(data: structureImage as Data)
+            }
+            structures.append(structure)
+        }
+        return structures
     }
     
     

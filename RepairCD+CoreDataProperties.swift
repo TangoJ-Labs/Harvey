@@ -2,8 +2,8 @@
 //  RepairCD+CoreDataProperties.swift
 //  Harvey
 //
-//  Created by Sean Hart on 9/17/17.
-//  Copyright © 2017 tangojlabs. All rights reserved.
+//  Created by Sean Hart on 9/20/17.
+//  Copyright © 2017 TangoJ Labs, LLC. All rights reserved.
 //
 
 import Foundation
@@ -18,7 +18,9 @@ extension RepairCD {
 
     @NSManaged public var order: Int32
     @NSManaged public var repair: String?
-    @NSManaged public var userID: String?
     @NSManaged public var repairID: String?
+    @NSManaged public var structureID: String?
+    @NSManaged public var datetime: NSDate?
+    @NSManaged public var stage: Int32
 
 }

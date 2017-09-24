@@ -43,7 +43,7 @@
 		B825BE0E1F55221700C12722 /* UtilityFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825BE0D1F55221700C12722 /* UtilityFunctions.swift */; };
 		B825BE101F559C3400C12722 /* AWSClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825BE0F1F559C3400C12722 /* AWSClasses.swift */; };
 		B825BE121F559F2700C12722 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825BE111F559F2700C12722 /* User.swift */; };
-		B825BE141F55A20400C12722 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825BE131F55A20400C12722 /* CameraViewController.swift */; };
+		B825BE141F55A20400C12722 /* CameraMultiImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825BE131F55A20400C12722 /* CameraMultiImageViewController.swift */; };
 		B825BE161F55A48E00C12722 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825BE151F55A48E00C12722 /* Extensions.swift */; };
 		B825BE181F55F55800C12722 /* CustomIdentityProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825BE171F55F55800C12722 /* CustomIdentityProvider.swift */; };
 		B825BE1A1F55FBFC00C12722 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825BE191F55FBFC00C12722 /* LoginViewController.swift */; };
@@ -63,10 +63,10 @@
 		B850603E1F675AD900BE25ED /* icon_pins_multi.png in Resources */ = {isa = PBXBuildFile; fileRef = B85060351F675AD900BE25ED /* icon_pins_multi.png */; };
 		B850603F1F675AD900BE25ED /* icon_pins_multi@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B85060361F675AD900BE25ED /* icon_pins_multi@2x.png */; };
 		B85060401F675AD900BE25ED /* icon_pins_multi@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B85060371F675AD900BE25ED /* icon_pins_multi@3x.png */; };
-		B866B1041F6F3D8F00321116 /* RepairCD+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866B1001F6F3D8F00321116 /* RepairCD+CoreDataClass.swift */; };
-		B866B1051F6F3D8F00321116 /* RepairCD+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866B1011F6F3D8F00321116 /* RepairCD+CoreDataProperties.swift */; };
 		B866B1061F6F3D8F00321116 /* SkillCD+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866B1021F6F3D8F00321116 /* SkillCD+CoreDataClass.swift */; };
 		B866B1071F6F3D8F00321116 /* SkillCD+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866B1031F6F3D8F00321116 /* SkillCD+CoreDataProperties.swift */; };
+		B866B1091F6F769E00321116 /* Structure.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866B1081F6F769E00321116 /* Structure.swift */; };
+		B866B10B1F6FEA3600321116 /* CameraSingleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866B10A1F6FEA3600321116 /* CameraSingleImageViewController.swift */; };
 		B86BCC861F64A29E003C667D /* UserCD+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BCC821F64A29E003C667D /* UserCD+CoreDataClass.swift */; };
 		B86BCC871F64A29E003C667D /* UserCD+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BCC831F64A29E003C667D /* UserCD+CoreDataProperties.swift */; };
 		B86BCC881F64A29E003C667D /* CurrentUser+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BCC841F64A29E003C667D /* CurrentUser+CoreDataClass.swift */; };
@@ -79,10 +79,10 @@
 		B891DB551F6C5889000B1CB5 /* icon_settings.png in Resources */ = {isa = PBXBuildFile; fileRef = B891DB521F6C5889000B1CB5 /* icon_settings.png */; };
 		B891DB561F6C5889000B1CB5 /* icon_settings@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B891DB531F6C5889000B1CB5 /* icon_settings@2x.png */; };
 		B891DB571F6C5889000B1CB5 /* icon_settings@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B891DB541F6C5889000B1CB5 /* icon_settings@3x.png */; };
-		B891DB591F6C5C6F000B1CB5 /* ProfileTabVolunteerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB581F6C5C6F000B1CB5 /* ProfileTabVolunteerViewController.swift */; };
-		B891DB5B1F6C60E2000B1CB5 /* ProfileTabHouseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB5A1F6C60E2000B1CB5 /* ProfileTabHouseViewController.swift */; };
+		B891DB591F6C5C6F000B1CB5 /* ProfileTabSkillViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB581F6C5C6F000B1CB5 /* ProfileTabSkillViewController.swift */; };
+		B891DB5B1F6C60E2000B1CB5 /* ProfileTabStructureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB5A1F6C60E2000B1CB5 /* ProfileTabStructureViewController.swift */; };
 		B891DB5D1F6C757D000B1CB5 /* ProfileSkillTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB5C1F6C757D000B1CB5 /* ProfileSkillTableViewCell.swift */; };
-		B891DB5F1F6D8993000B1CB5 /* ProfileDamageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB5E1F6D8992000B1CB5 /* ProfileDamageTableViewCell.swift */; };
+		B891DB5F1F6D8993000B1CB5 /* ProfileStructureTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB5E1F6D8992000B1CB5 /* ProfileStructureTableViewCell.swift */; };
 		B891DB611F6E0200000B1CB5 /* Skill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB601F6E0200000B1CB5 /* Skill.swift */; };
 		B891DB631F6E0570000B1CB5 /* Repair.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB621F6E0570000B1CB5 /* Repair.swift */; };
 		B895C54E1F590018002D369E /* FB.png in Resources */ = {isa = PBXBuildFile; fileRef = B895C5441F590018002D369E /* FB.png */; };
@@ -165,6 +165,10 @@
 		B8E48C051F6A1F7D00F23F51 /* icon_check_hazard.png in Resources */ = {isa = PBXBuildFile; fileRef = B8E48BFF1F6A1F7D00F23F51 /* icon_check_hazard.png */; };
 		B8E48C061F6A1F7D00F23F51 /* icon_check_hazard@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B8E48C001F6A1F7D00F23F51 /* icon_check_hazard@2x.png */; };
 		B8E48C071F6A1F7D00F23F51 /* icon_check_hazard@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B8E48C011F6A1F7D00F23F51 /* icon_check_hazard@3x.png */; };
+		B8E9682E1F72828500A62065 /* RepairCD+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8E9682C1F72828500A62065 /* RepairCD+CoreDataClass.swift */; };
+		B8E9682F1F72828500A62065 /* RepairCD+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8E9682D1F72828500A62065 /* RepairCD+CoreDataProperties.swift */; };
+		B8E968321F728DED00A62065 /* StructureCD+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8E968301F728DED00A62065 /* StructureCD+CoreDataClass.swift */; };
+		B8E968331F728DED00A62065 /* StructureCD+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8E968311F728DED00A62065 /* StructureCD+CoreDataProperties.swift */; };
 		B8F9168D1F5C750600A268E1 /* Shelter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F9168C1F5C750600A268E1 /* Shelter.swift */; };
 		B8FC56A51F5E29110020A871 /* InfoWindowHydro.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8FC56A41F5E29110020A871 /* InfoWindowHydro.swift */; };
 		B8FC56A71F5E43300020A871 /* InfoWindowShelter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8FC56A61F5E43300020A871 /* InfoWindowShelter.swift */; };
@@ -215,7 +219,7 @@
 		B825BE0D1F55221700C12722 /* UtilityFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UtilityFunctions.swift; sourceTree = "<group>"; };
 		B825BE0F1F559C3400C12722 /* AWSClasses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWSClasses.swift; sourceTree = "<group>"; };
 		B825BE111F559F2700C12722 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = User.swift; path = Harvey/User.swift; sourceTree = "<group>"; };
-		B825BE131F55A20400C12722 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
+		B825BE131F55A20400C12722 /* CameraMultiImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraMultiImageViewController.swift; sourceTree = "<group>"; };
 		B825BE151F55A48E00C12722 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		B825BE171F55F55800C12722 /* CustomIdentityProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomIdentityProvider.swift; sourceTree = "<group>"; };
 		B825BE191F55FBFC00C12722 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -235,10 +239,10 @@
 		B85060351F675AD900BE25ED /* icon_pins_multi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_pins_multi.png; sourceTree = "<group>"; };
 		B85060361F675AD900BE25ED /* icon_pins_multi@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_pins_multi@2x.png"; sourceTree = "<group>"; };
 		B85060371F675AD900BE25ED /* icon_pins_multi@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_pins_multi@3x.png"; sourceTree = "<group>"; };
-		B866B1001F6F3D8F00321116 /* RepairCD+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "RepairCD+CoreDataClass.swift"; sourceTree = "<group>"; };
-		B866B1011F6F3D8F00321116 /* RepairCD+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "RepairCD+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B866B1021F6F3D8F00321116 /* SkillCD+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SkillCD+CoreDataClass.swift"; sourceTree = "<group>"; };
 		B866B1031F6F3D8F00321116 /* SkillCD+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SkillCD+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B866B1081F6F769E00321116 /* Structure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Structure.swift; sourceTree = "<group>"; };
+		B866B10A1F6FEA3600321116 /* CameraSingleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraSingleImageViewController.swift; sourceTree = "<group>"; };
 		B86BCC811F64A261003C667D /* Harvey_DataModel_1.3.5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Harvey_DataModel_1.3.5.xcdatamodel; sourceTree = "<group>"; };
 		B86BCC821F64A29E003C667D /* UserCD+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UserCD+CoreDataClass.swift"; sourceTree = "<group>"; };
 		B86BCC831F64A29E003C667D /* UserCD+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UserCD+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -256,10 +260,10 @@
 		B891DB521F6C5889000B1CB5 /* icon_settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_settings.png; sourceTree = "<group>"; };
 		B891DB531F6C5889000B1CB5 /* icon_settings@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_settings@2x.png"; sourceTree = "<group>"; };
 		B891DB541F6C5889000B1CB5 /* icon_settings@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_settings@3x.png"; sourceTree = "<group>"; };
-		B891DB581F6C5C6F000B1CB5 /* ProfileTabVolunteerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTabVolunteerViewController.swift; sourceTree = "<group>"; };
-		B891DB5A1F6C60E2000B1CB5 /* ProfileTabHouseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTabHouseViewController.swift; sourceTree = "<group>"; };
+		B891DB581F6C5C6F000B1CB5 /* ProfileTabSkillViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTabSkillViewController.swift; sourceTree = "<group>"; };
+		B891DB5A1F6C60E2000B1CB5 /* ProfileTabStructureViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTabStructureViewController.swift; sourceTree = "<group>"; };
 		B891DB5C1F6C757D000B1CB5 /* ProfileSkillTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileSkillTableViewCell.swift; sourceTree = "<group>"; };
-		B891DB5E1F6D8992000B1CB5 /* ProfileDamageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileDamageTableViewCell.swift; sourceTree = "<group>"; };
+		B891DB5E1F6D8992000B1CB5 /* ProfileStructureTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileStructureTableViewCell.swift; sourceTree = "<group>"; };
 		B891DB601F6E0200000B1CB5 /* Skill.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Skill.swift; sourceTree = "<group>"; };
 		B891DB621F6E0570000B1CB5 /* Repair.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Repair.swift; sourceTree = "<group>"; };
 		B895C5441F590018002D369E /* FB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FB.png; sourceTree = "<group>"; };
@@ -348,6 +352,10 @@
 		B8E48BFF1F6A1F7D00F23F51 /* icon_check_hazard.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_check_hazard.png; sourceTree = "<group>"; };
 		B8E48C001F6A1F7D00F23F51 /* icon_check_hazard@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_check_hazard@2x.png"; sourceTree = "<group>"; };
 		B8E48C011F6A1F7D00F23F51 /* icon_check_hazard@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_check_hazard@3x.png"; sourceTree = "<group>"; };
+		B8E9682C1F72828500A62065 /* RepairCD+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "RepairCD+CoreDataClass.swift"; sourceTree = "<group>"; };
+		B8E9682D1F72828500A62065 /* RepairCD+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "RepairCD+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B8E968301F728DED00A62065 /* StructureCD+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StructureCD+CoreDataClass.swift"; sourceTree = "<group>"; };
+		B8E968311F728DED00A62065 /* StructureCD+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StructureCD+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B8F9168C1F5C750600A268E1 /* Shelter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Shelter.swift; path = Harvey/Shelter.swift; sourceTree = "<group>"; };
 		B8FC56A41F5E29110020A871 /* InfoWindowHydro.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoWindowHydro.swift; sourceTree = "<group>"; };
 		B8FC56A61F5E43300020A871 /* InfoWindowShelter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoWindowShelter.swift; sourceTree = "<group>"; };
@@ -397,6 +405,7 @@
 				B832412A1F573366008709B4 /* Spot.swift */,
 				B832412C1F5733DA008709B4 /* SpotContent.swift */,
 				B8D05F441F57998400D3CFAF /* SpotRequest.swift */,
+				B866B1081F6F769E00321116 /* Structure.swift */,
 				B825BE111F559F2700C12722 /* User.swift */,
 			);
 			name = Objects;
@@ -448,7 +457,8 @@
 				B8B4CA471F615519001CD74D /* AgreementViewController.swift */,
 				B87421741F54BD4F00E0981A /* AppDelegate.swift */,
 				B825BE0F1F559C3400C12722 /* AWSClasses.swift */,
-				B825BE131F55A20400C12722 /* CameraViewController.swift */,
+				B825BE131F55A20400C12722 /* CameraMultiImageViewController.swift */,
+				B866B10A1F6FEA3600321116 /* CameraSingleImageViewController.swift */,
 				B87421891F54CD2600E0981A /* Constants.swift */,
 				B825BE171F55F55800C12722 /* CustomIdentityProvider.swift */,
 				B825BE151F55A48E00C12722 /* Extensions.swift */,
@@ -458,10 +468,10 @@
 				B8FC56A61F5E43300020A871 /* InfoWindowShelter.swift */,
 				B825BE191F55FBFC00C12722 /* LoginViewController.swift */,
 				B87421761F54BD4F00E0981A /* MapViewController.swift */,
-				B891DB5E1F6D8992000B1CB5 /* ProfileDamageTableViewCell.swift */,
 				B891DB5C1F6C757D000B1CB5 /* ProfileSkillTableViewCell.swift */,
-				B891DB5A1F6C60E2000B1CB5 /* ProfileTabHouseViewController.swift */,
-				B891DB581F6C5C6F000B1CB5 /* ProfileTabVolunteerViewController.swift */,
+				B891DB5E1F6D8992000B1CB5 /* ProfileStructureTableViewCell.swift */,
+				B891DB581F6C5C6F000B1CB5 /* ProfileTabSkillViewController.swift */,
+				B891DB5A1F6C60E2000B1CB5 /* ProfileTabStructureViewController.swift */,
 				B821A4641F681BE700997EE1 /* ProfileViewController.swift */,
 				B80B9C861F635EC8006583CE /* RequestClasses.swift */,
 				B8D05F501F5887D400D3CFAF /* SpotTableViewCell.swift */,
@@ -600,10 +610,12 @@
 				B8DDEB221F5AE21000F0A623 /* LogUserflow+CoreDataProperties.swift */,
 				B8FC56A91F5E50DB0020A871 /* MapSetting+CoreDataClass.swift */,
 				B8FC56AA1F5E50DB0020A871 /* MapSetting+CoreDataProperties.swift */,
-				B866B1001F6F3D8F00321116 /* RepairCD+CoreDataClass.swift */,
-				B866B1011F6F3D8F00321116 /* RepairCD+CoreDataProperties.swift */,
+				B8E9682C1F72828500A62065 /* RepairCD+CoreDataClass.swift */,
+				B8E9682D1F72828500A62065 /* RepairCD+CoreDataProperties.swift */,
 				B866B1021F6F3D8F00321116 /* SkillCD+CoreDataClass.swift */,
 				B866B1031F6F3D8F00321116 /* SkillCD+CoreDataProperties.swift */,
+				B8E968301F728DED00A62065 /* StructureCD+CoreDataClass.swift */,
+				B8E968311F728DED00A62065 /* StructureCD+CoreDataProperties.swift */,
 				B8DDEB1B1F5AE21000F0A623 /* TutorialView+CoreDataClass.swift */,
 				B8DDEB1C1F5AE21000F0A623 /* TutorialView+CoreDataProperties.swift */,
 				B86BCC821F64A29E003C667D /* UserCD+CoreDataClass.swift */,
@@ -643,7 +655,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0830;
 				LastUpgradeCheck = 0830;
-				ORGANIZATIONNAME = tangojlabs;
+				ORGANIZATIONNAME = "TangoJ Labs, LLC";
 				TargetAttributes = {
 					B87421701F54BD4F00E0981A = {
 						CreatedOnToolsVersion = 8.3.3;
@@ -839,12 +851,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B891DB5F1F6D8993000B1CB5 /* ProfileDamageTableViewCell.swift in Sources */,
-				B866B1051F6F3D8F00321116 /* RepairCD+CoreDataProperties.swift in Sources */,
+				B891DB5F1F6D8993000B1CB5 /* ProfileStructureTableViewCell.swift in Sources */,
 				B821A4671F69485E00997EE1 /* ActivityViewController.swift in Sources */,
-				B891DB5B1F6C60E2000B1CB5 /* ProfileTabHouseViewController.swift in Sources */,
+				B891DB5B1F6C60E2000B1CB5 /* ProfileTabStructureViewController.swift in Sources */,
 				B87421771F54BD4F00E0981A /* MapViewController.swift in Sources */,
+				B8E968321F728DED00A62065 /* StructureCD+CoreDataClass.swift in Sources */,
 				B891DB5D1F6C757D000B1CB5 /* ProfileSkillTableViewCell.swift in Sources */,
+				B8E968331F728DED00A62065 /* StructureCD+CoreDataProperties.swift in Sources */,
 				B80B9C931F645252006583CE /* UserTableViewController.swift in Sources */,
 				B8F9168D1F5C750600A268E1 /* Shelter.swift in Sources */,
 				B866B1071F6F3D8F00321116 /* SkillCD+CoreDataProperties.swift in Sources */,
@@ -863,15 +876,16 @@
 				B8B4CA5E1F61AEF1001CD74D /* InfoWindowAgreement.swift in Sources */,
 				B8DDEB231F5AE21000F0A623 /* TutorialView+CoreDataClass.swift in Sources */,
 				B891DB611F6E0200000B1CB5 /* Skill.swift in Sources */,
-				B866B1041F6F3D8F00321116 /* RepairCD+CoreDataClass.swift in Sources */,
 				B8FC56A71F5E43300020A871 /* InfoWindowShelter.swift in Sources */,
 				B80B9C951F645885006583CE /* UserTableViewCell.swift in Sources */,
 				B8FC56A51F5E29110020A871 /* InfoWindowHydro.swift in Sources */,
+				B8E9682E1F72828500A62065 /* RepairCD+CoreDataClass.swift in Sources */,
 				B8DDEB291F5AE21000F0A623 /* LogUserflow+CoreDataClass.swift in Sources */,
 				B8DDEB131F5AD2EE00F0A623 /* HoleView.swift in Sources */,
+				B8E9682F1F72828500A62065 /* RepairCD+CoreDataProperties.swift in Sources */,
 				B85060261F665DB200BE25ED /* SOS.swift in Sources */,
 				B86BCC861F64A29E003C667D /* UserCD+CoreDataClass.swift in Sources */,
-				B891DB591F6C5C6F000B1CB5 /* ProfileTabVolunteerViewController.swift in Sources */,
+				B891DB591F6C5C6F000B1CB5 /* ProfileTabSkillViewController.swift in Sources */,
 				B874217D1F54BD4F00E0981A /* Harvey.xcdatamodeld in Sources */,
 				B85060281F66CE5100BE25ED /* Hazard.swift in Sources */,
 				B86BCC891F64A29E003C667D /* CurrentUser+CoreDataProperties.swift in Sources */,
@@ -881,7 +895,7 @@
 				B825BE101F559C3400C12722 /* AWSClasses.swift in Sources */,
 				B8FC56AB1F5E50DB0020A871 /* MapSetting+CoreDataClass.swift in Sources */,
 				B8DDEB281F5AE21000F0A623 /* LogError+CoreDataProperties.swift in Sources */,
-				B825BE141F55A20400C12722 /* CameraViewController.swift in Sources */,
+				B825BE141F55A20400C12722 /* CameraMultiImageViewController.swift in Sources */,
 				B895C5DD1F59E53F002D369E /* AboutViewController.swift in Sources */,
 				B80B9C851F635C4E006583CE /* UserViewController.swift in Sources */,
 				B874218A1F54CD2600E0981A /* Constants.swift in Sources */,
@@ -889,10 +903,12 @@
 				B832412B1F573366008709B4 /* Spot.swift in Sources */,
 				B866B1061F6F3D8F00321116 /* SkillCD+CoreDataClass.swift in Sources */,
 				B825BE121F559F2700C12722 /* User.swift in Sources */,
+				B866B1091F6F769E00321116 /* Structure.swift in Sources */,
 				B8DDEB1A1F5ADE8300F0A623 /* CoreDataFunctions.swift in Sources */,
 				B8FC56AC1F5E50DB0020A871 /* MapSetting+CoreDataProperties.swift in Sources */,
 				B821A4651F681BE700997EE1 /* ProfileViewController.swift in Sources */,
 				B825BE1A1F55FBFC00C12722 /* LoginViewController.swift in Sources */,
+				B866B10B1F6FEA3600321116 /* CameraSingleImageViewController.swift in Sources */,
 				B891DB631F6E0570000B1CB5 /* Repair.swift in Sources */,
 				B832412D1F5733DA008709B4 /* SpotContent.swift in Sources */,
 			);

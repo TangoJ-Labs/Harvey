@@ -3,7 +3,7 @@
 //  Harvey
 //
 //  Created by Sean Hart on 8/29/17.
-//  Copyright © 2017 tangojlabs. All rights reserved.
+//  Copyright © 2017 TangoJ Labs, LLC. All rights reserved.
 //
 
 import AWSCognito
@@ -122,7 +122,7 @@ class AWSPrepRequest
     // Once the Facebook token is gained, request a Cognito Identity ID
     func getCognitoID()
     {
-        print("AC-PREP - IN GET COGNITO ID: \(String(describing: requestToCall.facebookToken))")
+        print("AC-PREP - IN GET COGNITO ID: \(String(describing: requestToCall.facebookToken?.tokenString))")
         if let token = requestToCall.facebookToken
         {
 //            print("AC - GETTING COGNITO ID: \(String(describing: Constants.credentialsProvider.identityId))")
@@ -1438,7 +1438,162 @@ class AWSGetShelterData : AWSRequestObject
 
 // MARK: HAZARD
 
-class AWSGetHazardData : AWSRequestObject
+class AWSGetHazardData: AWSRequestObject
+{
+//    let url = URL(string: "http://192.168.1.5:5000/api/app/hazard")
+    let url = URL(string: "http://www.harveytown.org/api/app/hazard")
+    
+    override func makeRequest()
+    {
+        if let facebookToken = FBSDKAccessToken.current()
+        {
+            var json = [String: Any]()
+            json["app_version"] = Constants.Settings.appVersion
+            json["identity_id"] = Constants.credentialsProvider.identityId
+            json["login_provider"] = "graph.facebook.com"
+            json["login_token"] = facebookToken.tokenString
+            let jsonData = try? JSONSerialization.data(withJSONObject: json)
+            
+            print("AC-GH")
+            var request = URLRequest(url: url!)
+            request.httpMethod = "POST"
+            request.httpBody = jsonData
+            request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+            let session = URLSession(configuration: .default)
+            let apiTest = session.dataTask(with: request)
+            { (responseData, response, error) in
+                if let res = response as? HTTPURLResponse
+                {
+                    print("AC-GH - RESPONSE CODE: \(res.statusCode)")
+                    if let data = responseData
+                    {
+                        print("AC-GH RESPONSE:")
+                        let resData = String(data: data, encoding: String.Encoding.utf8)
+                        print(resData)
+                        do
+                        {
+                            let json = try JSONSerialization.jsonObject(with: data, options: []) //as! [String:Any]
+//                            let posts = json["posts"] as? [[String: Any]] ?? []
+                            print(json)
+                            
+                            // Convert the data to JSON with keys and AnyObject values
+                            if let allData = json as? [String: AnyObject]
+                            {
+                                print("AC-GH - ALL DATA:")
+                                print(allData)
+                                // Convert the response to an array of AnyObjects
+                                // EXTRACT HAZARD DATA
+                                if let allHazardRaw = allData["hazard"] as? [Any]
+                                {
+                                    print("AC-GH - ALL HAZARD:")
+                                    print(allHazardRaw)
+                                    // Loop through each AnyObject in the array
+                                    for newHazard in allHazardRaw
+                                    {
+                                        print("AC-GH - HAZARD:")
+                                        print(newHazard)
+                                        // Convert the response to JSON with keys and AnyObject values
+                                        // Then convert the AnyObject values to Strings or Numbers depending on their key
+                                        if let hazardRaw = newHazard as? [String: AnyObject]
+                                        {
+                                            // Double-check one of the key values before moving on
+                                            if let hazardID = hazardRaw["hazard_id"]
+                                            {
+                                                let addHazard = Hazard()
+                                                addHazard.hazardID = hazardID as? String
+                                                addHazard.userID = hazardRaw["user_id"] as! String
+                                                addHazard.datetime = Date(timeIntervalSince1970: hazardRaw["timestamp"] as! Double)
+                                                addHazard.lat = hazardRaw["lat"] as! Double
+                                                addHazard.lng = hazardRaw["lng"] as! Double
+                                                addHazard.status = hazardRaw["status"] as! String
+                                                addHazard.type = Constants().hazardType(hazardRaw["type"] as! Int)
+                                                
+                                                // Check to see if the hazard already exists
+                                                var hazardExists = false
+                                                hazardLoop: for hazard in Constants.Data.allHazard
+                                                {
+                                                    if hazard.hazardID! == hazardID as! String
+                                                    {
+                                                        // It already exists, so update the values
+                                                        hazardExists = true
+                                                        
+                                                        hazard.userID = addHazard.userID
+                                                        hazard.datetime = addHazard.datetime
+                                                        hazard.lat = addHazard.lat
+                                                        hazard.lng = addHazard.lng
+                                                        hazard.status = addHazard.status
+                                                        hazard.type = addHazard.type
+                                                        
+                                                        break hazardLoop
+                                                    }
+                                                }
+                                                if !hazardExists
+                                                {
+                                                    // It does not exist, so add it to the list
+                                                    Constants.Data.allHazard.append(addHazard)
+                                                }
+                                                print("AC-GH - ADDED/UPDATED HAZARD DATA: \(String(describing: addHazard.hazardID))")
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            // Notify the parent view that the AWS call completed successfully
+                            if let parentVC = self.awsRequestDelegate
+                            {
+                                print("AC-GH - CALLED PARENT")
+                                parentVC.processAwsReturn(self, success: true)
+                            }
+                        }
+                        catch let error as NSError
+                        {
+                            print(error)
+                        }
+                        
+                        
+                    }
+                }
+                if let err = error
+                {
+                    print("AC-GH: GET DATA ERROR: \(String(describing: err))")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else
+                {
+//                    if let returnData = String(data: data as! Data, encoding: .utf8)
+//                    {
+//                        print("AC-GH - RETURN DATA: \(returnData)")
+//                    }
+//                    else
+//                    {
+//                        print("AC-GH - RETURN DATA ERROR")
+//                        // Notify the parent view that the request completed with an error
+//                        if let parentVC = self.requestDelegate
+//                        {
+//                            parentVC.processRequestReturn(self, success: false)
+//                        }
+//                    }
+                }
+            }
+            apiTest.resume()
+        }
+        else
+        {
+            
+        }
+    }
+}
+
+class AWSGetHazardDataOLD : AWSRequestObject
 {
     // Use this request function to request all active Hazard data
     override func makeRequest()

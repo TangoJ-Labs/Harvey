@@ -3,7 +3,7 @@
 //  Harvey
 //
 //  Created by Sean Hart on 8/29/17.
-//  Copyright © 2017 tangojlabs. All rights reserved.
+//  Copyright © 2017 TangoJ Labs, LLC. All rights reserved.
 //
 
 import AWSCognito

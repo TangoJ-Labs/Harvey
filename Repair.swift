@@ -3,24 +3,30 @@
 //  Harvey
 //
 //  Created by Sean Hart on 9/16/17.
-//  Copyright © 2017 tangojlabs. All rights reserved.
+//  Copyright © 2017 TangoJ Labs, LLC. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 class Repair
 {
+    var repairID: String!
+    var structureID: String!
     var repair: String!
-    var userID: String!
+    var datetime: Date!
+    var stage: Constants.RepairStage!
     
-    // For use when listing a user's skills
-    var order: Int = 0
+    var order: Int = 0 // For use when listing a structure's repair needs
+    var images = [UIImage]() // Images of the damaged area - display on the preview view
     
-    convenience init(repair: String!, userID: String!)
+    convenience init(repairID: String!, structureID: String!, repair: String!, datetime: Date!, stage: Constants.RepairStage!)
     {
         self.init()
         
+        self.repairID = repairID
+        self.structureID = structureID
         self.repair = repair
-        self.userID = userID
+        self.datetime = datetime
+        self.stage = stage
     }
 }
