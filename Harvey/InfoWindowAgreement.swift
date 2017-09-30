@@ -190,10 +190,10 @@ class InfoWindowAgreement: UIView, AWSRequestDelegate
             loadingIndicator.startAnimating()
             
             // The user is agreeing to the final page, so fire the AWS record update
-            let awsUpdateUser = AWSUpdateUser(userID: Constants.Data.currentUser.userID)
-            awsUpdateUser.status = "active"
+            let awsUserUpdate = AWSUserUpdate(userID: Constants.Data.currentUser.userID)
+            awsUserUpdate.status = "active"
             
-            AWSPrepRequest(requestToCall: awsUpdateUser, delegate: self as AWSRequestDelegate).prepRequest()
+            AWSPrepRequest(requestToCall: awsUserUpdate, delegate: self as AWSRequestDelegate).prepRequest()
             
             // Notify the parent view that the infoWindow needs to close with an action
             if let parentVC = self.infoWindowDelegate
@@ -218,8 +218,8 @@ class InfoWindowAgreement: UIView, AWSRequestDelegate
                 // Process the return data based on the method used
                 switch objectType
                 {
-                case let awsUpdateUser as AWSUpdateUser:
-                    print("IWA - awsUpdateUser: \(awsUpdateUser.userID), \(success)")
+                case let awsUserUpdate as AWSUserUpdate:
+                    print("IWA - awsUserUpdate: \(awsUserUpdate.userID), \(success)")
                     if success
                     {
                         self.loadingIndicator.stopAnimating()
@@ -235,7 +235,7 @@ class InfoWindowAgreement: UIView, AWSRequestDelegate
                     }
                     else
                     {
-                        print("ERROR: AWSUpdateUser")
+                        print("ERROR: AWSUserUpdate")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  You will need to accept the agreements again.")
                         alert.show()

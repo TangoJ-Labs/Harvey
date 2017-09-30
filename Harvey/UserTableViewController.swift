@@ -245,7 +245,7 @@ class UserTableViewController: UIViewController, UITableViewDataSource, UITableV
                 self.reloadDataManually()
                 
                 // Upload the change
-                AWSPrepRequest(requestToCall: AWSPutUserConnection(targetUserID: userSelect.userID, connection: connectionUpdateValue), delegate: self as AWSRequestDelegate).prepRequest()
+                AWSPrepRequest(requestToCall: AWSUserConnectionPut(targetUserID: userSelect.userID, connection: connectionUpdateValue), delegate: self as AWSRequestDelegate).prepRequest()
             }
             let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default)
             { (result : UIAlertAction) -> Void in
@@ -349,10 +349,10 @@ class UserTableViewController: UIViewController, UITableViewDataSource, UITableV
                 // Process the return data based on the method used
                 switch objectType
                 {
-                case _ as AWSUpdateSpotContentData:
+                case _ as AWSSpotContentStatusUpdate:
                     if success
                     {
-                        
+                        print("UTVC - AWSSpotContentStatusUpdate - SUCCESS")
                     }
                     else
                     {

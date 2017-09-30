@@ -103,7 +103,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         
         NotificationCenter.default.addObserver(self, selector: #selector(ProfileViewController.statusBarHeightChange(_:)), name: Notification.Name("UIApplicationWillChangeStatusBarFrameNotification"), object: nil)
         
-        RequestPrep(requestToCall: APITest(), delegate: self as RequestDelegate).prepRequest()
+//        RequestPrep(requestToCall: APITest(), delegate: self as RequestDelegate).prepRequest()
     }
     
     override func viewWillAppear(_ animated: Bool)
@@ -586,14 +586,14 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                             alert.show()
                         }
                     }
-                case _ as AWSPutUserConnection:
+                case _ as AWSUserConnectionPut:
                     if success
                     {
                         self.popViewController()
                     }
                     else
                     {
-                        print("PVC - AWS ERROR: AWSPutUserConnection")
+                        print("PVC - AWS ERROR: AWSUserConnectionPut")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()

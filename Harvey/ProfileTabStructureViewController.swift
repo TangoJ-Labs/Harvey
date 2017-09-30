@@ -9,31 +9,8 @@
 import UIKit
 
 
-class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate
+class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, CameraViewControllerDelegate
 {
-    var structureList: [Structure]!
-    
-//    convenience init(structureList: [Structure])
-//    {
-//        self.init(nibName:nil, bundle:nil)
-//        
-//        // Order the Array
-//        let structureList = structureList.sorted {
-//            $0.datetime > $1.datetime
-//        }
-//        self.spotRequests = spotRequestsSort
-//        
-//        print("ATVC - SPOT REQUESTS COUNT: \(spotRequestsSort.count)")
-//        if spotRequests.count > 0
-//        {
-//            contentExists = true
-//        }
-//        else
-//        {
-//            backgroundText = "You don't have any Photo Requests yet.  Go to the main map to add some!"
-//        }
-//    }
-    
     // Save device settings to adjust view if needed
     var screenSize: CGRect!
     var statusBarHeight: CGFloat!
@@ -59,6 +36,8 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     var addButtonTapGestureRecognizer: UITapGestureRecognizer!
     
     let addButtonHeight: CGFloat = 70
+    
+    var structureList = [Structure]()
     
     override func viewDidLoad()
     {
@@ -245,12 +224,27 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     
     func addButtonTap(_ gesture: UITapGestureRecognizer)
     {
-        // Load the camera view and only allow one photo to be taken
-        if let navCon = self.navigationController
-        {
-            let cameraVC = CameraSingleImageViewController()
-            navCon.pushViewController(cameraVC, animated: true)
+        // Explain that a photo is needed to create the Structure - allow the user to cancel
+        let alertController = UIAlertController(title: "Photo Required", message: "New Structures require a photo - Take a photo of the outside of the structure.  Other users will see this photo when viewing information regarding this structure.", preferredStyle: UIAlertControllerStyle.alert)
+        let laterAction = UIAlertAction(title: "Later", style: UIAlertActionStyle.default)
+        { (result : UIAlertAction) -> Void in
+            print("PTSVC - CAMERA POPUP - LATER")
+            
         }
+        alertController.addAction(laterAction)
+        let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default)
+        { (result : UIAlertAction) -> Void in
+            print("PTSVC - CAMERA POPUP - OK")
+            // Load the camera view and only allow one photo to be taken
+            if let navCon = self.navigationController
+            {
+                let cameraVC = CameraSingleImageViewController()
+                cameraVC.cameraDelegate = self
+                navCon.pushViewController(cameraVC, animated: true)
+            }
+        }
+        alertController.addAction(okAction)
+        alertController.show()
     }
     
     // MARK: TABLE VIEW DATA SOURCE
@@ -324,6 +318,15 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     }
     
     
+    // MARK: DELEGATE METHODS
+    
+    func returnFromCamera()
+    {
+        print("PTSVC - RETURN FROM CAMERA")
+        
+    }
+    
+    
     // MARK: CUSTOM METHODS
     
     func refreshStructureTable()
@@ -355,7 +358,7 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     func requestData()
     {
 //        // Request the user's skill history
-//        AWSPrepRequest(requestToCall: AWSGetSkills(userID: Constants.Data.currentUser.userID), delegate: self as AWSRequestDelegate).prepRequest()
+//        AWSPrepRequest(requestToCall: AWSSkillQuery(userID: Constants.Data.currentUser.userID), delegate: self as AWSRequestDelegate).prepRequest()
     }
     
     
@@ -377,11 +380,11 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
                 // Process the return data based on the method used
                 switch objectType
                 {
-//                case let awsGetRandomID as AWSGetRandomID:
+//                case let awsCreateRandomID as AWSCreateRandomID:
 //                    if success
 //                    {
-//                        print("PTSTVC - AWS GET RANDOM ID: \(awsGetRandomID.randomID)")
-//                        if let randomID = awsGetRandomID.randomID
+//                        print("PTSTVC - AWS GET RANDOM ID: \(awsCreateRandomID)")
+//                        if let randomID = awsCreateRandomID
 //                        {
 //                            
 //                        }

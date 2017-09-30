@@ -231,7 +231,7 @@ class UserViewController: UIViewController, AWSRequestDelegate, RequestDelegate
         { (result : UIAlertAction) -> Void in
             print("BLOCK USER")
             // Change the user status to blocked
-            AWSPrepRequest(requestToCall: AWSPutUserConnection(targetUserID: self.user.userID, connection: "block"), delegate: self as AWSRequestDelegate).prepRequest()
+            AWSPrepRequest(requestToCall: AWSUserConnectionPut(targetUserID: self.user.userID, connection: "block"), delegate: self as AWSRequestDelegate).prepRequest()
         }
         alertController.addAction(cancelAction)
         alertController.addAction(confirmAction)
@@ -314,7 +314,7 @@ class UserViewController: UIViewController, AWSRequestDelegate, RequestDelegate
                 // Process the return data based on the method used
                 switch objectType
                 {
-                case _ as AWSPutUserConnection:
+                case _ as AWSUserConnectionPut:
                     if success
                     {
                         // Add the user to the block list

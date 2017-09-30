@@ -185,7 +185,7 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
 //        clearTmpDirectory()
         
         // Request a random id for the Spot
-        AWSPrepRequest(requestToCall: AWSGetRandomID(randomIdType: Constants.randomIdType.random_structure_id), delegate: self as AWSRequestDelegate).prepRequest()
+        AWSPrepRequest(requestToCall: AWSCreateRandomID(randomIdType: Constants.randomIdType.random_structure_id), delegate: self as AWSRequestDelegate).prepRequest()
     }
     
     // Perform setup before the view loads
@@ -581,12 +581,12 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                 // Process the return data based on the method used
                 switch objectType
                 {
-                case let awsGetRandomID as AWSGetRandomID:
+                case let awsCreateRandomID as AWSCreateRandomID:
                     if success
                     {
-                        if let randomID = awsGetRandomID.randomID
+                        if let randomID = awsCreateRandomID.randomID
                         {
-                            if awsGetRandomID.randomIdType == Constants.randomIdType.random_structure_id
+                            if awsCreateRandomID.randomIdType == Constants.randomIdType.random_structure_id
                             {
                                 // Save the randomID
                                 self.structureID = randomID
@@ -613,7 +613,7 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                     {
                         print("CSIVC - AWSUploadMediaToBucket SUCCESS")
                         // The image was successfully uploaded, so
-//                        AWSPrepRequest(requestToCall: AWSPutSpotData(spot: self.spot), delegate: self as AWSRequestDelegate).prepRequest()
+//                        AWSPrepRequest(requestToCall: AWSSpotPut(spot: self.spot), delegate: self as AWSRequestDelegate).prepRequest()
                     }
                     else
                     {
@@ -621,15 +621,15 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
                     }
-                case _ as AWSPutSpotData:
+                case _ as AWSStructurePut:
                     if success
                     {
-                        print("CSIVC - AWSPutSpotData SUCCESS")
+                        print("CSIVC - AWSStructurePut SUCCESS")
                         
                         // Notify the parent view that the AWS Put completed
                         if let parentVC = self.cameraDelegate
                         {
-                            parentVC.reloadData()
+                            parentVC.returnFromCamera()
                         }
                         
                         // Stop the activity indicator and shoow the send image
@@ -641,6 +641,7 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                     }
                     else
                     {
+                        print("CSIVC - AWSStructurePut FAILURE")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()

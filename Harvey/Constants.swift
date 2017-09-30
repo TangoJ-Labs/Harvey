@@ -418,6 +418,7 @@ struct Constants
         static let mapStyleUrl = URL(string: "mapbox://styles/tangojlabs/ciqwaddsl0005b7m0xwctftow")
         static let maxServerTries: Int = 5
         static let maxServerTryRefreshTime: Double = 5000 // in milliseconds
+        static let requestTimeout = 20.0
         
         static let mapViewDefaultLat: CLLocationDegrees = 29.758624
         static let mapViewDefaultLong: CLLocationDegrees = -95.366795
@@ -490,6 +491,56 @@ struct Constants
         static let markerIconHouse = "marker_icon_house.png"
         static let markerIconShelter = "marker_icon_shelter.png"
         static let markerIconSOS = "marker_icon_flag_red.png"
+        
+//        static let urlSettings = "http://192.168.1.5:5000/app/settings"
+//        static let urlUserCheck = "http://192.168.1.5:5000/app/user/check"
+//        static let urlShelterQueryActive = "http://192.168.1.5:5000/app/shelter/query/active"
+//        static let urlHazardQueryActive = "http://192.168.1.5:5000/app/hazard/query/active"
+//        static let urlHazardPut = "http://192.168.1.5:5000/app/hazard/put"
+        
+        static let urlRandomId = "http://127.0.0.1:5000/app/randomid"
+        static let urlLogin = "http://127.0.0.1:5000/app/login"
+        static let urlSettings = "http://127.0.0.1:5000/app/settings"
+        static let urlUserCheck = "http://127.0.0.1:5000/app/user/check"
+        static let urlUserUpdate = "http://127.0.0.1:5000/app/user/update"
+        static let urlUserQueryActive = "http://127.0.0.1:5000/app/user/query/active"
+        static let urlUserConnectionQuery = "http://127.0.0.1:5000/app/user/connection/query"
+        static let urlUserConnectionPut = "http://127.0.0.1:5000/app/user/connection/put"
+        static let urlSkillQuery = "http://127.0.0.1:5000/app/skill/query"
+        static let urlSkillPut = "http://127.0.0.1:5000/app/skill/put"
+        static let urlStructureQuery = "http://127.0.0.1:5000/app/structure/query"
+        static let urlStructurePut = "http://127.0.0.1:5000/app/structure/put"
+        static let urlRepairQuery = "http://127.0.0.1:5000/app/repair/query"
+        static let urlRepairPut = "http://127.0.0.1:5000/app/repair/put"
+        static let urlSpotQueryActive = "http://127.0.0.1:5000/app/spot/query/active"
+        static let urlSpotPut = "http://127.0.0.1:5000/app/spot/put"
+        static let urlSpotContentStatusUpdate = "http://127.0.0.1:5000/app/spot/spotcontent/statusupdate"
+        static let urlSpotRequestPut = "http://127.0.0.1:5000/app/spot/spotrequest/put"
+        static let urlShelterQueryActive = "http://127.0.0.1:5000/app/shelter/query/active"
+        static let urlHazardQueryActive = "http://127.0.0.1:5000/app/hazard/query/active"
+        static let urlHazardPut = "http://127.0.0.1:5000/app/hazard/put"
+        static let urlHydroQuery = "http://127.0.0.1:5000/app/hydro/query/active"
+        
+//        static let urlRandomId = "http://www.harveytown.org/app/randomid"
+//        static let urlLogin = "http://www.harveytown.org/app/login"
+//        static let urlSettings = "http://www.harveytown.org/app/settings"
+//        static let urlUserCheck = "http://www.harveytown.org/app/user/check"
+//        static let urlUserUpdate = "http://www.harveytown.org/app/user/update"
+//        static let urlUserQueryActive = "http://www.harveytown.org/app/user/query/active"
+//        static let urlUserConnectionQuery = "http://www.harveytown.org/app/user/connection/query"
+//        static let urlUserConnectionPut = "http://www.harveytown.org/app/user/connection/put"
+//        static let urlSkillQuery = "http://www.harveytown.org/app/skill/query"
+//        static let urlSkillPut = "http://www.harveytown.org/app/skill/put"
+//        static let urlRepairQuery = "http://127.0.0.1:5000/app/repair/query"
+//        static let urlRepairPut = "http://127.0.0.1:5000/app/repair/put"
+//        static let urlSpotQueryActive = "http://www.harveytown.org/app/spot/query/active"
+//        static let urlSpotPut = "http://www.harveytown.org/app/spot/put"
+//        static let urlSpotContentStatusUpdate = "http://www.harveytown.org/app/spot/spotcontent/statusupdate"
+//        static let urlSpotRequestPut = "http://www.harveytown.org/app/spot/spotrequest/put"
+//        static let urlShelterQueryActive = "http://www.harveytown.org/app/shelter/query/active"
+//        static let urlHazardQueryActive = "http://www.harveytown.org/app/hazard/query/active"
+//        static let urlHazardPut = "http://www.harveytown.org/app/hazard/put"
+//        static let urlHydroQuery = "http://www.harveytown.org/app/hydro/query/active"
     }
     
     

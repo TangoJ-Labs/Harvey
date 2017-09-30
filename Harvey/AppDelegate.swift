@@ -52,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AWSRequestDelegate
         {
             print(facebookToken.tokenString)
             // Request the global app settings
-            AWSPrepRequest(requestToCall: AWSGetSettings(), delegate: self as AWSRequestDelegate).prepRequest()
+            AWSPrepRequest(requestToCall: AWSSettings(), delegate: self as AWSRequestDelegate).prepRequest()
             
             // Try to retrieve the current user from Core Data
             let currentUser = CoreDataFunctions().currentUserRetrieve()
@@ -216,7 +216,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AWSRequestDelegate
                 // Process the return data based on the method used
                 switch objectType
                 {
-                case _ as AWSGetSettings:
+                case _ as AWSSettings:
                     if success
                     {
                         print("AD - SETTINGS RETURN - SUCCESS")

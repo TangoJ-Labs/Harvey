@@ -310,7 +310,7 @@ class ProfileTabSkillViewController: UIViewController, UITableViewDataSource, UI
             }
         }
         // Upload the changes
-        AWSPrepRequest(requestToCall: AWSPutSkills(skills: skillList), delegate: self as AWSRequestDelegate).prepRequest()
+        AWSPrepRequest(requestToCall: AWSSkillPut(skills: skillList), delegate: self as AWSRequestDelegate).prepRequest()
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath)
@@ -366,7 +366,7 @@ class ProfileTabSkillViewController: UIViewController, UITableViewDataSource, UI
     func requestData()
     {
         // Request the user's skill history
-        AWSPrepRequest(requestToCall: AWSGetSkills(userID: Constants.Data.currentUser.userID), delegate: self as AWSRequestDelegate).prepRequest()
+        AWSPrepRequest(requestToCall: AWSSkillQuery(userID: Constants.Data.currentUser.userID), delegate: self as AWSRequestDelegate).prepRequest()
     }
     
     // MARK: AWS DELEGATE METHODS
@@ -387,7 +387,7 @@ class ProfileTabSkillViewController: UIViewController, UITableViewDataSource, UI
                 // Process the return data based on the method used
                 switch objectType
                 {
-                case _ as AWSGetSkills:
+                case _ as AWSSkillQuery:
                     if success
                     {
                         print("PTSKVC - AWS GET SKILLS - SUCCESS")
@@ -402,7 +402,7 @@ class ProfileTabSkillViewController: UIViewController, UITableViewDataSource, UI
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
                     }
-                case _ as AWSPutSkills:
+                case _ as AWSSkillPut:
                     if success
                     {
                         print("PTSKVC - AWS PUT SKILLS - SUCCESS")

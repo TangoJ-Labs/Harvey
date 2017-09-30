@@ -842,12 +842,12 @@ class CoreDataFunctions: AWSRequestDelegate
 //    
 //    func logErrorRetrieve(andDelete: Bool) -> [LogError]
 //    {
-//        // Retrieve the Blob notification data from Core Data
+//        // Retrieve the notification data from Core Data
 //        let moc = DataController().managedObjectContext
 //        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
 //        let logErrorFetch: NSFetchRequest<LogError> = LogError.fetchRequest()
 //        
-//        // Create an empty blobNotifications list in case the Core Data request fails
+//        // Create an empty notifications list in case the Core Data request fails
 //        var logErrors = [LogError]()
 //        do
 //        {
@@ -909,11 +909,11 @@ class CoreDataFunctions: AWSRequestDelegate
 //    
 //    func logUserflowRetrieve(andDelete: Bool) -> [LogUserflow]
 //    {
-//        // Retrieve the Blob notification data from Core Data
+//        // Retrieve the notification data from Core Data
 //        let moc = DataController().managedObjectContext
 //        let logUserflowFetch: NSFetchRequest<LogUserflow> = LogUserflow.fetchRequest()
 //        
-//        // Create an empty blobNotifications list in case the Core Data request fails
+//        // Create an empty notifications list in case the Core Data request fails
 //        var logUserflows = [LogUserflow]()
 //        do
 //        {

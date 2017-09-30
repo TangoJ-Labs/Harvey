@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Harvey/MapViewController.swift"
-            timestampString = "527253061.217114"
+            timestampString = "528392156.005261"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1718"
-            endingLineNumber = "1718"
+            startingLineNumber = "1751"
+            endingLineNumber = "1751"
             landmarkName = "addSpotMapFeatures()"
             landmarkType = "7">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Harvey/MapViewController.swift"
-            timestampString = "527253061.217114"
+            timestampString = "528392156.005261"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1304"
-            endingLineNumber = "1304"
+            startingLineNumber = "1337"
+            endingLineNumber = "1337"
             landmarkName = "requestMapData(userLocation:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -48,22 +48,6 @@
             startingLineNumber = "158"
             endingLineNumber = "158"
             landmarkName = "tableView(_:cellForRowAt:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Harvey/AWSClasses.swift"
-            timestampString = "527909436.821657"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1648"
-            endingLineNumber = "1648"
-            landmarkName = "makeRequest()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

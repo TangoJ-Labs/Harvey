@@ -322,7 +322,7 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
                     requests[self.currentIndex].status = "delete"
                     
                     // Send the SpotRequest update
-                    AWSPrepRequest(requestToCall: AWSPutSpotRequestData(spotRequest: requests[self.currentIndex]), delegate: self as AWSRequestDelegate).prepRequest()
+                    AWSPrepRequest(requestToCall: AWSSpotRequestPut(spotRequest: requests[self.currentIndex]), delegate: self as AWSRequestDelegate).prepRequest()
                     
                     // Remove the object at the list index and load the next object at the nearest upper index
                     // If the list only contains one object, and it is being deleted, just delete the object and remove the unneeded view containers
@@ -387,7 +387,7 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
                     hazds[self.currentIndex].status = "delete"
                     
                     // Send the Hazard update
-                    AWSPrepRequest(requestToCall: AWSPutHazardData(hazard: hazds[self.currentIndex]), delegate: self as AWSRequestDelegate).prepRequest()
+                    AWSPrepRequest(requestToCall: AWSHazardPut(hazard: hazds[self.currentIndex]), delegate: self as AWSRequestDelegate).prepRequest()
                     
                     // Remove the object at the list index and load the next object at the nearest upper index
                     // If the list only contains one object, and it is being deleted, just delete the object and remove the unneeded view containers
@@ -530,10 +530,10 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
                 // Process the return data based on the method used
                 switch objectType
                 {
-                case _ as AWSPutSpotRequestData:
+                case _ as AWSSpotRequestPut:
                     if success
                     {
-                        print("AVC - AWSPutSpotRequestData SUCCESS")
+                        print("AVC - AWSSpotRequestPut SUCCESS")
                         
                         if let sRequests = self.spotRequests
                         {
@@ -545,12 +545,12 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
                     }
                     else
                     {
-                        print("AVC - AWSPutSpotRequestData FAILURE")
+                        print("AVC - AWSSpotRequestPut FAILURE")
                         // Show the error message
                         let alertController = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         self.present(alertController, animated: true, completion: nil)
                     }
-                case _ as AWSPutHazardData:
+                case _ as AWSHazardPut:
                     if success
                     {
                         print("AVC - AWSPutHazardData SUCCESS")

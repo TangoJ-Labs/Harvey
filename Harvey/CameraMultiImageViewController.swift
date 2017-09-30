@@ -15,7 +15,7 @@ import UIKit
 
 protocol CameraViewControllerDelegate
 {
-    func reloadData()
+    func returnFromCamera()
 }
 
 class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, MKMapViewDelegate, AWSRequestDelegate
@@ -233,7 +233,7 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
 //        clearTmpDirectory()
         
         // Request a random id for the Spot
-        AWSPrepRequest(requestToCall: AWSGetRandomID(randomIdType: Constants.randomIdType.random_spot_id), delegate: self as AWSRequestDelegate).prepRequest()
+        AWSPrepRequest(requestToCall: AWSCreateRandomID(randomIdType: Constants.randomIdType.random_spot_id), delegate: self as AWSRequestDelegate).prepRequest()
     }
     
     // Perform setup before the view loads
@@ -986,12 +986,12 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
                 // Process the return data based on the method used
                 switch objectType
                 {
-                case let awsGetRandomID as AWSGetRandomID:
+                case let awsCreateRandomID as AWSCreateRandomID:
                     if success
                     {
-                        if let randomID = awsGetRandomID.randomID
+                        if let randomID = awsCreateRandomID.randomID
                         {
-                            if awsGetRandomID.randomIdType == Constants.randomIdType.random_spot_id
+                            if awsCreateRandomID.randomIdType == Constants.randomIdType.random_spot_id
                             {
                                 // Current user coords
                                 let userCoords = self.mapView.userLocation.coordinate
@@ -1026,7 +1026,7 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
                         {
                             // The first image was successfully uploaded, so upload the Spot data
                             // This ensures that Spots don't exist without some media
-                            AWSPrepRequest(requestToCall: AWSPutSpotData(spot: self.spot), delegate: self as AWSRequestDelegate).prepRequest()
+                            AWSPrepRequest(requestToCall: AWSSpotPut(spot: self.spot), delegate: self as AWSRequestDelegate).prepRequest()
                         }
                     }
                     else
@@ -1039,15 +1039,15 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
                         self.loadingIndicator.stopAnimating()
                         self.actionButton.addSubview(self.actionButtonLabel)
                     }
-                case _ as AWSPutSpotData:
+                case _ as AWSSpotPut:
                     if success
                     {
-//                        print("CVC - AWSPutSpotData SUCCESS")
+//                        print("CVC - AWSSpotPut SUCCESS")
                         
                         // Notify the parent view that the AWS Put completed
                         if let parentVC = self.cameraDelegate
                         {
-                            parentVC.reloadData()
+                            parentVC.returnFromCamera()
                         }
                         
                         // Stop the activity indicator and shoow the send image

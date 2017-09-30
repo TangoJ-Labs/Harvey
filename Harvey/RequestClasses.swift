@@ -358,6 +358,7 @@ class APITest: RequestObject
             print("RC-API TEST")
             var request = URLRequest(url: url!)
             request.httpMethod = "POST"
+            request.timeoutInterval = Constants.Settings.requestTimeout
             request.httpBody = jsonData
             request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
             let session = URLSession(configuration: .default)

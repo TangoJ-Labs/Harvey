@@ -577,7 +577,7 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                                     print("STVC - FLAG 00 FOR CONTENT: \(String(describing: contentID))")
                                     
                                     // Send the SpotContent update
-                                    AWSPrepRequest(requestToCall: AWSUpdateSpotContentData(contentID: contentID, spotID: spotID, statusUpdate: "flag-00"), delegate: self as AWSRequestDelegate).prepRequest()
+                                    AWSPrepRequest(requestToCall: AWSSpotContentStatusUpdate(contentID: contentID, spotID: spotID, statusUpdate: "flag-00"), delegate: self as AWSRequestDelegate).prepRequest()
                                 }
                                 let inaccurateAction = UIAlertAction(title: "Inaccurate", style: UIAlertActionStyle.default)
                                 { (result : UIAlertAction) -> Void in
@@ -588,7 +588,7 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                                     print("STVC - FLAG 01 FOR CONTENT: \(String(describing: contentID))")
                                     
                                     // Send the SpotContent update
-                                    AWSPrepRequest(requestToCall: AWSUpdateSpotContentData(contentID: contentID, spotID: spotID, statusUpdate: "flag-01"), delegate: self as AWSRequestDelegate).prepRequest()
+                                    AWSPrepRequest(requestToCall: AWSSpotContentStatusUpdate(contentID: contentID, spotID: spotID, statusUpdate: "flag-01"), delegate: self as AWSRequestDelegate).prepRequest()
                                 }
                                 let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default)
                                 { (result : UIAlertAction) -> Void in
@@ -614,7 +614,7 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                                     print("STVC - DELETE FOR CONTENT: \(String(describing: contentID))")
                                     
                                     // Send the SpotContent update
-                                    AWSPrepRequest(requestToCall: AWSUpdateSpotContentData(contentID: contentID, spotID: spotID, statusUpdate: "delete"), delegate: self as AWSRequestDelegate).prepRequest()
+                                    AWSPrepRequest(requestToCall: AWSSpotContentStatusUpdate(contentID: contentID, spotID: spotID, statusUpdate: "delete"), delegate: self as AWSRequestDelegate).prepRequest()
                                     
                                     // Update the content so that it displays as waiting for the delete command to complete
                                     self.spotContent[tappedIndexPath.row].deletePending = true
@@ -806,14 +806,14 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                         let alertController = UtilityFunctions().createAlertOkView("AWSGetMediaImage - Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         self.present(alertController, animated: true, completion: nil)
                     }
-                case let awsUpdateSpotContentData as AWSUpdateSpotContentData:
+                case let awsSpotContentStatusUpdate as AWSSpotContentStatusUpdate:
                     if success
                     {
                         // The flagging / delete update was successful, so remove the image from the current view
                         // THE GLOBAL ARRAY WAS UPDATED IN THE AWS CLASS RESPONSE
                         localSpotContentLoop: for (index, spotContentObject) in self.spotContent.enumerated()
                         {
-                            if spotContentObject.contentID == awsUpdateSpotContentData.contentID
+                            if spotContentObject.contentID == awsSpotContentStatusUpdate.contentID
                             {
                                 // Remove the SpotContent object
                                 self.spotContent.remove(at: index)

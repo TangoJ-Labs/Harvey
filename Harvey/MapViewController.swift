@@ -1117,7 +1117,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                 addHazardButtonSpinner.startAnimating()
                 
                 // Request a randomID for the Hazard before upload - the upload will fire when the id is downloaded
-                AWSPrepRequest(requestToCall: AWSGetRandomID(randomIdType: Constants.randomIdType.random_hazard_id), delegate: self as AWSRequestDelegate).prepRequest()
+                AWSPrepRequest(requestToCall: AWSCreateRandomID(randomIdType: Constants.randomIdType.random_hazard_id), delegate: self as AWSRequestDelegate).prepRequest()
             }
             else
             {
@@ -1146,7 +1146,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                 addSpotRequestButtonSpinner.startAnimating()
                 
                 // Request a randomID for the SpotRequest before upload
-                AWSPrepRequest(requestToCall: AWSGetRandomID(randomIdType: Constants.randomIdType.random_spot_id), delegate: self as AWSRequestDelegate).prepRequest()
+                AWSPrepRequest(requestToCall: AWSCreateRandomID(randomIdType: Constants.randomIdType.random_spot_id), delegate: self as AWSRequestDelegate).prepRequest()
             }
             else
             {
@@ -1157,6 +1157,18 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         }
     }
     
+    func addHazardComplete()
+    {
+        // Reset the reload settings so that a refresh can be tried again even if the request fails
+        // Release the hold on adding a new Hazard while uploading
+        self.newHazardPrepInProgress = false
+        
+        // Reset the view controllers involved
+        self.addHazardDeactivate()
+        
+        // Reset the download indicators
+        self.resetIndicators()
+    }
     func addHazardActivate()
     {
         print("MVC - addHazardActivate")
@@ -1196,6 +1208,18 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         addSpotRequestActive = true
         addSpotRequestButtonImage.image = UIImage(named: Constants.Strings.iconCheckYellowPin)
     }
+    func addSpotRequestComplete()
+    {
+        // Reset the reload settings so that a refresh can be tried again even if the request fails
+        // Release the hold on adding a new SpotRequest while uploading
+        self.newSpotRequestPrepInProgress = false
+        
+        // Reset the view controllers involved
+        self.addSpotRequestDeactivate()
+        
+        // Reset the download indicators
+        self.resetIndicators()
+    }
     func addSpotRequestDeactivate()
     {
         print("MVC - addSpotRequestDeactivate")
@@ -1217,6 +1241,24 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     
     
     // MARK: DELEGATE METHODS
+    
+    func returnFromCamera()
+    {
+        reloadData()
+    }
+    func resetIndicators()
+    {
+        // Check to see whether any data is still downloading - if not, stop the spinner
+        if !downloadingSpot && !downloadingHydro && !downloadingShelter && !downloadingHazard
+        {
+            // All the data has been loaded - Hide the loading indicator
+            self.refreshViewSpinner.stopAnimating()
+            self.refreshView.addSubview(self.refreshViewImage)
+        }
+    }
+    
+    
+    // MARK: CUSTOM METHODS
     
     func reloadData()
     {
@@ -1245,17 +1287,8 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             self.addHazardMapFeatures()
         }
         
-        // Check to see whether any data is still downloading - if not, stop the spinner
-        if !downloadingSpot && !downloadingHydro && !downloadingShelter && !downloadingHazard
-        {
-            // All the data has been loaded - Hide the loading indicator
-            self.refreshViewSpinner.stopAnimating()
-            self.refreshView.addSubview(self.refreshViewImage)
-        }
+        resetIndicators()
     }
-    
-    
-    // MARK: CUSTOM METHODS
     
     func toggleMenuTime()
     {
@@ -1304,12 +1337,12 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         userLoc["lat"] = userLocation.coordinate.latitude
         userLoc["lng"] = userLocation.coordinate.longitude
         
-        AWSPrepRequest(requestToCall: AWSGetSpotData(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
-        AWSPrepRequest(requestToCall: AWSGetHydroData(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
-        AWSPrepRequest(requestToCall: AWSGetShelterData(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
-        AWSPrepRequest(requestToCall: AWSGetHazardData(), delegate: self as AWSRequestDelegate).prepRequest()
-        AWSPrepRequest(requestToCall: AWSGetUsers(), delegate: self as AWSRequestDelegate).prepRequest()
-        AWSPrepRequest(requestToCall: AWSGetUserConnections(), delegate: self as AWSRequestDelegate).prepRequest()
+        AWSPrepRequest(requestToCall: AWSSpotQueryActive(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
+        AWSPrepRequest(requestToCall: AWSHydroQuery(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
+        AWSPrepRequest(requestToCall: AWSShelterQuery(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
+        AWSPrepRequest(requestToCall: AWSHazardQuery(), delegate: self as AWSRequestDelegate).prepRequest()
+        AWSPrepRequest(requestToCall: AWSUserQueryActive(), delegate: self as AWSRequestDelegate).prepRequest()
+        AWSPrepRequest(requestToCall: AWSUserConnectionQuery(userID: Constants.Data.currentUser.userID), delegate: self as AWSRequestDelegate).prepRequest()
         
         // Set all the downloading indicators to true
         downloadingSpot = true
@@ -1398,7 +1431,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     }
     
     // Adjust the Map Camera settings to allow or disallow angling the camera view
-    // If not in the add blob process, angle the map automatically if the zoom is high enough
+    // Angle the map automatically if the zoom is high enough
     func adjustMapViewCamera()
     {
 //        print("MVC - ADJUSTING MAP CAMERA")
@@ -1855,168 +1888,179 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                 // Process the return data based on the method used
                 switch objectType
                 {
-                case _ as AWSGetSpotData:
+                case _ as AWSSpotQueryActive:
                     if success
                     {
-                        // Reset the SpotMarker indicator (if the zoom is low enough? - seems to be working w/o check)
-//                        if mapView.camera.zoom < Constants.Settings.mapViewAngledZoom
-                        self.spotMarkersVisible = false
-                        
-                        // Mark the proper data as downloaded
-                        self.downloadingSpot = false
-                        
                         self.reloadData()
                     }
                     else
                     {
-                        print("MVC-ERROR: AWSGetSpotData")
+                        print("MVC-ERROR: AWSSpotQueryActive")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
                     }
-                case _ as AWSGetHydroData:
+                    // Reset the reload settings so that a refresh can be tried again even if the request fails
+                    // Reset the SpotMarker indicator (if the zoom is low enough? - seems to be working w/o check)
+//                    if mapView.camera.zoom < Constants.Settings.mapViewAngledZoom
+                    self.spotMarkersVisible = false
+                    
+                    // Mark the proper data as downloaded
+                    self.downloadingSpot = false
+                    
+                    // Reset the download indicators
+                    self.resetIndicators()
+                    
+                case _ as AWSHydroQuery:
                     if success
                     {
-                        // Mark the proper data as downloaded
-                        self.downloadingHydro = false
-                        
                         self.reloadData()
                     }
                     else
                     {
-                        print("MVC-ERROR: AWSGetHydroData")
+                        print("MVC-ERROR: AWSHydroQuery")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
                     }
-                case _ as AWSGetShelterData:
+                    // Reset the reload settings so that a refresh can be tried again even if the request fails
+                    // Mark the proper data as downloaded
+                    self.downloadingHydro = false
+                    
+                    // Reset the download indicators
+                    self.resetIndicators()
+                    
+                case _ as AWSShelterQuery:
                     if success
                     {
-                        // Mark the proper data as downloaded
-                        self.downloadingShelter = false
-                        
                         self.reloadData()
                     }
                     else
                     {
-                        print("MVC-ERROR: AWSGetShelterData")
+                        print("MVC-ERROR: AWSShelterQuery")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
                     }
-                case _ as AWSGetHazardData:
+                    // Reset the reload settings so that a refresh can be tried again even if the request fails
+                    // Mark the proper data as downloaded
+                    self.downloadingShelter = false
+                    
+                    // Reset the download indicators
+                    self.resetIndicators()
+                    
+                case _ as AWSHazardQuery:
                     if success
                     {
-                        // Mark the proper data as downloaded
-                        self.downloadingHazard = false
-                        
                         self.reloadData()
                     }
                     else
                     {
-                        print("MVC-ERROR: AWSGetShelterData")
+                        print("MVC-ERROR: AWSHazardQuery")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
                     }
-                case let awsGetRandomID as AWSGetRandomID:
+                    // Reset the reload settings so that a refresh can be tried again even if the request fails
+                    // Mark the proper data as downloaded
+                    self.downloadingHazard = false
+                    
+                    // Reset the download indicators
+                    self.resetIndicators()
+                    
+                case let awsCreateRandomID as AWSCreateRandomID:
                     if success
                     {
                         // The randomID is only requested once the upload command is given, so upload the data when the randomID is received
-//                        print("MVC - AWSGetRandomID: \(String(describing: awsGetRandomID.randomID))")
-                        if awsGetRandomID.randomIdType == Constants.randomIdType.random_spot_id
+//                        print("MVC - AWSCreateRandomID: \(String(describing: awsCreateRandomID.randomID))")
+                        if awsCreateRandomID.randomIdType == Constants.randomIdType.random_spot_id
                         {
                             if let spotRequest = self.newSpotRequest
                             {
-                                spotRequest.requestID = awsGetRandomID.randomID
+                                spotRequest.requestID = awsCreateRandomID.randomID
                                 
                                 // Upload the SpotRequest
-                                AWSPrepRequest(requestToCall: AWSPutSpotRequestData(spotRequest: spotRequest), delegate: self as AWSRequestDelegate).prepRequest()
+                                AWSPrepRequest(requestToCall: AWSSpotRequestPut(spotRequest: spotRequest), delegate: self as AWSRequestDelegate).prepRequest()
                             }
                         }
-                        else if awsGetRandomID.randomIdType == Constants.randomIdType.random_hazard_id
+                        else if awsCreateRandomID.randomIdType == Constants.randomIdType.random_hazard_id
                         {
                             if let hazard = self.newHazard
                             {
-                                print("MVC-AWSGetRandomID for HAZARD for user: \(hazard.userID)")
-                                hazard.hazardID = awsGetRandomID.randomID
+                                print("MVC-AWSCreateRandomID for HAZARD for user: \(hazard.userID)")
+                                hazard.hazardID = awsCreateRandomID.randomID
                                 
                                 // Upload the Hazard
-                                AWSPrepRequest(requestToCall: AWSPutHazardData(hazard: hazard), delegate: self as AWSRequestDelegate).prepRequest()
+                                AWSPrepRequest(requestToCall: AWSHazardPut(hazard: hazard), delegate: self as AWSRequestDelegate).prepRequest()
                             }
                         }
                     }
                     else
                     {
-                        print("MVC-ERROR: AWSGetRandomID")
+                        print("MVC-ERROR: AWSCreateRandomID")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
+                        
+                        self.addSpotRequestComplete()
+                        self.addHazardComplete()
                     }
-                case _ as AWSPutSpotRequestData:
+                case _ as AWSSpotRequestPut:
                     if success
                     {
                         // The SpotRequest was already added to the global array in AWSClasses
-                        print("MVC - AWSPutSpotRequestData SUCCESS")
-                        
-                        // Release the hold on adding a new SpotRequest while uploading
-                        self.newSpotRequestPrepInProgress = false
-                        
-                        // Reset the view controllers involved
-                        self.addSpotRequestDeactivate()
+                        print("MVC - AWSSpotRequestPut SUCCESS")
                         
                         // Update the SpotRequests
                         self.reloadData()
                     }
                     else
                     {
-                        print("ERROR: AWSPutSpotRequestData")
+                        print("ERROR: AWSSpotRequestPut")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
                     }
-                case _ as AWSPutHazardData:
+                    self.addSpotRequestComplete()
+                    
+                case _ as AWSHazardPut:
                     if success
                     {
                         // The Hazard was already added to the global array in AWSClasses
-                        print("MVC - AWSPutHazardData SUCCESS")
-                        
-                        // Release the hold on adding a new Hazard while uploading
-                        self.newHazardPrepInProgress = false
-                        
-                        // Reset the view controllers involved
-                        self.addHazardDeactivate()
+                        print("MVC - AWSHazardPut SUCCESS")
                         
                         // Update the Hazards
                         self.reloadData()
                     }
                     else
                     {
-                        print("ERROR: AWSPutSpotRequestData")
+                        print("ERROR: AWSHazardPut")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
                     }
-                case _ as AWSGetUsers:
+                    self.addHazardComplete()
+                    
+                case _ as AWSUserQueryActive:
                     if success
                     {
-                        print("MVC-SUCCESS: AWSGetUsers")
+                        print("MVC-SUCCESS: AWSUserQueryActive")
                     }
                     else
                     {
-                        print("MVC-ERROR: AWSGetUsers")
+                        print("MVC-ERROR: AWSUserQueryActive")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
                     }
-                case _ as AWSGetUserConnections:
+                case _ as AWSUserConnectionQuery:
                     if success
                     {
-                        print("MVC-SUCCESS: AWSGetUserConnections")
+                        print("MVC-SUCCESS: AWSUserConnectionQuery")
                     }
                     else
                     {
-                        print("MVC-ERROR: AWSGetUserConnections")
+                        print("MVC-ERROR: AWSUserConnectionQuery")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
@@ -2044,7 +2088,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             }
             else
             {
-                print("ERROR: AWSGetHydroData")
+                print("ERROR: FBGetUserData")
                 // Show the error message
                 let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                 alert.show()
@@ -2056,7 +2100,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             }
             else
             {
-                print("MVC-ERROR: AWSGetHydroData")
+                print("MVC-ERROR: FBDownloadUserImage")
                 // Show the error message
                 let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                 alert.show()
