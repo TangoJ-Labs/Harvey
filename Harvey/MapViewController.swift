@@ -538,6 +538,9 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(MapViewController.statusBarHeightChange(_:)), name: Notification.Name("UIApplicationWillChangeStatusBarFrameNotification"), object: nil)
+        
+        // Request a random id for the Spot
+        AWSPrepRequest(requestToCall: AWSCreateRandomID(randomIdType: Constants.randomIdType.random_structure_id), delegate: self as AWSRequestDelegate).prepRequest()
     }
     
     override func viewWillAppear(_ animated: Bool)
@@ -1037,6 +1040,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         // Load the CameraVC
         let cameraVC = CameraMultiImageViewController()
         cameraVC.cameraDelegate = self
+        cameraVC.forSpot = true
         self.navigationController!.pushViewController(cameraVC, animated: true)
 //        self.present(cameraVC, animated: true, completion: nil)
     }
@@ -1242,7 +1246,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     
     // MARK: DELEGATE METHODS
     
-    func returnFromCamera()
+    func returnFromCamera(updatedRow: Int?)
     {
         reloadData()
     }

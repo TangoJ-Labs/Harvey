@@ -15,7 +15,7 @@ import UIKit
 
 protocol CameraViewControllerDelegate
 {
-    func returnFromCamera()
+    func returnFromCamera(updatedRow: Int?)
 }
 
 class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, MKMapViewDelegate, AWSRequestDelegate
@@ -62,10 +62,16 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
     var mapCenter: CLLocationCoordinate2D!
     var defaultCamera: GMSCameraPosition!
     
-    // Spot data
+    // Type of recording
+    var forSpot: Bool = false
+    var forRepair: Bool = false
+    var repairRow: Int?
+    
+    // Item data
     var spot: Spot?
+    var repair: Repair?
     var previewViewArray = [UIView]()
-    var contentSelectedIDs = [String]()
+    var selectedIDs = [String]()
     
     var useBackCamera = true
     
@@ -232,8 +238,13 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
         self.view.sendSubview(toBack: self.loadingScreen)
 //        clearTmpDirectory()
         
-        // Request a random id for the Spot
-        AWSPrepRequest(requestToCall: AWSCreateRandomID(randomIdType: Constants.randomIdType.random_spot_id), delegate: self as AWSRequestDelegate).prepRequest()
+        // Request a random id -- NOT FOR REPAIRS - use the currently existing RepairID
+        if forSpot
+        {
+            AWSPrepRequest(requestToCall: AWSCreateRandomID(randomIdType: Constants.randomIdType.random_spot_id), delegate: self as AWSRequestDelegate).prepRequest()
+        }
+        
+        refreshImageRing()
     }
     
     // Perform setup before the view loads
@@ -300,17 +311,17 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
         if let touch = touches.first
         {
             // Find which image the tap was inside
-            var contentSelectedIndicator: Bool = false
+            var objectSelectedIndicator: Bool = false
             for (ivIndex, imageView) in previewViewArray.enumerated()
             {
                 if imageView.frame.contains(touch.location(in: imageRingView))
                 {
 //                    print("CVC - IMAGEVIEW: \(imageView) CONTAINS SELECTION")
-                    contentSelectedIndicator = true
+                    objectSelectedIndicator = true
                     
                     // Check whether the image has already been selected
                     var alreadySelected = false
-                    for (index, _) in contentSelectedIDs.enumerated()
+                    for (index, _) in selectedIDs.enumerated()
                     {
                         if index == ivIndex
                         {
@@ -318,23 +329,33 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
                             alreadySelected = true
                             
                             // The image was selected for a second time, so de-select the image
-                            contentSelectedIDs.remove(at: index)
+                            selectedIDs.remove(at: index)
                         }
                     }
 //                    print("CVC - IMAGEVIEW CHECK 2")
                     if !alreadySelected
                     {
-                        if let spot = spot
+                        if forSpot
                         {
-                            contentSelectedIDs.append(spot.spotContent[ivIndex].contentID)
+                            if let spot = spot
+                            {
+                                selectedIDs.append(spot.spotContent[ivIndex].contentID)
+                            }
+                        }
+                        else if forRepair
+                        {
+                            if let repair = repair
+                            {
+                                selectedIDs.append(repair.repairImages[ivIndex].imageID)
+                            }
                         }
                     }
-//                    print("CVC - imageSelected COUNT 1: \(contentSelectedIDs.count)")
+//                    print("CVC - imageSelected COUNT 1: \(selectedIDs.count)")
                 }
             }
             
             // If at least one image has been selected, show the delete icon
-            if contentSelectedIDs.count > 0
+            if selectedIDs.count > 0
             {
                 // An image was selected, so change the action button to the delete button
                 actionButtonLabel.text = "\u{1F5D1}"
@@ -385,40 +406,65 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
                 
                 // If images are selected, the delete button is showing, so delete the selected images
                 // Otherwise upload the images
-                if contentSelectedIDs.count > 0
+                if selectedIDs.count > 0
                 {
                     deleteImages()
                 }
                 else
                 {
-                    if let spot = spot
+                    if forSpot
                     {
-                        // Upload the images
-                        for (index, content) in spot.spotContent.enumerated()
+                        if let spot = spot
                         {
-                            if let image = content.image
+                            // Upload the images
+                            for (index, content) in spot.spotContent.enumerated()
                             {
-//                        let imageURL = UtilityFunctions().generateImageUrl(image: content.contentImage, fileName: "\(content.contentID!).jpg")
-//                        print("CVC - IMAGE URL FOR UPLOAD: \(imageURL.absoluteString)")
-                                
-                                let imagePath: String = NSTemporaryDirectory().stringByAppendingPathComponent(path: content.contentID! + ".jpg")
-//                                print("CVC - IMAGE PATH: \(imagePath)")
-                                let imageURL = URL(fileURLWithPath: imagePath)
-                                
-                                // Write the image to the file
-//                        if let imageData = UIImagePNGRepresentation(content.contentImage)
-                                if let imageData = UIImageJPEGRepresentation(image, 0.6)
+                                if let image = content.image
                                 {
-                                    try? imageData.write(to: imageURL)
-                                    AWSPrepRequest(requestToCall: AWSUploadMediaToBucket(bucket: Constants.Strings.S3BucketMedia, uploadKey: "\(content.contentID!).jpg", mediaURL: imageURL, imageIndex: index), delegate: self as AWSRequestDelegate).prepRequest()
+                                    let imagePath: String = NSTemporaryDirectory().stringByAppendingPathComponent(path: content.contentID! + ".jpg")
+                                    let imageURL = URL(fileURLWithPath: imagePath)
                                     
-                                    // Start the activity indicator and hide the send image
-                                    self.actionButtonLabel.removeFromSuperview()
-                                    self.loadingIndicator.startAnimating()
+                                    // Write the image to the file
+                                    if let imageData = UIImageJPEGRepresentation(image, 0.6)
+                                    {
+                                        try? imageData.write(to: imageURL)
+                                        AWSPrepRequest(requestToCall: AWSUploadMediaToBucket(bucket: Constants.Strings.S3BucketMedia, uploadKey: "\(content.contentID!).jpg", mediaURL: imageURL, imageIndex: index), delegate: self as AWSRequestDelegate).prepRequest()
+                                        
+                                        // Start the activity indicator and hide the send image
+                                        self.actionButtonLabel.removeFromSuperview()
+                                        self.loadingIndicator.startAnimating()
+                                    }
                                 }
                             }
                         }
                     }
+                    else if forRepair
+                    {
+                        if let repair = repair
+                        {
+                            // Upload the images
+                            for (index, rImage) in repair.repairImages.enumerated()
+                            {
+                                if let image = rImage.image
+                                {
+                                    let imagePath: String = NSTemporaryDirectory().stringByAppendingPathComponent(path: rImage.imageID! + ".jpg")
+                                    let imageURL = URL(fileURLWithPath: imagePath)
+                                    
+                                    // Write the image to the file
+                                    if let imageData = UIImageJPEGRepresentation(image, 0.6)
+                                    {
+                                        try? imageData.write(to: imageURL)
+                                        AWSPrepRequest(requestToCall: AWSUploadMediaToBucket(bucket: Constants.Strings.S3BucketMedia, uploadKey: "\(rImage.imageID!).jpg", mediaURL: imageURL, imageIndex: index), delegate: self as AWSRequestDelegate).prepRequest()
+                                        
+                                        // Start the activity indicator and hide the send image
+                                        self.actionButtonLabel.removeFromSuperview()
+                                        self.loadingIndicator.startAnimating()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
                 }
             }
 //            else if cameraView.frame.contains(touch.location(in: viewContainer)) && !contentSelectedIndicator
@@ -426,7 +472,7 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
 //                print("TOUCHED CAMERA")
 //                captureImage()
 //            }
-            else if contentSelectedIndicator
+            else if objectSelectedIndicator
             {
                 // An image was selected, so highlight the image
                 self.refreshImageRing()
@@ -513,55 +559,106 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
         imageRingView.subviews.forEach({ $0.removeFromSuperview() })
         previewViewArray = [UIView]()
         
-        if let spot = spot
+        if forSpot
         {
-//            print("CVC - IMAGE ARRAY COUNT: \(spot.spotContent.count)")
-            if spot.spotContent.count > 0
+            if let spot = spot
             {
-                imageRingView.isHidden = false
-                actionButton.isHidden = false
-                
-                let cellSize: CGFloat = Constants.Dim.cameraViewImageCellSize
-                let imageSize: CGFloat = Constants.Dim.cameraViewImageSize
-                let imageCellGap: CGFloat = (cellSize - imageSize) / 2
-                
-                // Add the imageviews to the ring view
-                for (index, content) in spot.spotContent.enumerated()
+                if spot.spotContent.count > 0
                 {
-                    let imageViewBase: CGPoint = basepointForCircleOfCircles(index, mainCircleRadius: imageRingDiameter / 2, radius: cellSize / 2, distance: (imageRingDiameter / 2) - (cellSize / 2)) // - (imageCellGap / 2))
-                    let cellContainer = UIView(frame: CGRect(x: imageViewBase.x, y: imageViewBase.y, width: cellSize, height: cellSize))
-                    cellContainer.layer.cornerRadius = cellSize / 2
-                    cellContainer.clipsToBounds = true
+                    imageRingView.isHidden = false
+                    actionButton.isHidden = false
                     
-                    let imageContainer = UIView(frame: CGRect(x: imageCellGap, y: imageCellGap, width: imageSize, height: imageSize))
-                    imageContainer.layer.cornerRadius = imageSize / 2
-                    imageContainer.clipsToBounds = true
-                    imageContainer.backgroundColor = UIColor.white
-                    cellContainer.addSubview(imageContainer)
+                    let cellSize: CGFloat = Constants.Dim.cameraViewImageCellSize
+                    let imageSize: CGFloat = Constants.Dim.cameraViewImageSize
+                    let imageCellGap: CGFloat = (cellSize - imageSize) / 2
                     
-                    let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: imageSize, height: imageSize))
-                    imageView.image = content.image
-                    imageContainer.addSubview(imageView)
-                    
-                    imageRingView.addSubview(cellContainer)
-                    previewViewArray.append(cellContainer)
-//                    print("CVC - IMAGE ARRAY INDEX: \(index)")
-//                    print("CVC - contentSelected COUNT 2: \(contentSelectedIDs.count)")
-                    
-                    // If the index is stored in the imageSelect array, it has been selected, so highlight the image
-                    for contentID in contentSelectedIDs
+                    // Add the imageviews to the ring view
+                    for (index, content) in spot.spotContent.enumerated()
                     {
-                        if contentID == content.contentID
+                        let imageViewBase: CGPoint = basepointForCircleOfCircles(index, mainCircleRadius: imageRingDiameter / 2, radius: cellSize / 2, distance: (imageRingDiameter / 2) - (cellSize / 2)) // - (imageCellGap / 2))
+                        let cellContainer = UIView(frame: CGRect(x: imageViewBase.x, y: imageViewBase.y, width: cellSize, height: cellSize))
+                        cellContainer.layer.cornerRadius = cellSize / 2
+                        cellContainer.clipsToBounds = true
+                        
+                        let imageContainer = UIView(frame: CGRect(x: imageCellGap, y: imageCellGap, width: imageSize, height: imageSize))
+                        imageContainer.layer.cornerRadius = imageSize / 2
+                        imageContainer.clipsToBounds = true
+                        imageContainer.backgroundColor = UIColor.white
+                        cellContainer.addSubview(imageContainer)
+                        
+                        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: imageSize, height: imageSize))
+                        imageView.image = content.image
+                        imageContainer.addSubview(imageView)
+                        
+                        imageRingView.addSubview(cellContainer)
+                        previewViewArray.append(cellContainer)
+                        
+                        // If the index is stored in the imageSelect array, it has been selected, so highlight the image
+                        for imageID in selectedIDs
                         {
-                            cellContainer.backgroundColor = UIColor.red.withAlphaComponent(0.3)
+                            if imageID == content.contentID
+                            {
+                                cellContainer.backgroundColor = UIColor.red.withAlphaComponent(0.3)
+                            }
                         }
                     }
                 }
+                else
+                {
+                    imageRingView.isHidden = true
+                    actionButton.isHidden = true
+                }
             }
-            else
+        }
+        else if forRepair
+        {
+            if let repair = repair
             {
-                imageRingView.isHidden = true
-                actionButton.isHidden = true
+                if repair.repairImages.count > 0
+                {
+                    imageRingView.isHidden = false
+                    actionButton.isHidden = false
+                    
+                    let cellSize: CGFloat = Constants.Dim.cameraViewImageCellSize
+                    let imageSize: CGFloat = Constants.Dim.cameraViewImageSize
+                    let imageCellGap: CGFloat = (cellSize - imageSize) / 2
+                    
+                    // Add the imageviews to the ring view
+                    for (index, rImage) in repair.repairImages.enumerated()
+                    {
+                        let imageViewBase: CGPoint = basepointForCircleOfCircles(index, mainCircleRadius: imageRingDiameter / 2, radius: cellSize / 2, distance: (imageRingDiameter / 2) - (cellSize / 2)) // - (imageCellGap / 2))
+                        let cellContainer = UIView(frame: CGRect(x: imageViewBase.x, y: imageViewBase.y, width: cellSize, height: cellSize))
+                        cellContainer.layer.cornerRadius = cellSize / 2
+                        cellContainer.clipsToBounds = true
+                        
+                        let imageContainer = UIView(frame: CGRect(x: imageCellGap, y: imageCellGap, width: imageSize, height: imageSize))
+                        imageContainer.layer.cornerRadius = imageSize / 2
+                        imageContainer.clipsToBounds = true
+                        imageContainer.backgroundColor = UIColor.white
+                        cellContainer.addSubview(imageContainer)
+                        
+                        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: imageSize, height: imageSize))
+                        imageView.image = rImage.image
+                        imageContainer.addSubview(imageView)
+                        
+                        imageRingView.addSubview(cellContainer)
+                        previewViewArray.append(cellContainer)
+                        
+                        // If the index is stored in the imageSelect array, it has been selected, so highlight the image
+                        for imageID in selectedIDs
+                        {
+                            if imageID == rImage.imageID
+                            {
+                                cellContainer.backgroundColor = UIColor.red.withAlphaComponent(0.3)
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    imageRingView.isHidden = true
+                    actionButton.isHidden = true
+                }
             }
         }
     }
@@ -622,40 +719,78 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
     func deleteImages()
     {
         // Sort the array and then reverse the order so that the latest indexes are removed first
-        contentSelectedIDs.sort()
-        contentSelectedIDs.reverse()
+        selectedIDs.sort()
+        selectedIDs.reverse()
         
-        for contentID in contentSelectedIDs
+        for imageID in selectedIDs
         {
-            if let spot = spot
+            if forSpot
             {
-                for (index, content) in spot.spotContent.enumerated()
+                if let spot = spot
                 {
-                    if content.contentID == contentID
+                    for (index, content) in spot.spotContent.enumerated()
                     {
-                        spot.spotContent.remove(at: index)
-//                        print("CVC - REMOVED IMAGE AT INDEX: \(index)")
+                        if content.contentID == imageID
+                        {
+                            spot.spotContent.remove(at: index)
+                        }
+                    }
+                }
+            }
+            else if forRepair
+            {
+                if let repair = repair
+                {
+                    for (index, rImage) in repair.repairImages.enumerated()
+                    {
+                        if rImage.imageID == imageID
+                        {
+                            repair.repairImages.remove(at: index)
+                        }
                     }
                 }
             }
         }
         
-        if let spot = spot
+        if forSpot
         {
-            // Now run through the images and rename them based on order
-            for (index, content) in spot.spotContent.enumerated()
+            if let spot = spot
             {
-                content.contentID = spot.spotID + "-" + String(index + 1)
+                // Now run through the images and rename them based on order
+                for (index, content) in spot.spotContent.enumerated()
+                {
+                    content.contentID = spot.spotID + "-" + String(index + 1)
+                }
+                
+                // Reset the imageSelected array, hide the delete button, and refresh the collection view
+                selectedIDs = [String]()
+                actionButtonLabel.text = "\u{2713}"
+                if spot.spotContent.count == 0
+                {
+                    actionButton.isHidden = true
+                }
+                refreshImageRing()
             }
-            
-            // Reset the imageSelected array, hide the delete button, and refresh the collection view
-            contentSelectedIDs = [String]()
-            actionButtonLabel.text = "\u{2713}"
-            if spot.spotContent.count == 0
+        }
+        else if forRepair
+        {
+            if let repair = repair
             {
-                actionButton.isHidden = true
+                // Now run through the images and rename them based on order
+                for (index, rImage) in repair.repairImages.enumerated()
+                {
+                    rImage.imageID = repair.repairID + "-" + String(index + 1)
+                }
+                
+                // Reset the imageSelected array, hide the delete button, and refresh the collection view
+                selectedIDs = [String]()
+                actionButtonLabel.text = "\u{2713}"
+                if repair.repairImages.count == 0
+                {
+                    actionButton.isHidden = true
+                }
+                refreshImageRing()
             }
-            refreshImageRing()
         }
     }
     
@@ -819,7 +954,7 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
     
     func captureImage()
     {
-//        print("IN CAPTURE IMAGE")
+        print("IN CAPTURE IMAGE")
         if let videoConnection = stillImageOutput!.connection(withMediaType: AVMediaTypeVideo)
         {
             stillImageOutput?.captureStillImageAsynchronously(from: videoConnection, completionHandler:
@@ -851,13 +986,13 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
                             {
                                 imageOrientationValue = 1
                             }
-//                            print("CVC - DEVICE ORIENTATION (FOR IMAGE): \(UIDevice.current.orientation.rawValue)")
+                            print("CVC - DEVICE ORIENTATION (FOR IMAGE): \(UIDevice.current.orientation.rawValue)")
                             
                             // Resize the image into a square
                             let cgImageRef = CGImage(jpegDataProviderSource: dataProvider, decode: nil, shouldInterpolate: true, intent: CGColorRenderingIntent.defaultIntent)
                             let rawImage = UIImage(cgImage: cgImageRef!, scale: 1.0, orientation: UIImageOrientation.right)
                             let sizedImage = rawImage.cropToBounds(rawImage.size.width, height: rawImage.size.width)
-//                            print("CVC - OLD IMAGE ORIENTATION: \(rawImage.imageOrientation.rawValue)")
+                            print("CVC - OLD IMAGE ORIENTATION: \(rawImage.imageOrientation.rawValue)")
                             
                             if let cgImage = sizedImage.cgImage
                             {
@@ -869,27 +1004,52 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
                                 
                                 print("CVC - NEW IMAGE ORIENTATION: \(image.imageOrientation.hashValue)")
                                 
-                                if let spot = self.spot
+                                if self.forSpot
                                 {
-                                    // Check how many images have already been added
-                                    let imageCount = spot.spotContent.count
-                                    
-                                    if imageCount < 12
+                                    if let spot = self.spot
                                     {
-                                        // Create the Spot Content
-                                        let contentID = spot.spotID + "-" + String(imageCount + 1)
-                                        let userCoords = self.mapView.userLocation.coordinate
+                                        // Check how many images have already been added
+                                        let imageCount = spot.spotContent.count
                                         
-                                        // Record the location for the spotContent
-                                        let spotContent = SpotContent(contentID: contentID, spotID: spot.spotID, datetime: Date(), type: Constants.ContentType.image, lat: userCoords.latitude, lng: userCoords.longitude)
-                                        spotContent.image = image
-                                        spot.spotContent.append(spotContent)
+                                        if imageCount < 12
+                                        {
+                                            // Create the Spot Content
+                                            let contentID = spot.spotID + "-" + String(imageCount + 1)
+                                            let userCoords = self.mapView.userLocation.coordinate
+                                            
+                                            let spotContent = SpotContent(contentID: contentID, spotID: spot.spotID, datetime: Date(timeIntervalSinceNow: 0), type: Constants.ContentType.image, lat: userCoords.latitude, lng: userCoords.longitude)
+                                            spotContent.image = image
+                                            spot.spotContent.append(spotContent)
+                                            
+                                            // Update the spot location and datetime
+                                            self.spot!.datetime = Date(timeIntervalSinceNow: 0)
+                                            self.spot!.lat = userCoords.latitude
+                                            self.spot!.lng = userCoords.longitude
+                                            
+                                            self.refreshImageRing()
+                                        }
+                                    }
+                                }
+                                else if self.forRepair
+                                {
+                                    if let repair = self.repair
+                                    {
+                                        // Check how many images have already been added
+                                        let imageCount = repair.repairImages.count
                                         
-                                        // Update the spot location
-                                        self.spot!.lat = userCoords.latitude
-                                        self.spot!.lng = userCoords.longitude
-                                        
-                                        self.refreshImageRing()
+                                        if imageCount < 12
+                                        {
+                                            // Create the RepairImage Object
+                                            let imageID = repair.repairID + "-" + String(imageCount + 1)
+                                            let repairImage = RepairImage(imageID: imageID, repairID: repair.repairID, datetime: Date(timeIntervalSinceNow: 0))
+                                            repairImage.image = image
+                                            repair.repairImages.append(repairImage)
+                                            
+                                            // Update the repair location and datetime
+                                            self.repair!.datetime = Date(timeIntervalSinceNow: 0)
+                                            
+                                            self.refreshImageRing()
+                                        }
                                     }
                                 }
                             }
@@ -991,7 +1151,7 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
                     {
                         if let randomID = awsCreateRandomID.randomID
                         {
-                            if awsCreateRandomID.randomIdType == Constants.randomIdType.random_spot_id
+                            if self.forSpot && awsCreateRandomID.randomIdType == Constants.randomIdType.random_spot_id
                             {
                                 // Current user coords
                                 let userCoords = self.mapView.userLocation.coordinate
@@ -1024,9 +1184,18 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
                         
                         if awsUploadMediaToBucket.imageIndex == 0
                         {
-                            // The first image was successfully uploaded, so upload the Spot data
-                            // This ensures that Spots don't exist without some media
-                            AWSPrepRequest(requestToCall: AWSSpotPut(spot: self.spot), delegate: self as AWSRequestDelegate).prepRequest()
+                            // The first image was successfully uploaded, so upload the data
+                            // This ensures that entities don't exist without some media
+                            if self.forSpot
+                            {
+                                AWSPrepRequest(requestToCall: AWSSpotPut(spot: self.spot), delegate: self as AWSRequestDelegate).prepRequest()
+                            }
+                            else if self.forRepair
+                            {
+                                let repairPut = AWSRepairPut(repair: self.repair)
+                                repairPut.updatedImages = 1
+                                AWSPrepRequest(requestToCall: repairPut, delegate: self as AWSRequestDelegate).prepRequest()
+                            }
                         }
                     }
                     else
@@ -1042,12 +1211,40 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
                 case _ as AWSSpotPut:
                     if success
                     {
-//                        print("CVC - AWSSpotPut SUCCESS")
+                        print("CVC - AWSSpotPut SUCCESS")
                         
                         // Notify the parent view that the AWS Put completed
                         if let parentVC = self.cameraDelegate
                         {
-                            parentVC.returnFromCamera()
+                            parentVC.returnFromCamera(updatedRow: nil)
+                        }
+                        
+                        // Stop the activity indicator and shoow the send image
+                        self.loadingIndicator.stopAnimating()
+                        self.actionButton.addSubview(self.actionButtonLabel)
+                        
+                        // Return to the parentVC
+                        self.popViewController()
+                    }
+                    else
+                    {
+                        // Show the error message
+                        let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                        alert.show()
+                        
+                        // Stop the activity indicator and shoow the send image
+                        self.loadingIndicator.stopAnimating()
+                        self.actionButton.addSubview(self.actionButtonLabel)
+                    }
+                case _ as AWSRepairPut:
+                    if success
+                    {
+                        print("CVC - AWSRepairPut SUCCESS")
+                        
+                        // Notify the parent view that the AWS Put completed
+                        if let parentVC = self.cameraDelegate
+                        {
+                            parentVC.returnFromCamera(updatedRow: self.repairRow)
                         }
                         
                         // Stop the activity indicator and shoow the send image

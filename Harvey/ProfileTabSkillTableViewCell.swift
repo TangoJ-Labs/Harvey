@@ -1,5 +1,5 @@
 //
-//  ProfileSkillTableViewCell.swift
+//  ProfileTabSkillTableViewCell.swift
 //  Harvey
 //
 //  Created by Sean Hart on 9/15/17.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ProfileSkillTableViewCell: UITableViewCell
+class ProfileTabSkillTableViewCell: UITableViewCell
 {
     var cellContainer: UIView!
     var skillImageView: UIImageView!

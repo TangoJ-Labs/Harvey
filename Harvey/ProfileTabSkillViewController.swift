@@ -70,7 +70,7 @@ class ProfileTabSkillViewController: UIViewController, UITableViewDataSource, UI
         skillTableView = UITableView(frame: CGRect(x: 0, y: 50, width: viewContainer.frame.width, height: viewContainer.frame.height - 50))
         skillTableView.dataSource = self
         skillTableView.delegate = self
-        skillTableView.register(ProfileSkillTableViewCell.self, forCellReuseIdentifier: Constants.Strings.profileSkillTableViewCellReuseIdentifier)
+        skillTableView.register(ProfileTabSkillTableViewCell.self, forCellReuseIdentifier: Constants.Strings.profileTabSkillTableViewCellReuseIdentifier)
         skillTableView.separatorStyle = .none
         skillTableView.backgroundColor = UIColor.clear //Constants.Colors.standardBackground
         skillTableView.isScrollEnabled = true
@@ -237,7 +237,7 @@ class ProfileTabSkillViewController: UIViewController, UITableViewDataSource, UI
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
         print("PTSKVC - CREATING CELL: \(indexPath.row)")
-        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.Strings.profileSkillTableViewCellReuseIdentifier, for: indexPath) as! ProfileSkillTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.Strings.profileTabSkillTableViewCellReuseIdentifier, for: indexPath) as! ProfileTabSkillTableViewCell
         cell.selectionStyle = .none
         
         cell.cellContainer.frame = CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height)
@@ -248,21 +248,8 @@ class ProfileTabSkillViewController: UIViewController, UITableViewDataSource, UI
         cell.border1.frame = CGRect(x: 0, y: Constants.Dim.skillCellHeight - 1, width: cell.cellContainer.frame.width, height: 1)
         
         cell.skillTitle.text = skillList[indexPath.row].skill
-        
-        
-        cell.checkContainer.backgroundColor = Constants.Colors.spotGrayLight
-        cell.checkText.text = "No\nExperience"
-        
-        if skillList[indexPath.row].level == Constants.Experience.some
-        {
-            cell.checkContainer.backgroundColor = Constants.Colors.colorYellow
-            cell.checkText.text = "Some\nExperience"
-        }
-        else if skillList[indexPath.row].level == Constants.Experience.expert
-        {
-            cell.checkContainer.backgroundColor = Constants.Colors.colorOrange
-            cell.checkText.text = "Expert"
-        }
+        cell.checkContainer.backgroundColor = Constants().experienceColor(skillList[indexPath.row].level.rawValue)
+        cell.checkText.text = Constants().experienceTitle(skillList[indexPath.row].level.rawValue)
         
         return cell
     }
@@ -304,7 +291,7 @@ class ProfileTabSkillViewController: UIViewController, UITableViewDataSource, UI
                 skill.level = newLevel
                 
                 // Save the updated / new skill to Core Data
-                CoreDataFunctions().skillSave(skill: skill, deleteSkill: false)
+                CoreDataFunctions().skillSave(skill: skill)
                 
                 break skillLoop
             }

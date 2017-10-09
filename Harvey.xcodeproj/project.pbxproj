@@ -49,6 +49,11 @@
 		B825BE1A1F55FBFC00C12722 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825BE191F55FBFC00C12722 /* LoginViewController.swift */; };
 		B832412B1F573366008709B4 /* Spot.swift in Sources */ = {isa = PBXBuildFile; fileRef = B832412A1F573366008709B4 /* Spot.swift */; };
 		B832412D1F5733DA008709B4 /* SpotContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B832412C1F5733DA008709B4 /* SpotContent.swift */; };
+		B834D42A1F804ABB009F28DD /* StructureUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B834D4291F804ABB009F28DD /* StructureUser.swift */; };
+		B834D42D1F804B9B009F28DD /* StructureUserCD+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B834D42B1F804B9B009F28DD /* StructureUserCD+CoreDataClass.swift */; };
+		B834D42E1F804B9B009F28DD /* StructureUserCD+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B834D42C1F804B9B009F28DD /* StructureUserCD+CoreDataProperties.swift */; };
+		B834D4311F81036A009F28DD /* StructureCD+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B834D42F1F81036A009F28DD /* StructureCD+CoreDataClass.swift */; };
+		B834D4321F81036A009F28DD /* StructureCD+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B834D4301F81036A009F28DD /* StructureCD+CoreDataProperties.swift */; };
 		B85060261F665DB200BE25ED /* SOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85060251F665DB200BE25ED /* SOS.swift */; };
 		B85060281F66CE5100BE25ED /* Hazard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85060271F66CE5100BE25ED /* Hazard.swift */; };
 		B850602C1F66CF3D00BE25ED /* icon_hazard.png in Resources */ = {isa = PBXBuildFile; fileRef = B85060291F66CF3D00BE25ED /* icon_hazard.png */; };
@@ -63,6 +68,11 @@
 		B850603E1F675AD900BE25ED /* icon_pins_multi.png in Resources */ = {isa = PBXBuildFile; fileRef = B85060351F675AD900BE25ED /* icon_pins_multi.png */; };
 		B850603F1F675AD900BE25ED /* icon_pins_multi@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B85060361F675AD900BE25ED /* icon_pins_multi@2x.png */; };
 		B85060401F675AD900BE25ED /* icon_pins_multi@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B85060371F675AD900BE25ED /* icon_pins_multi@3x.png */; };
+		B8568D961F885FE6005F44FC /* RepairImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8568D951F885FE6005F44FC /* RepairImage.swift */; };
+		B8568D981F8931F9005F44FC /* RepairImageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8568D971F8931F9005F44FC /* RepairImageTableViewCell.swift */; };
+		B8568D9A1F893273005F44FC /* RepairImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8568D991F893273005F44FC /* RepairImageViewController.swift */; };
+		B85991371F825B4600ACD252 /* ProfileRepairViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85991361F825B4600ACD252 /* ProfileRepairViewController.swift */; };
+		B85991391F82D24000ACD252 /* ProfileRepairTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85991381F82D24000ACD252 /* ProfileRepairTableViewCell.swift */; };
 		B866B1061F6F3D8F00321116 /* SkillCD+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866B1021F6F3D8F00321116 /* SkillCD+CoreDataClass.swift */; };
 		B866B1071F6F3D8F00321116 /* SkillCD+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866B1031F6F3D8F00321116 /* SkillCD+CoreDataProperties.swift */; };
 		B866B1091F6F769E00321116 /* Structure.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866B1081F6F769E00321116 /* Structure.swift */; };
@@ -81,8 +91,8 @@
 		B891DB571F6C5889000B1CB5 /* icon_settings@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B891DB541F6C5889000B1CB5 /* icon_settings@3x.png */; };
 		B891DB591F6C5C6F000B1CB5 /* ProfileTabSkillViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB581F6C5C6F000B1CB5 /* ProfileTabSkillViewController.swift */; };
 		B891DB5B1F6C60E2000B1CB5 /* ProfileTabStructureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB5A1F6C60E2000B1CB5 /* ProfileTabStructureViewController.swift */; };
-		B891DB5D1F6C757D000B1CB5 /* ProfileSkillTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB5C1F6C757D000B1CB5 /* ProfileSkillTableViewCell.swift */; };
-		B891DB5F1F6D8993000B1CB5 /* ProfileStructureTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB5E1F6D8992000B1CB5 /* ProfileStructureTableViewCell.swift */; };
+		B891DB5D1F6C757D000B1CB5 /* ProfileTabSkillTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB5C1F6C757D000B1CB5 /* ProfileTabSkillTableViewCell.swift */; };
+		B891DB5F1F6D8993000B1CB5 /* ProfileTabStructureTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB5E1F6D8992000B1CB5 /* ProfileTabStructureTableViewCell.swift */; };
 		B891DB611F6E0200000B1CB5 /* Skill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB601F6E0200000B1CB5 /* Skill.swift */; };
 		B891DB631F6E0570000B1CB5 /* Repair.swift in Sources */ = {isa = PBXBuildFile; fileRef = B891DB621F6E0570000B1CB5 /* Repair.swift */; };
 		B895C54E1F590018002D369E /* FB.png in Resources */ = {isa = PBXBuildFile; fileRef = B895C5441F590018002D369E /* FB.png */; };
@@ -167,8 +177,6 @@
 		B8E48C071F6A1F7D00F23F51 /* icon_check_hazard@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B8E48C011F6A1F7D00F23F51 /* icon_check_hazard@3x.png */; };
 		B8E9682E1F72828500A62065 /* RepairCD+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8E9682C1F72828500A62065 /* RepairCD+CoreDataClass.swift */; };
 		B8E9682F1F72828500A62065 /* RepairCD+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8E9682D1F72828500A62065 /* RepairCD+CoreDataProperties.swift */; };
-		B8E968321F728DED00A62065 /* StructureCD+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8E968301F728DED00A62065 /* StructureCD+CoreDataClass.swift */; };
-		B8E968331F728DED00A62065 /* StructureCD+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8E968311F728DED00A62065 /* StructureCD+CoreDataProperties.swift */; };
 		B8F9168D1F5C750600A268E1 /* Shelter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F9168C1F5C750600A268E1 /* Shelter.swift */; };
 		B8FC56A51F5E29110020A871 /* InfoWindowHydro.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8FC56A41F5E29110020A871 /* InfoWindowHydro.swift */; };
 		B8FC56A71F5E43300020A871 /* InfoWindowShelter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8FC56A61F5E43300020A871 /* InfoWindowShelter.swift */; };
@@ -225,6 +233,11 @@
 		B825BE191F55FBFC00C12722 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		B832412A1F573366008709B4 /* Spot.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Spot.swift; path = Harvey/Spot.swift; sourceTree = "<group>"; };
 		B832412C1F5733DA008709B4 /* SpotContent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SpotContent.swift; path = Harvey/SpotContent.swift; sourceTree = "<group>"; };
+		B834D4291F804ABB009F28DD /* StructureUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructureUser.swift; sourceTree = "<group>"; };
+		B834D42B1F804B9B009F28DD /* StructureUserCD+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StructureUserCD+CoreDataClass.swift"; sourceTree = "<group>"; };
+		B834D42C1F804B9B009F28DD /* StructureUserCD+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StructureUserCD+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B834D42F1F81036A009F28DD /* StructureCD+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StructureCD+CoreDataClass.swift"; sourceTree = "<group>"; };
+		B834D4301F81036A009F28DD /* StructureCD+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StructureCD+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B85060251F665DB200BE25ED /* SOS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SOS.swift; path = Harvey/SOS.swift; sourceTree = "<group>"; };
 		B85060271F66CE5100BE25ED /* Hazard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hazard.swift; sourceTree = "<group>"; };
 		B85060291F66CF3D00BE25ED /* icon_hazard.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_hazard.png; sourceTree = "<group>"; };
@@ -239,6 +252,11 @@
 		B85060351F675AD900BE25ED /* icon_pins_multi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_pins_multi.png; sourceTree = "<group>"; };
 		B85060361F675AD900BE25ED /* icon_pins_multi@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_pins_multi@2x.png"; sourceTree = "<group>"; };
 		B85060371F675AD900BE25ED /* icon_pins_multi@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_pins_multi@3x.png"; sourceTree = "<group>"; };
+		B8568D951F885FE6005F44FC /* RepairImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepairImage.swift; sourceTree = "<group>"; };
+		B8568D971F8931F9005F44FC /* RepairImageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepairImageTableViewCell.swift; sourceTree = "<group>"; };
+		B8568D991F893273005F44FC /* RepairImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepairImageViewController.swift; sourceTree = "<group>"; };
+		B85991361F825B4600ACD252 /* ProfileRepairViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileRepairViewController.swift; sourceTree = "<group>"; };
+		B85991381F82D24000ACD252 /* ProfileRepairTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileRepairTableViewCell.swift; sourceTree = "<group>"; };
 		B866B1021F6F3D8F00321116 /* SkillCD+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SkillCD+CoreDataClass.swift"; sourceTree = "<group>"; };
 		B866B1031F6F3D8F00321116 /* SkillCD+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SkillCD+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B866B1081F6F769E00321116 /* Structure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Structure.swift; sourceTree = "<group>"; };
@@ -262,8 +280,8 @@
 		B891DB541F6C5889000B1CB5 /* icon_settings@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_settings@3x.png"; sourceTree = "<group>"; };
 		B891DB581F6C5C6F000B1CB5 /* ProfileTabSkillViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTabSkillViewController.swift; sourceTree = "<group>"; };
 		B891DB5A1F6C60E2000B1CB5 /* ProfileTabStructureViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTabStructureViewController.swift; sourceTree = "<group>"; };
-		B891DB5C1F6C757D000B1CB5 /* ProfileSkillTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileSkillTableViewCell.swift; sourceTree = "<group>"; };
-		B891DB5E1F6D8992000B1CB5 /* ProfileStructureTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileStructureTableViewCell.swift; sourceTree = "<group>"; };
+		B891DB5C1F6C757D000B1CB5 /* ProfileTabSkillTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTabSkillTableViewCell.swift; sourceTree = "<group>"; };
+		B891DB5E1F6D8992000B1CB5 /* ProfileTabStructureTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTabStructureTableViewCell.swift; sourceTree = "<group>"; };
 		B891DB601F6E0200000B1CB5 /* Skill.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Skill.swift; sourceTree = "<group>"; };
 		B891DB621F6E0570000B1CB5 /* Repair.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Repair.swift; sourceTree = "<group>"; };
 		B895C5441F590018002D369E /* FB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FB.png; sourceTree = "<group>"; };
@@ -354,8 +372,6 @@
 		B8E48C011F6A1F7D00F23F51 /* icon_check_hazard@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_check_hazard@3x.png"; sourceTree = "<group>"; };
 		B8E9682C1F72828500A62065 /* RepairCD+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "RepairCD+CoreDataClass.swift"; sourceTree = "<group>"; };
 		B8E9682D1F72828500A62065 /* RepairCD+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "RepairCD+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B8E968301F728DED00A62065 /* StructureCD+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StructureCD+CoreDataClass.swift"; sourceTree = "<group>"; };
-		B8E968311F728DED00A62065 /* StructureCD+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StructureCD+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B8F9168C1F5C750600A268E1 /* Shelter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Shelter.swift; path = Harvey/Shelter.swift; sourceTree = "<group>"; };
 		B8FC56A41F5E29110020A871 /* InfoWindowHydro.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoWindowHydro.swift; sourceTree = "<group>"; };
 		B8FC56A61F5E43300020A871 /* InfoWindowShelter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoWindowShelter.swift; sourceTree = "<group>"; };
@@ -399,6 +415,7 @@
 				B8D97E191F56A166006D9782 /* DataHydro.swift */,
 				B85060271F66CE5100BE25ED /* Hazard.swift */,
 				B891DB621F6E0570000B1CB5 /* Repair.swift */,
+				B8568D951F885FE6005F44FC /* RepairImage.swift */,
 				B8F9168C1F5C750600A268E1 /* Shelter.swift */,
 				B891DB601F6E0200000B1CB5 /* Skill.swift */,
 				B85060251F665DB200BE25ED /* SOS.swift */,
@@ -406,6 +423,7 @@
 				B832412C1F5733DA008709B4 /* SpotContent.swift */,
 				B8D05F441F57998400D3CFAF /* SpotRequest.swift */,
 				B866B1081F6F769E00321116 /* Structure.swift */,
+				B834D4291F804ABB009F28DD /* StructureUser.swift */,
 				B825BE111F559F2700C12722 /* User.swift */,
 			);
 			name = Objects;
@@ -426,6 +444,15 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
+		B834D4281F803300009F28DD /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				B80B9C521F624126006583CE /* marker_icon_shelter@2x.png */,
+				B80B9C7D1F6242AB006583CE /* marker_icon_shelter@3x.png */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		B87421681F54BD4F00E0981A = {
 			isa = PBXGroup;
 			children = (
@@ -438,6 +465,7 @@
 				B87421721F54BD4F00E0981A /* Products */,
 				B825BE0A1F551F5F00C12722 /* Resources */,
 				B8DDEB141F5ADC1D00F0A623 /* Settings */,
+				B834D4281F803300009F28DD /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -468,11 +496,15 @@
 				B8FC56A61F5E43300020A871 /* InfoWindowShelter.swift */,
 				B825BE191F55FBFC00C12722 /* LoginViewController.swift */,
 				B87421761F54BD4F00E0981A /* MapViewController.swift */,
-				B891DB5C1F6C757D000B1CB5 /* ProfileSkillTableViewCell.swift */,
-				B891DB5E1F6D8992000B1CB5 /* ProfileStructureTableViewCell.swift */,
+				B85991381F82D24000ACD252 /* ProfileRepairTableViewCell.swift */,
+				B85991361F825B4600ACD252 /* ProfileRepairViewController.swift */,
+				B891DB5C1F6C757D000B1CB5 /* ProfileTabSkillTableViewCell.swift */,
 				B891DB581F6C5C6F000B1CB5 /* ProfileTabSkillViewController.swift */,
+				B891DB5E1F6D8992000B1CB5 /* ProfileTabStructureTableViewCell.swift */,
 				B891DB5A1F6C60E2000B1CB5 /* ProfileTabStructureViewController.swift */,
 				B821A4641F681BE700997EE1 /* ProfileViewController.swift */,
+				B8568D971F8931F9005F44FC /* RepairImageTableViewCell.swift */,
+				B8568D991F893273005F44FC /* RepairImageViewController.swift */,
 				B80B9C861F635EC8006583CE /* RequestClasses.swift */,
 				B8D05F501F5887D400D3CFAF /* SpotTableViewCell.swift */,
 				B8D05F4E1F58865600D3CFAF /* SpotTableViewController.swift */,
@@ -614,8 +646,10 @@
 				B8E9682D1F72828500A62065 /* RepairCD+CoreDataProperties.swift */,
 				B866B1021F6F3D8F00321116 /* SkillCD+CoreDataClass.swift */,
 				B866B1031F6F3D8F00321116 /* SkillCD+CoreDataProperties.swift */,
-				B8E968301F728DED00A62065 /* StructureCD+CoreDataClass.swift */,
-				B8E968311F728DED00A62065 /* StructureCD+CoreDataProperties.swift */,
+				B834D42F1F81036A009F28DD /* StructureCD+CoreDataClass.swift */,
+				B834D4301F81036A009F28DD /* StructureCD+CoreDataProperties.swift */,
+				B834D42B1F804B9B009F28DD /* StructureUserCD+CoreDataClass.swift */,
+				B834D42C1F804B9B009F28DD /* StructureUserCD+CoreDataProperties.swift */,
 				B8DDEB1B1F5AE21000F0A623 /* TutorialView+CoreDataClass.swift */,
 				B8DDEB1C1F5AE21000F0A623 /* TutorialView+CoreDataProperties.swift */,
 				B86BCC821F64A29E003C667D /* UserCD+CoreDataClass.swift */,
@@ -805,9 +839,14 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Harvey/Pods-Harvey-resources.sh",
+				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
+				"${PODS_ROOT}/GooglePlacePicker/Frameworks/GooglePlacePicker.framework/Resources/GooglePlacePicker.bundle",
+				"${PODS_ROOT}/GooglePlaces/Frameworks/GooglePlaces.framework/Resources/GooglePlaces.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -820,9 +859,28 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Harvey/Pods-Harvey-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/AWSCognito/AWSCognito.framework",
+				"${BUILT_PRODUCTS_DIR}/AWSCognitoIdentityProvider/AWSCognitoIdentityProvider.framework",
+				"${BUILT_PRODUCTS_DIR}/AWSCore/AWSCore.framework",
+				"${BUILT_PRODUCTS_DIR}/AWSLambda/AWSLambda.framework",
+				"${BUILT_PRODUCTS_DIR}/AWSS3/AWSS3.framework",
+				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKLoginKit/FBSDKLoginKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKShareKit/FBSDKShareKit.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSCognito.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSCognitoIdentityProvider.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSCore.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSLambda.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSS3.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Bolts.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKLoginKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKShareKit.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -835,13 +893,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Harvey-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -851,13 +912,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B891DB5F1F6D8993000B1CB5 /* ProfileStructureTableViewCell.swift in Sources */,
+				B891DB5F1F6D8993000B1CB5 /* ProfileTabStructureTableViewCell.swift in Sources */,
+				B834D42D1F804B9B009F28DD /* StructureUserCD+CoreDataClass.swift in Sources */,
 				B821A4671F69485E00997EE1 /* ActivityViewController.swift in Sources */,
 				B891DB5B1F6C60E2000B1CB5 /* ProfileTabStructureViewController.swift in Sources */,
 				B87421771F54BD4F00E0981A /* MapViewController.swift in Sources */,
-				B8E968321F728DED00A62065 /* StructureCD+CoreDataClass.swift in Sources */,
-				B891DB5D1F6C757D000B1CB5 /* ProfileSkillTableViewCell.swift in Sources */,
-				B8E968331F728DED00A62065 /* StructureCD+CoreDataProperties.swift in Sources */,
+				B891DB5D1F6C757D000B1CB5 /* ProfileTabSkillTableViewCell.swift in Sources */,
 				B80B9C931F645252006583CE /* UserTableViewController.swift in Sources */,
 				B8F9168D1F5C750600A268E1 /* Shelter.swift in Sources */,
 				B866B1071F6F3D8F00321116 /* SkillCD+CoreDataProperties.swift in Sources */,
@@ -868,14 +928,21 @@
 				B8D05F511F5887D400D3CFAF /* SpotTableViewCell.swift in Sources */,
 				B8D97E1A1F56A166006D9782 /* DataHydro.swift in Sources */,
 				B87421751F54BD4F00E0981A /* AppDelegate.swift in Sources */,
+				B834D42A1F804ABB009F28DD /* StructureUser.swift in Sources */,
 				B8DDEB171F5ADE5400F0A623 /* DataController.swift in Sources */,
+				B834D4321F81036A009F28DD /* StructureCD+CoreDataProperties.swift in Sources */,
 				B86BCC881F64A29E003C667D /* CurrentUser+CoreDataClass.swift in Sources */,
+				B8568D981F8931F9005F44FC /* RepairImageTableViewCell.swift in Sources */,
 				B8DDEB271F5AE21000F0A623 /* LogError+CoreDataClass.swift in Sources */,
+				B834D4311F81036A009F28DD /* StructureCD+CoreDataClass.swift in Sources */,
+				B8568D961F885FE6005F44FC /* RepairImage.swift in Sources */,
+				B834D42E1F804B9B009F28DD /* StructureUserCD+CoreDataProperties.swift in Sources */,
 				B825BE181F55F55800C12722 /* CustomIdentityProvider.swift in Sources */,
 				B8D05F4F1F58865600D3CFAF /* SpotTableViewController.swift in Sources */,
 				B8B4CA5E1F61AEF1001CD74D /* InfoWindowAgreement.swift in Sources */,
 				B8DDEB231F5AE21000F0A623 /* TutorialView+CoreDataClass.swift in Sources */,
 				B891DB611F6E0200000B1CB5 /* Skill.swift in Sources */,
+				B85991371F825B4600ACD252 /* ProfileRepairViewController.swift in Sources */,
 				B8FC56A71F5E43300020A871 /* InfoWindowShelter.swift in Sources */,
 				B80B9C951F645885006583CE /* UserTableViewCell.swift in Sources */,
 				B8FC56A51F5E29110020A871 /* InfoWindowHydro.swift in Sources */,
@@ -890,6 +957,7 @@
 				B85060281F66CE5100BE25ED /* Hazard.swift in Sources */,
 				B86BCC891F64A29E003C667D /* CurrentUser+CoreDataProperties.swift in Sources */,
 				B825BE0E1F55221700C12722 /* UtilityFunctions.swift in Sources */,
+				B85991391F82D24000ACD252 /* ProfileRepairTableViewCell.swift in Sources */,
 				B80B9C871F635EC8006583CE /* RequestClasses.swift in Sources */,
 				B8D05F451F57998400D3CFAF /* SpotRequest.swift in Sources */,
 				B825BE101F559C3400C12722 /* AWSClasses.swift in Sources */,
@@ -903,6 +971,7 @@
 				B832412B1F573366008709B4 /* Spot.swift in Sources */,
 				B866B1061F6F3D8F00321116 /* SkillCD+CoreDataClass.swift in Sources */,
 				B825BE121F559F2700C12722 /* User.swift in Sources */,
+				B8568D9A1F893273005F44FC /* RepairImageViewController.swift in Sources */,
 				B866B1091F6F769E00321116 /* Structure.swift in Sources */,
 				B8DDEB1A1F5ADE8300F0A623 /* CoreDataFunctions.swift in Sources */,
 				B8FC56AC1F5E50DB0020A871 /* MapSetting+CoreDataProperties.swift in Sources */,

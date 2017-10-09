@@ -43,9 +43,8 @@ class UtilityFunctions: AWSRequestDelegate
         let loginManager = FBSDKLoginManager()
         loginManager.logOut()
         
-        // Clear the global user data
-        Constants.Data.currentUser = User()
-        CoreDataFunctions().currentUserSave(user: Constants.Data.currentUser, deleteUser: true)
+        // Clear the global current user data
+        CoreDataFunctions().currentUserRetrieve(deleteAll: true)
     }
     
     //https://www.hackingwithswift.com/example-code/media/how-to-save-a-uiimage-to-a-file-using-uiimagepngrepresentation
@@ -89,7 +88,7 @@ class UtilityFunctions: AWSRequestDelegate
             if previousSetting != user.connection
             {
                 // Save the current user data to Core Data
-                CoreDataFunctions().userSave(user: user, deleteUser: false)
+                CoreDataFunctions().userSave(user: user)
             }
         }
     }

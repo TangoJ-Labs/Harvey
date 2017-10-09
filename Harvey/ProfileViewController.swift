@@ -305,42 +305,8 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             let tab1VC = ProfileTabSkillViewController()
             tab1VC.tabBarItem = UITabBarItem(title: "Volunteer", image: nil, selectedImage: nil)
             
-            
-//            let leftButtonItem = UIBarButtonItem(title: "\u{2190}",
-//                                                 style: UIBarButtonItemStyle.plain,
-//                                                 target: self,
-//                                                 action: #selector(UserViewController.popViewController(_:)))
-//            leftButtonItem.tintColor = Constants.Colors.colorTextNavBar
-//            
-//            let rightButtonItem = UIBarButtonItem(title: "",
-//                                                  style: UIBarButtonItemStyle.plain,
-//                                                  target: self,
-//                                                  action: #selector(UserViewController.blankFunc(_:)))
-//            rightButtonItem.tintColor = Constants.Colors.colorTextNavBar
-//            
-//            let ncTitle = UIView(frame: CGRect(x: screenSize.width / 2 - 100, y: 10, width: 200, height: 40))
-//            ncTitleText = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 40))
-//            ncTitleText.text = "My Volunteer Profile"
-//            if let name = Constants.Data.currentUser.name
-//            {
-//                ncTitleText.text = name
-//            }
-//            
-//            ncTitleText.textColor = Constants.Colors.colorTextNavBar
-//            ncTitleText.font = UIFont(name: Constants.Strings.fontAlt, size: 22)
-//            ncTitleText.textAlignment = .center
-//            ncTitle.addSubview(ncTitleText)
-//            
-//            // Assign the created Nav Bar settings to the Tab Bar Controller
-//            self.navigationItem.titleView = ncTitle
-//            self.navigationItem.hidesBackButton = true
-//            self.navigationItem.setLeftBarButton(leftButtonItem, animated: false)
-            
-            
-            
             let tab2VC = ProfileTabStructureViewController()
             tab2VC.tabBarItem = UITabBarItem(title: "My House", image: nil, selectedImage: nil)
-            
             
             // Navigation Bar settings
             let profileTabBarController = UITabBarController()

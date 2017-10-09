@@ -27,6 +27,7 @@ struct Constants
         case random_spot_id = "random_spot_id"
         case random_media_id = "random_media_id"
         case random_structure_id = "random_structure_id"
+        case random_repair_id = "random_repair_id"
     }
     
     enum ContentType: Int
@@ -239,29 +240,59 @@ struct Constants
             return Constants.Experience.none
         }
     }
+    func experienceTitle(_ experienceInt: Int) -> String
+    {
+        // Evaluate the experienceInt Integer received and convert it to the appropriate String title
+        switch experienceInt
+        {
+        case 0:
+            return "No\nExperience"
+        case 1:
+            return "Some\nExperience"
+        case 2:
+            return "Expert"
+        default:
+            return "No\nExperience"
+        }
+    }
+    func experienceColor(_ experienceInt: Int) -> UIColor
+    {
+        // Evaluate the experienceInt Integer received and convert it to the appropriate background color
+        switch experienceInt
+        {
+        case 0:
+            return Constants.Colors.spotGrayLight
+        case 1:
+            return Constants.Colors.colorYellow
+        case 3:
+            return Constants.Colors.colorBlue
+        default:
+            return Constants.Colors.spotGrayLight
+        }
+    }
     
-    enum Structure: Int
+    enum StructureType: Int
     {
         case residence = 0
         case retail = 1
         case office = 2
         case other = 3
     }
-    func structure(_ structureInt: Int) -> Constants.Structure
+    func structureType(_ structureTypeInt: Int) -> Constants.StructureType
     {
-        // Evaluate the structureInt Integer received and convert it to the appropriate Structure
-        switch structureInt
+        // Evaluate the structureTypeInt Integer received and convert it to the appropriate Structure
+        switch structureTypeInt
         {
         case 0:
-            return Constants.Structure.residence
+            return Constants.StructureType.residence
         case 1:
-            return Constants.Structure.retail
+            return Constants.StructureType.retail
         case 2:
-            return Constants.Structure.office
+            return Constants.StructureType.office
         case 3:
-            return Constants.Structure.other
+            return Constants.StructureType.other
         default:
-            return Constants.Structure.other
+            return Constants.StructureType.other
         }
     }
     
@@ -289,13 +320,48 @@ struct Constants
             return Constants.StructureStage.waiting
         }
     }
+//    func structureStageTitle(_ structureStageInt: Int) -> String
+//    {
+//        // Evaluate the structureStageInt Integer received and convert it to the appropriate String title
+//        switch structureStageInt
+//        {
+//        case 0:
+//            return "No\nExperience"
+//        case 1:
+//            return "Some\nExperience"
+//        case 2:
+//            return "Repair in Progress"
+//        case 3:
+//            return "Repair Completed"
+//        default:
+//            return "No\nExperience"
+//        }
+//    }
+//    func structureStageColor(_ structureStageInt: Int) -> UIColor
+//    {
+//        // Evaluate the structureStageInt Integer received and convert it to the appropriate background color
+//        switch structureStageInt
+//        {
+//        case 0:
+//            return Constants.Colors.spotGrayLight
+//        case 1:
+//            return Constants.Colors.colorOrange
+//        case 2:
+//            return Constants.Colors.colorYellow
+//        case 3:
+//            return Constants.Colors.colorBlue
+//        default:
+//            return Constants.Colors.spotGrayLight
+//        }
+//    }
     
     enum RepairStage: Int
     {
-        case waiting = 0
-        case repairing = 1
-        case complete = 2
-        case other = 3
+        case na = 0
+        case waiting = 1
+        case repairing = 2
+        case complete = 3
+        case other = 4
     }
     func repairStage(_ repairStageInt: Int) -> Constants.RepairStage
     {
@@ -303,15 +369,74 @@ struct Constants
         switch repairStageInt
         {
         case 0:
-            return Constants.RepairStage.waiting
+            return Constants.RepairStage.na
         case 1:
-            return Constants.RepairStage.repairing
+            return Constants.RepairStage.waiting
         case 2:
-            return Constants.RepairStage.complete
+            return Constants.RepairStage.repairing
         case 3:
+            return Constants.RepairStage.complete
+        case 4:
             return Constants.RepairStage.other
         default:
             return Constants.RepairStage.waiting
+        }
+    }
+    func repairStageToggle(_ currentRepairStage: Constants.RepairStage) -> Constants.RepairStage
+    {
+        // Evaluate the currentRepairStage received and convert it to the next RepairStage
+        switch currentRepairStage
+        {
+        case RepairStage.na:
+            return Constants.RepairStage.waiting
+        case RepairStage.waiting:
+            return Constants.RepairStage.repairing
+        case RepairStage.repairing:
+            return Constants.RepairStage.complete
+        case RepairStage.complete:
+            return Constants.RepairStage.other
+        case RepairStage.other:
+            return Constants.RepairStage.na
+//        default:
+//            return Constants.RepairStage.na
+        }
+    }
+    func repairStageTitle(_ repairStageInt: Int) -> String
+    {
+        // Evaluate the repairStageInt Integer received and convert it to the appropriate String title
+        switch repairStageInt
+        {
+        case 0:
+            return "No Repair Needed"
+        case 1:
+            return "Waiting for Repair"
+        case 2:
+            return "Repair in Progress"
+        case 3:
+            return "Repair Completed"
+        case 4:
+            return "Other Repair Stage"
+        default:
+            return "Waiting for Repair"
+        }
+    }
+    func repairStageColor(_ repairStageInt: Int) -> UIColor
+    {
+        // Evaluate the repairStageInt Integer received and convert it to the appropriate background color
+        switch repairStageInt
+        {
+        case 0:
+            return Constants.Colors.spotGrayLight
+        case 1:
+            return Constants.Colors.colorOrange
+        case 2:
+            return Constants.Colors.colorYellow
+        case 3:
+            return Constants.Colors.colorBlue
+        case 4:
+            return Constants.Colors.colorGrayDark
+        default:
+            return Constants.Colors.spotGrayLight
         }
     }
     
@@ -395,6 +520,7 @@ struct Constants
         
         static var skills = [Skill]()
         static var structures = [Structure]()
+        static var structureUsers = [StructureUser]()
         static var repairs = [Repair]()
     }
     
@@ -404,7 +530,7 @@ struct Constants
         static let cameraViewImageCellSize: CGFloat = 60
         
         static let userTableCellHeight: CGFloat = 50
-        static let structureCellHeight: CGFloat = 100
+        static let repairCellHeight: CGFloat = 100
         static let skillCellHeight: CGFloat = 100
         
         static let spotRadius: Double = 50 // in meters - see radius in Spot
@@ -462,8 +588,10 @@ struct Constants
         
         static let spotTableViewCellReuseIdentifier = "spotTableViewCell"
         static let userTableViewCellReuseIdentifier = "userTableViewCell"
-        static let profileStructureTableViewCellReuseIdentifier = "profileStructureTableViewCell"
-        static let profileSkillTableViewCellReuseIdentifier = "profileSkillTableViewCell"
+        static let profileTabSkillTableViewCellReuseIdentifier = "profileTabSkillTableViewCell"
+        static let profileTabStructureTableViewCellReuseIdentifier = "profileTabStructureTableViewCell"
+        static let profileRepairTableViewCellReuseIdentifier = "profileRepairTableViewCell"
+        static let repairImageTableViewCellReuseIdentifier = "repairImageTableViewCell"
         
         static let imageHarvey = "Harvey.png"
         static let iconAccountGray = "icon_account_gray.png"
@@ -492,34 +620,55 @@ struct Constants
         static let markerIconShelter = "marker_icon_shelter.png"
         static let markerIconSOS = "marker_icon_flag_red.png"
         
-//        static let urlSettings = "http://192.168.1.5:5000/app/settings"
-//        static let urlUserCheck = "http://192.168.1.5:5000/app/user/check"
-//        static let urlShelterQueryActive = "http://192.168.1.5:5000/app/shelter/query/active"
-//        static let urlHazardQueryActive = "http://192.168.1.5:5000/app/hazard/query/active"
-//        static let urlHazardPut = "http://192.168.1.5:5000/app/hazard/put"
+        static let urlRandomId = "http://192.168.1.5:5000/app/randomid"
+        static let urlLogin = "http://192.168.1.5:5000/app/login"
+        static let urlSettings = "http://192.168.1.5:5000/app/settings"
+        static let urlUserCheck = "http://192.168.1.5:5000/app/user/check"
+        static let urlUserUpdate = "http://192.168.1.5:5000/app/user/update"
+        static let urlUserQueryActive = "http://192.168.1.5:5000/app/user/query/active"
+        static let urlUserConnectionQuery = "http://192.168.1.5:5000/app/user/connection/query"
+        static let urlUserConnectionPut = "http://192.168.1.5:5000/app/user/connection/put"
+        static let urlSkillQuery = "http://192.168.1.5:5000/app/skill/query"
+        static let urlSkillPut = "http://192.168.1.5:5000/app/skill/put"
+        static let urlStructureQuery = "http://192.168.1.5:5000/app/structure/query"
+        static let urlStructurePut = "http://192.168.1.5:5000/app/structure/put"
+        static let urlStructureUserQuery = "http://192.168.1.5:5000/app/structure-user/query"
+        static let urlStructureUserPut = "http://192.168.1.5:5000/app/structure-user/put"
+        static let urlRepairQuery = "http://192.168.1.5:5000/app/repair/query"
+        static let urlRepairPut = "http://192.168.1.5:5000/app/repair/put"
+        static let urlSpotQueryActive = "http://192.168.1.5:5000/app/spot/query/active"
+        static let urlSpotPut = "http://192.168.1.5:5000/app/spot/put"
+        static let urlSpotContentStatusUpdate = "http://192.168.1.5:5000/app/spot/spotcontent/statusupdate"
+        static let urlSpotRequestPut = "http://192.168.1.5:5000/app/spot/spotrequest/put"
+        static let urlShelterQueryActive = "http://192.168.1.5:5000/app/shelter/query/active"
+        static let urlHazardQueryActive = "http://192.168.1.5:5000/app/hazard/query/active"
+        static let urlHazardPut = "http://192.168.1.5:5000/app/hazard/put"
+        static let urlHydroQuery = "http://192.168.1.5:5000/app/hydro/query/active"
         
-        static let urlRandomId = "http://127.0.0.1:5000/app/randomid"
-        static let urlLogin = "http://127.0.0.1:5000/app/login"
-        static let urlSettings = "http://127.0.0.1:5000/app/settings"
-        static let urlUserCheck = "http://127.0.0.1:5000/app/user/check"
-        static let urlUserUpdate = "http://127.0.0.1:5000/app/user/update"
-        static let urlUserQueryActive = "http://127.0.0.1:5000/app/user/query/active"
-        static let urlUserConnectionQuery = "http://127.0.0.1:5000/app/user/connection/query"
-        static let urlUserConnectionPut = "http://127.0.0.1:5000/app/user/connection/put"
-        static let urlSkillQuery = "http://127.0.0.1:5000/app/skill/query"
-        static let urlSkillPut = "http://127.0.0.1:5000/app/skill/put"
-        static let urlStructureQuery = "http://127.0.0.1:5000/app/structure/query"
-        static let urlStructurePut = "http://127.0.0.1:5000/app/structure/put"
-        static let urlRepairQuery = "http://127.0.0.1:5000/app/repair/query"
-        static let urlRepairPut = "http://127.0.0.1:5000/app/repair/put"
-        static let urlSpotQueryActive = "http://127.0.0.1:5000/app/spot/query/active"
-        static let urlSpotPut = "http://127.0.0.1:5000/app/spot/put"
-        static let urlSpotContentStatusUpdate = "http://127.0.0.1:5000/app/spot/spotcontent/statusupdate"
-        static let urlSpotRequestPut = "http://127.0.0.1:5000/app/spot/spotrequest/put"
-        static let urlShelterQueryActive = "http://127.0.0.1:5000/app/shelter/query/active"
-        static let urlHazardQueryActive = "http://127.0.0.1:5000/app/hazard/query/active"
-        static let urlHazardPut = "http://127.0.0.1:5000/app/hazard/put"
-        static let urlHydroQuery = "http://127.0.0.1:5000/app/hydro/query/active"
+//        static let urlRandomId = "http://127.0.0.1:5000/app/randomid"
+//        static let urlLogin = "http://127.0.0.1:5000/app/login"
+//        static let urlSettings = "http://127.0.0.1:5000/app/settings"
+//        static let urlUserCheck = "http://127.0.0.1:5000/app/user/check"
+//        static let urlUserUpdate = "http://127.0.0.1:5000/app/user/update"
+//        static let urlUserQueryActive = "http://127.0.0.1:5000/app/user/query/active"
+//        static let urlUserConnectionQuery = "http://127.0.0.1:5000/app/user/connection/query"
+//        static let urlUserConnectionPut = "http://127.0.0.1:5000/app/user/connection/put"
+//        static let urlSkillQuery = "http://127.0.0.1:5000/app/skill/query"
+//        static let urlSkillPut = "http://127.0.0.1:5000/app/skill/put"
+//        static let urlStructureQuery = "http://127.0.0.1:5000/app/structure/query"
+//        static let urlStructurePut = "http://127.0.0.1:5000/app/structure/put"
+//        static let urlStructureUserQuery = "http://127.0.0.1:5000/app/structure-user/query"
+//        static let urlStructureUserPut = "http://127.0.0.1:5000/app/structure-user/put"
+//        static let urlRepairQuery = "http://127.0.0.1:5000/app/repair/query"
+//        static let urlRepairPut = "http://127.0.0.1:5000/app/repair/put"
+//        static let urlSpotQueryActive = "http://127.0.0.1:5000/app/spot/query/active"
+//        static let urlSpotPut = "http://127.0.0.1:5000/app/spot/put"
+//        static let urlSpotContentStatusUpdate = "http://127.0.0.1:5000/app/spot/spotcontent/statusupdate"
+//        static let urlSpotRequestPut = "http://127.0.0.1:5000/app/spot/spotrequest/put"
+//        static let urlShelterQueryActive = "http://127.0.0.1:5000/app/shelter/query/active"
+//        static let urlHazardQueryActive = "http://127.0.0.1:5000/app/hazard/query/active"
+//        static let urlHazardPut = "http://127.0.0.1:5000/app/hazard/put"
+//        static let urlHydroQuery = "http://127.0.0.1:5000/app/hydro/query/active"
         
 //        static let urlRandomId = "http://www.harveytown.org/app/randomid"
 //        static let urlLogin = "http://www.harveytown.org/app/login"
@@ -531,8 +680,12 @@ struct Constants
 //        static let urlUserConnectionPut = "http://www.harveytown.org/app/user/connection/put"
 //        static let urlSkillQuery = "http://www.harveytown.org/app/skill/query"
 //        static let urlSkillPut = "http://www.harveytown.org/app/skill/put"
-//        static let urlRepairQuery = "http://127.0.0.1:5000/app/repair/query"
-//        static let urlRepairPut = "http://127.0.0.1:5000/app/repair/put"
+//        static let urlStructureQuery = "http://www.harveytown.org/app/structure/query"
+//        static let urlStructurePut = "http://www.harveytown.org/app/structure/put"
+//        static let urlStructureUserQuery = "http://www.harveytown.org/app/structure-user/query"
+//        static let urlStructureUserPut = "http://www.harveytown.org/app/structure-user/put"
+//        static let urlRepairQuery = "http://www.harveytown.org/app/repair/query"
+//        static let urlRepairPut = "http://www.harveytown.org/app/repair/put"
 //        static let urlSpotQueryActive = "http://www.harveytown.org/app/spot/query/active"
 //        static let urlSpotPut = "http://www.harveytown.org/app/spot/put"
 //        static let urlSpotContentStatusUpdate = "http://www.harveytown.org/app/spot/spotcontent/statusupdate"

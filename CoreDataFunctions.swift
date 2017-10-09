@@ -110,24 +110,11 @@ class CoreDataFunctions: AWSRequestDelegate
     
     
     // MARK: CURRENT USER
-    func currentUserSave(user: User, deleteUser: Bool)
+    func currentUserSave(user: User)
     {
         print("CD-CUS - USER NAME: \(String(describing: user.name))")
         let moc = DataController().managedObjectContext
-//        moc.mergePolicy = NSMergePolicy.overwrite
         moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
-//        // Delete the current data
-//        let deleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: "CurrentUser")
-//        let deleteRequest = NSBatchDeleteRequest(fetchRequest: deleteFetch)
-//        do
-//        {
-//            let result = try moc.execute(deleteRequest)
-//            print("CD-CUS - OLD DATA DELETE RESULT: \(result)")
-//        }
-//        catch
-//        {
-//            fatalError("Failed to delete CurrentUser: \(error)")
-//        }
         // Try to retrieve the Current User data from Core Data
         var currentUserArray = [CurrentUser]()
         let currentUserFetch: NSFetchRequest<CurrentUser> = CurrentUser.fetchRequest()
@@ -140,63 +127,59 @@ class CoreDataFunctions: AWSRequestDelegate
         {
             fatalError("Failed to fetch CurrentUser: \(error)")
         }
-        // If the user needs to be deleted, just leave the array empty
-        if !deleteUser
+        // If the return has no content, no current User have been saved
+        if currentUserArray.count == 0
         {
-            // If the return has no content, no current User have been saved
-            if currentUserArray.count == 0
+            print("CD-CUS - NEW")
+            // Save the Current User data in Core Data
+            let entity = NSEntityDescription.insertNewObject(forEntityName: "CurrentUser", into: moc) as! CurrentUser
+            entity.setValue(user.userID, forKey: "userID")
+            entity.setValue(user.facebookID, forKey: "facebookID")
+            entity.setValue(user.type, forKey: "type")
+            entity.setValue(user.status, forKey: "status")
+            entity.setValue(user.datetime, forKey: "datetime")
+            entity.setValue(user.connection, forKey: "connection")
+            if let userName = user.name
             {
-                print("CD-CUS - NEW")
-                // Save the Current User data in Core Data
-                let entity = NSEntityDescription.insertNewObject(forEntityName: "CurrentUser", into: moc) as! CurrentUser
-                entity.setValue(user.userID, forKey: "userID")
-                entity.setValue(user.facebookID, forKey: "facebookID")
-                entity.setValue(user.type, forKey: "type")
-                entity.setValue(user.status, forKey: "status")
-                entity.setValue(user.datetime, forKey: "datetime")
-                entity.setValue(user.connection, forKey: "connection")
-                if let userName = user.name
-                {
-                    entity.setValue(userName, forKey: "name")
-                }
-                if let userImage = user.image
-                {
-                    entity.setValue(UIImagePNGRepresentation(userImage)! as NSData, forKey: "image")
-                }
-                if let userThumbnail = user.thumbnail
-                {
-                    entity.setValue(UIImagePNGRepresentation(userThumbnail)! as NSData, forKey: "thumbnail")
-                }
+                entity.setValue(userName, forKey: "name")
+            }
+            if let userImage = user.image
+            {
+                entity.setValue(UIImagePNGRepresentation(userImage)! as NSData, forKey: "image")
+            }
+            if let userThumbnail = user.thumbnail
+            {
+                entity.setValue(UIImagePNGRepresentation(userThumbnail)! as NSData, forKey: "thumbnail")
+            }
+        }
+        else
+        {
+            print("CD-CUS - EXISTS")
+            // Replace the Current User data to ensure that the latest data is used
+            currentUserArray[0].userID = user.userID
+            currentUserArray[0].facebookID = user.facebookID
+            currentUserArray[0].type = user.type
+            currentUserArray[0].status = user.status
+            currentUserArray[0].connection = user.connection
+            if let datetime = user.datetime
+            {
+                currentUserArray[0].datetime = datetime as NSDate
             }
             else
             {
-                print("CD-CUS - EXISTS")
-                // Replace the Current User data to ensure that the latest data is used
-                currentUserArray[0].userID = user.userID
-                currentUserArray[0].facebookID = user.facebookID
-                currentUserArray[0].type = user.type
-                currentUserArray[0].status = user.status
-                currentUserArray[0].connection = user.connection
-                if let datetime = user.datetime
-                {
-                    currentUserArray[0].datetime = datetime as NSDate
-                }
-                else
-                {
-                    currentUserArray[0].datetime = NSDate(timeIntervalSinceNow: 0)
-                }
-                if let userName = user.name
-                {
-                    currentUserArray[0].name = userName
-                }
-                if let userImage = user.image
-                {
-                    currentUserArray[0].image = UIImagePNGRepresentation(userImage)! as NSData
-                }
-                if let userThumbnail = user.thumbnail
-                {
-                    currentUserArray[0].thumbnail = UIImagePNGRepresentation(userThumbnail)! as NSData
-                }
+                currentUserArray[0].datetime = NSDate(timeIntervalSinceNow: 0)
+            }
+            if let userName = user.name
+            {
+                currentUserArray[0].name = userName
+            }
+            if let userImage = user.image
+            {
+                currentUserArray[0].image = UIImagePNGRepresentation(userImage)! as NSData
+            }
+            if let userThumbnail = user.thumbnail
+            {
+                currentUserArray[0].thumbnail = UIImagePNGRepresentation(userThumbnail)! as NSData
             }
         }
         // Save the Entity
@@ -210,7 +193,7 @@ class CoreDataFunctions: AWSRequestDelegate
         }
     }
     
-    func currentUserRetrieve() -> User
+    func currentUserRetrieve(deleteAll: Bool) -> User
     {
         // Access Core Data
         // Retrieve the Current User data from Core Data
@@ -230,40 +213,57 @@ class CoreDataFunctions: AWSRequestDelegate
         }
         // Create a new Current User entity
         let currentUser = User()
-        if currentUserArray.count > 0
+        // If the data should not be deleted, return the data, otherwise clear the data array and save
+        if !deleteAll
         {
-            // Use the first object - only one should be saved
-            currentUser.userID = currentUserArray[0].userID
-            currentUser.facebookID = currentUserArray[0].facebookID
-            currentUser.type = currentUserArray[0].type
-            currentUser.status = currentUserArray[0].status
-            if let connection = currentUserArray[0].connection
+            if currentUserArray.count > 0
             {
-                currentUser.connection = connection as String
+                // Use the first object - only one should be saved
+                currentUser.userID = currentUserArray[0].userID
+                currentUser.facebookID = currentUserArray[0].facebookID
+                currentUser.type = currentUserArray[0].type
+                currentUser.status = currentUserArray[0].status
+                if let connection = currentUserArray[0].connection
+                {
+                    currentUser.connection = connection as String
+                }
+                else
+                {
+                    currentUser.connection = "na"
+                }
+                if let datetimeRaw = currentUserArray[0].datetime
+                {
+                    currentUser.datetime = datetimeRaw as Date
+                }
+                else
+                {
+                    currentUser.datetime = Date(timeIntervalSinceNow: 0)
+                }
+                if let userName = currentUserArray[0].name
+                {
+                    currentUser.name = userName
+                }
+                if let userImage = currentUserArray[0].image
+                {
+                    currentUser.image = UIImage(data: userImage as Data)
+                }
+                if let userThumbnail = currentUserArray[0].thumbnail
+                {
+                    currentUser.thumbnail = UIImage(data: userThumbnail as Data)
+                }
             }
-            else
+        }
+        else
+        {
+            currentUserArray = [CurrentUser]()
+            // Save the Entity
+            do
             {
-                currentUser.connection = "na"
+                try moc.save()
             }
-            if let datetimeRaw = currentUserArray[0].datetime
+            catch
             {
-                currentUser.datetime = datetimeRaw as Date
-            }
-            else
-            {
-                currentUser.datetime = Date(timeIntervalSinceNow: 0)
-            }
-            if let userName = currentUserArray[0].name
-            {
-                currentUser.name = userName
-            }
-            if let userImage = currentUserArray[0].image
-            {
-                currentUser.image = UIImage(data: userImage as Data)
-            }
-            if let userThumbnail = currentUserArray[0].thumbnail
-            {
-                currentUser.thumbnail = UIImage(data: userThumbnail as Data)
+                fatalError("Failure to save context: \(error)")
             }
         }
         return currentUser
@@ -271,7 +271,7 @@ class CoreDataFunctions: AWSRequestDelegate
     
     
     // MARK: USER
-    func userSave(user: User, deleteUser: Bool)
+    func userSave(user: User)
     {
         // Try to retrieve the User data from Core Data
         var userArray = [UserCD]()
@@ -287,76 +287,72 @@ class CoreDataFunctions: AWSRequestDelegate
         {
             fatalError("Failed to fetch User: \(error)")
         }
-        // If the user needs to be deleted, just leave the array empty
-        if !deleteUser
+        // Check whether the user exists, otherwise add the user
+        var userExists = false
+        userLoop: for (uIndex, userCheck) in userArray.enumerated()
         {
-            // Check whether the user exists, otherwise add the user
-            var userExists = false
-            userLoop: for (uIndex, userCheck) in userArray.enumerated()
+            if let checkUserID = userCheck.userID
             {
-                if let checkUserID = userCheck.userID
+                if checkUserID == user.userID
                 {
-                    if checkUserID == user.userID
+                    // The user exists, so update the Core Data
+                    userExists = true
+                    // Replace the User data to ensure that the latest data is used
+                    userArray[uIndex].userID = user.userID
+                    userArray[uIndex].facebookID = user.facebookID
+                    userArray[uIndex].type = user.type
+                    userArray[uIndex].status = user.status
+                    userArray[uIndex].connection = user.connection
+                    if let datetimeRaw = user.datetime
                     {
-                        // The user exists, so update the Core Data
-                        userExists = true
-                        // Replace the User data to ensure that the latest data is used
-                        userArray[uIndex].userID = user.userID
-                        userArray[uIndex].facebookID = user.facebookID
-                        userArray[uIndex].type = user.type
-                        userArray[uIndex].status = user.status
-                        userArray[uIndex].connection = user.connection
-                        if let datetimeRaw = user.datetime
-                        {
-                            userArray[uIndex].datetime = datetimeRaw as NSDate
-                        }
-                        else
-                        {
-                            userArray[uIndex].datetime = NSDate(timeIntervalSinceNow: 0)
-                        }
-                        if let userName = user.name
-                        {
-                            userArray[uIndex].name = userName
-                        }
-                        if let userImage = user.image
-                        {
-                            userArray[uIndex].image = UIImagePNGRepresentation(userImage)! as NSData
-                        }
-                        if let userThumbnail = user.thumbnail
-                        {
-                            userArray[uIndex].thumbnail = UIImagePNGRepresentation(userThumbnail)! as NSData
-                        }
-                        
-                        break userLoop
+                        userArray[uIndex].datetime = datetimeRaw as NSDate
                     }
+                    else
+                    {
+                        userArray[uIndex].datetime = NSDate(timeIntervalSinceNow: 0)
+                    }
+                    if let userName = user.name
+                    {
+                        userArray[uIndex].name = userName
+                    }
+                    if let userImage = user.image
+                    {
+                        userArray[uIndex].image = UIImagePNGRepresentation(userImage)! as NSData
+                    }
+                    if let userThumbnail = user.thumbnail
+                    {
+                        userArray[uIndex].thumbnail = UIImagePNGRepresentation(userThumbnail)! as NSData
+                    }
+                    
+                    break userLoop
                 }
             }
-            // If the user does not exist, add a new entity
-            if !userExists
+        }
+        // If the user does not exist, add a new entity
+        if !userExists
+        {
+            print("CD-US - NOT EXIST: \(user.userID)")
+            let newUser = NSEntityDescription.insertNewObject(forEntityName: "UserCD", into: moc) as! UserCD
+            newUser.setValue(user.userID, forKey: "userID")
+            newUser.setValue(user.facebookID, forKey: "facebookID")
+            newUser.setValue(user.type, forKey: "type")
+            newUser.setValue(user.status, forKey: "status")
+            newUser.setValue(user.datetime, forKey: "datetime")
+            newUser.setValue(user.connection, forKey: "connection")
+            if let userName = user.name
             {
-                print("CD-US - NOT EXIST: \(user.userID)")
-                let newUser = NSEntityDescription.insertNewObject(forEntityName: "UserCD", into: moc) as! UserCD
-                newUser.setValue(user.userID, forKey: "userID")
-                newUser.setValue(user.facebookID, forKey: "facebookID")
-                newUser.setValue(user.type, forKey: "type")
-                newUser.setValue(user.status, forKey: "status")
-                newUser.setValue(user.datetime, forKey: "datetime")
-                newUser.setValue(user.connection, forKey: "connection")
-                if let userName = user.name
-                {
-                    newUser.setValue(userName, forKey: "name")
-                }
-                if let userImage = user.image
-                {
-                    newUser.setValue(UIImagePNGRepresentation(userImage)! as NSData, forKey: "image")
-                }
-                if let userThumbnail = user.thumbnail
-                {
-                    newUser.setValue(UIImagePNGRepresentation(userThumbnail)! as NSData, forKey: "thumbnail")
-                }
-                
-                userArray.append(newUser)
+                newUser.setValue(userName, forKey: "name")
             }
+            if let userImage = user.image
+            {
+                newUser.setValue(UIImagePNGRepresentation(userImage)! as NSData, forKey: "image")
+            }
+            if let userThumbnail = user.thumbnail
+            {
+                newUser.setValue(UIImagePNGRepresentation(userThumbnail)! as NSData, forKey: "thumbnail")
+            }
+            
+            userArray.append(newUser)
         }
         // Save the Entity
         do
@@ -420,7 +416,7 @@ class CoreDataFunctions: AWSRequestDelegate
     
     
     // MARK: USER SKILLS
-    func skillSave(skill: Skill, deleteSkill: Bool)
+    func skillSave(skill: Skill)
     {
         // Try to retrieve the Skill data from Core Data
         var skillArray = [SkillCD]()
@@ -436,43 +432,39 @@ class CoreDataFunctions: AWSRequestDelegate
         {
             fatalError("CD-SSK - Failed to fetch entity: \(error)")
         }
-        // If the skill needs to be deleted, just leave the array empty
-        if !deleteSkill
+        // Check whether the skill exists, otherwise add the skill
+        var skillExists = false
+        skillLoop: for (sIndex, skillCheck) in skillArray.enumerated()
         {
-            // Check whether the skill exists, otherwise add the skill
-            var skillExists = false
-            skillLoop: for (sIndex, skillCheck) in skillArray.enumerated()
+            if let checkSkillID = skillCheck.skillID
             {
-                if let checkSkillID = skillCheck.skillID
+                if checkSkillID == skill.skillID
                 {
-                    if checkSkillID == skill.skillID
-                    {
-                        // The skill exists, so update the Core Data
-                        skillExists = true
-                        // Replace the Skill data to ensure that the latest data is used
-                        skillArray[sIndex].skillID = skill.skillID
-                        skillArray[sIndex].skill = skill.skill
-                        skillArray[sIndex].userID = skill.userID
-                        skillArray[sIndex].level = Int32(skill.level.rawValue)
-                        skillArray[sIndex].order = Int32(skill.order)
-                        
-                        break skillLoop
-                    }
+                    // The skill exists, so update the Core Data
+                    skillExists = true
+                    // Replace the Skill data to ensure that the latest data is used
+                    skillArray[sIndex].skillID = skill.skillID
+                    skillArray[sIndex].skill = skill.skill
+                    skillArray[sIndex].userID = skill.userID
+                    skillArray[sIndex].level = Int32(skill.level.rawValue)
+                    skillArray[sIndex].order = Int32(skill.order)
+                    
+                    break skillLoop
                 }
             }
-            // If the skill does not exist, add a new entity
-            if !skillExists
-            {
-                print("CD-SSK - NOT EXIST: \(skill.skillID)")
-                let newSkill = NSEntityDescription.insertNewObject(forEntityName: "SkillCD", into: moc) as! SkillCD
-                newSkill.setValue(skill.skillID, forKey: "skillID")
-                newSkill.setValue(skill.skill, forKey: "skill")
-                newSkill.setValue(skill.userID, forKey: "userID")
-                newSkill.setValue(skill.level.rawValue, forKey: "level")
-                newSkill.setValue(skill.order, forKey: "order")
-                
-                skillArray.append(newSkill)
-            }
+        }
+        // If the skill does not exist, add a new entity
+        if !skillExists
+        {
+            print("CD-SSK - NOT EXIST: \(skill.skillID)")
+            let newSkill = NSEntityDescription.insertNewObject(forEntityName: "SkillCD", into: moc) as! SkillCD
+            newSkill.setValue(skill.skillID, forKey: "skillID")
+            newSkill.setValue(skill.skill, forKey: "skill")
+            newSkill.setValue(skill.userID, forKey: "userID")
+            newSkill.setValue(skill.level.rawValue, forKey: "level")
+            newSkill.setValue(skill.order, forKey: "order")
+            
+            skillArray.append(newSkill)
         }
         // Save the Entity
         do
@@ -519,7 +511,7 @@ class CoreDataFunctions: AWSRequestDelegate
     }
     
     // MARK: STRUCTURE REPAIRS
-    func repairSave(repair: Repair, deleteRepair: Bool)
+    func repairSave(repair: Repair)
     {
         // Try to retrieve the Repair data from Core Data
         var repairArray = [RepairCD]()
@@ -535,45 +527,41 @@ class CoreDataFunctions: AWSRequestDelegate
         {
             fatalError("CD-RS - Failed to fetch entity: \(error)")
         }
-        // If the repair needs to be deleted, just leave the array empty
-        if !deleteRepair
+        // Check whether the repair exists, otherwise add the repair
+        var repairExists = false
+        repairLoop: for (rIndex, repairCheck) in repairArray.enumerated()
         {
-            // Check whether the repair exists, otherwise add the repair
-            var repairExists = false
-            repairLoop: for (rIndex, repairCheck) in repairArray.enumerated()
+            if let checkRepairID = repairCheck.repairID
             {
-                if let checkRepairID = repairCheck.repairID
+                if checkRepairID == repair.repairID
                 {
-                    if checkRepairID == repair.repairID
-                    {
-                        // The repair exists, so update the Core Data
-                        repairExists = true
-                        // Replace the Repair data to ensure that the latest data is used
-                        repairArray[rIndex].repairID = repair.repairID
-                        repairArray[rIndex].structureID = repair.structureID
-                        repairArray[rIndex].repair = repair.repair
-                        repairArray[rIndex].datetime = repair.datetime as! NSDate
-                        repairArray[rIndex].stage = Int32(repair.stage.rawValue)
-                        repairArray[rIndex].order = Int32(repair.order)
-                        
-                        break repairLoop
-                    }
+                    // The repair exists, so update the Core Data
+                    repairExists = true
+                    // Replace the Repair data to ensure that the latest data is used
+                    repairArray[rIndex].repairID = repair.repairID
+                    repairArray[rIndex].structureID = repair.structureID
+                    repairArray[rIndex].repair = repair.repair
+                    repairArray[rIndex].datetime = repair.datetime as! NSDate
+                    repairArray[rIndex].stage = Int32(repair.stage.rawValue)
+                    repairArray[rIndex].order = Int32(repair.order)
+                    
+                    break repairLoop
                 }
             }
-            // If the repair does not exist, add a new entity
-            if !repairExists
-            {
-                print("CD-RS - NOT EXIST: \(repair.repairID)")
-                let newRepair = NSEntityDescription.insertNewObject(forEntityName: "RepairCD", into: moc) as! RepairCD
-                newRepair.setValue(repair.repairID, forKey: "repairID")
-                newRepair.setValue(repair.structureID, forKey: "structureID")
-                newRepair.setValue(repair.repair, forKey: "repair")
-                newRepair.setValue(repair.datetime, forKey: "datetime")
-                newRepair.setValue(repair.stage.rawValue, forKey: "stage")
-                newRepair.setValue(repair.order, forKey: "order")
-                
-                repairArray.append(newRepair)
-            }
+        }
+        // If the repair does not exist, add a new entity
+        if !repairExists
+        {
+            print("CD-RS - NOT EXIST: \(repair.repairID)")
+            let newRepair = NSEntityDescription.insertNewObject(forEntityName: "RepairCD", into: moc) as! RepairCD
+            newRepair.setValue(repair.repairID, forKey: "repairID")
+            newRepair.setValue(repair.structureID, forKey: "structureID")
+            newRepair.setValue(repair.repair, forKey: "repair")
+            newRepair.setValue(repair.datetime, forKey: "datetime")
+            newRepair.setValue(repair.stage.rawValue, forKey: "stage")
+            newRepair.setValue(repair.order, forKey: "order")
+            
+            repairArray.append(newRepair)
         }
         // Save the Entity
         do
@@ -621,7 +609,7 @@ class CoreDataFunctions: AWSRequestDelegate
     }
     
     // MARK: STRUCTURE
-    func structureSave(structure: Structure, deleteStructure: Bool)
+    func structureSave(structure: Structure)
     {
         // Try to retrieve the Structure data from Core Data
         var structureArray = [StructureCD]()
@@ -637,57 +625,50 @@ class CoreDataFunctions: AWSRequestDelegate
         {
             fatalError("CD-STS - Failed to fetch entity: \(error)")
         }
-        // If the structure needs to be deleted, just leave the array empty
-        if !deleteStructure
+        // Check whether the structure exists, otherwise add the entity
+        var structureExists = false
+        structureLoop: for (sIndex, structureCheck) in structureArray.enumerated()
         {
-            // Check whether the structure exists, otherwise add the entity
-            var structureExists = false
-            structureLoop: for (sIndex, structureCheck) in structureArray.enumerated()
+            if let checkStructureID = structureCheck.structureID
             {
-                if let checkStructureID = structureCheck.structureID
+                if checkStructureID == structure.structureID
                 {
-                    if checkStructureID == structure.structureID
+                    // The structure exists, so update the Core Data
+                    structureExists = true
+                    // Replace the Structure data to ensure that the latest data is used
+                    print("CD-STS - EXISTS: \(structure.structureID)")
+                    structureArray[sIndex].structureID = structure.structureID
+                    structureArray[sIndex].lat = structure.lat
+                    structureArray[sIndex].lng = structure.lng
+                    structureArray[sIndex].datetime = structure.datetime as! NSDate
+                    structureArray[sIndex].type = Int32(structure.type.rawValue)
+                    structureArray[sIndex].stage = Int32(structure.stage.rawValue)
+                    if let structureImage = structure.image
                     {
-                        // The structure exists, so update the Core Data
-                        structureExists = true
-                        // Replace the Structure data to ensure that the latest data is used
-                        structureArray[sIndex].structureID = structure.structureID
-// FIX - SAVE STRUCTURE USER IDs IN SEPARATE ARRAY?
-//                        structureArray[sIndex].userIDs.values = structure.userIDs
-                        structureArray[sIndex].lat = structure.lat
-                        structureArray[sIndex].lng = structure.lng
-                        structureArray[sIndex].datetime = structure.datetime as! NSDate
-                        structureArray[sIndex].type = Int32(structure.type.rawValue)
-                        structureArray[sIndex].stage = Int32(structure.stage.rawValue)
-                        if let structureImage = structure.image
-                        {
-                            structureArray[sIndex].image = UIImagePNGRepresentation(structureImage)! as NSData
-                        }
-                        
-                        break structureLoop
+                        structureArray[sIndex].image = UIImagePNGRepresentation(structureImage)! as NSData
                     }
+                    
+                    break structureLoop
                 }
             }
-            // If the structure does not exist, add a new entity
-            if !structureExists
+        }
+        // If the structure does not exist, add a new entity
+        if !structureExists
+        {
+            print("CD-STS - EXISTS (NO): \(structure.structureID)")
+            let newStructure = NSEntityDescription.insertNewObject(forEntityName: "StructureCD", into: moc) as! StructureCD
+            newStructure.setValue(structure.structureID, forKey: "structureID")
+            newStructure.setValue(structure.lat, forKey: "lat")
+            newStructure.setValue(structure.lng, forKey: "lng")
+            newStructure.setValue(structure.datetime, forKey: "datetime")
+            newStructure.setValue(structure.type.rawValue, forKey: "type")
+            newStructure.setValue(structure.stage.rawValue, forKey: "stage")
+            if let structureImage = structure.image
             {
-                print("CD-STS - NOT EXIST: \(structure.structureID)")
-                let newStructure = NSEntityDescription.insertNewObject(forEntityName: "StructureCD", into: moc) as! StructureCD
-                newStructure.setValue(structure.structureID, forKey: "structureID")
-// FIX - SEE ABOVE
-//                newStructure.setValue(structure.userIDs.values, forKey: "userIDs")
-                newStructure.setValue(structure.lat, forKey: "lat")
-                newStructure.setValue(structure.lng, forKey: "lng")
-                newStructure.setValue(structure.datetime, forKey: "datetime")
-                newStructure.setValue(structure.type.rawValue, forKey: "type")
-                newStructure.setValue(structure.stage.rawValue, forKey: "stage")
-                if let structureImage = structure.image
-                {
-                    newStructure.setValue(UIImagePNGRepresentation(structureImage)! as NSData, forKey: "image")
-                }
-                
-                structureArray.append(newStructure)
+                newStructure.setValue(UIImagePNGRepresentation(structureImage)! as NSData, forKey: "image")
             }
+            
+            structureArray.append(newStructure)
         }
         // Save the Entity
         do
@@ -724,12 +705,12 @@ class CoreDataFunctions: AWSRequestDelegate
         {
             let structure = Structure()
             structure.structureID = structureObj.structureID
-            structure.userIDs = structureObj.userIDs as? [String]
             structure.lat = structureObj.lat
             structure.lng = structureObj.lng
             structure.datetime = structureObj.datetime as! Date
-            structure.type = Constants().structure(Int(structureObj.type))
+            structure.type = Constants().structureType(Int(structureObj.type))
             structure.stage = Constants().structureStage(Int(structureObj.stage))
+            structure.repairs = repairRetrieveForStructure(structureID: structureObj.structureID)
             if let structureImage = structureObj.image
             {
                 structure.image = UIImage(data: structureImage as Data)
@@ -737,6 +718,92 @@ class CoreDataFunctions: AWSRequestDelegate
             structures.append(structure)
         }
         return structures
+    }
+    
+    
+    // MARK: STRUCTURE-USER
+    func structureUserSave(structureUser: StructureUser)
+    {
+        // Try to retrieve the StructureUser data from Core Data
+        var structureUserArray = [StructureUserCD]()
+        let moc = DataController().managedObjectContext
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        let structureUserFetch: NSFetchRequest<StructureUserCD> = StructureUserCD.fetchRequest()
+        // Create an empty Structure list in case the Core Data request fails
+        do
+        {
+            structureUserArray = try moc.fetch(structureUserFetch)
+        }
+        catch
+        {
+            fatalError("CD-STUS - Failed to fetch entity: \(error)")
+        }
+        // Check whether the structureUser exists, otherwise add the entity
+        var structureUserExists = false
+        structureUserLoop: for (suIndex, structureUserCheck) in structureUserArray.enumerated()
+        {
+            if let checkStructureID = structureUserCheck.structureID
+            {
+                if checkStructureID == structureUser.structureID
+                {
+                    // The structureUser exists, so update the Core Data
+                    structureUserExists = true
+                    // Replace the StructureUser data to ensure that the latest data is used
+                    structureUserArray[suIndex].structureID = structureUser.structureID
+                    structureUserArray[suIndex].userID = structureUser.userID
+                    
+                    break structureUserLoop
+                }
+            }
+        }
+        // If the structure does not exist, add a new entity
+        if !structureUserExists
+        {
+            print("CD-STUS - NOT EXIST: \(structureUser.structureID)")
+            let newStructureUser = NSEntityDescription.insertNewObject(forEntityName: "StructureUserCD", into: moc) as! StructureUserCD
+            newStructureUser.setValue(structureUser.structureID, forKey: "structureID")
+            newStructureUser.setValue(structureUser.userID, forKey: "userID")
+            structureUserArray.append(newStructureUser)
+        }
+        // Save the Entity
+        do
+        {
+            try moc.save()
+        }
+        catch
+        {
+            fatalError("CD-STUS - Failure to save context: \(error)")
+        }
+    }
+    
+    func structureUserRetrieveAll() -> [StructureUser]
+    {
+        // Access Core Data
+        // Retrieve all StructureUser entities from Core Data
+        let moc = DataController().managedObjectContext
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        let structureUserFetch: NSFetchRequest<StructureUserCD> = StructureUserCD.fetchRequest()
+        
+        // Create an empty StructureUser list in case the Core Data request fails
+        var structureUserArray = [StructureUserCD]()
+        do
+        {
+            structureUserArray = try moc.fetch(structureUserFetch)
+        }
+        catch
+        {
+            fatalError("CD-STUR - Failed to fetch entity: \(error)")
+        }
+        // Create new StructureUser objects
+        var structureUsers = [StructureUser]()
+        for structureUserObj in structureUserArray
+        {
+            let structureUser = StructureUser()
+            structureUser.structureID = structureUserObj.structureID
+            structureUser.userID = structureUserObj.userID
+            structureUsers.append(structureUser)
+        }
+        return structureUsers
     }
     
     

@@ -432,7 +432,9 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                 if !spotContent[indexPath.row].imageDownloading
                 {
                     // Get the missing image
-                    AWSPrepRequest(requestToCall: AWSGetMediaImage(spotContent: cellSpotContent), delegate: self as AWSRequestDelegate).prepRequest()
+                    let awsObject = AWSDownloadMediaImage(imageID: cellSpotContent.contentID)
+                    awsObject.imageParentID = cellSpotContent.spotID
+                    AWSPrepRequest(requestToCall: awsObject, delegate: self as AWSRequestDelegate).prepRequest()
                     
                     // Save the downloading indicator on the object in the array, otherwise it will download again
                     spotContent[indexPath.row].imageDownloading = true
@@ -750,19 +752,19 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                 // Process the return data based on the method used
                 switch objectType
                 {
-                case let awsGetMediaImage as AWSGetMediaImage:
+                case let awsDownloadMediaImage as AWSDownloadMediaImage:
                     if success
                     {
-                        if let contentImage = awsGetMediaImage.contentImage
+                        if let contentImage = awsDownloadMediaImage.contentImage
                         {
                             // Find the spotContent Object in the local array and add the downloaded image to the object variable
                             findSpotContentLoop: for contentObject in self.spotContent
                             {
-                                if contentObject.contentID == awsGetMediaImage.spotContent.contentID
+                                if contentObject.contentID == awsDownloadMediaImage.imageID
                                 {
                                     // Set the local image property to the downloaded image
                                     contentObject.image = contentImage
-                                    if let filePath = awsGetMediaImage.spotContent.imageFilePath
+                                    if let filePath = awsDownloadMediaImage.imageFilePath
                                     {
                                         contentObject.imageFilePath = filePath
                                     }
@@ -774,28 +776,28 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                             // Find the spotContent Object in the global array and add the downloaded image to the object variable
                             findSpotLoop: for spotObject in Constants.Data.allSpot
                             {
-                                if spotObject.spotID == awsGetMediaImage.spotContent.spotID
+                                // The parentID should be the spotID, use it to narrow down which Spot contains the needed content
+                                if let spotID = awsDownloadMediaImage.imageParentID
                                 {
-                                    findSpotContentLoop: for contentObject in spotObject.spotContent
+                                    if spotID == spotObject.spotID
                                     {
-                                        if contentObject.contentID == awsGetMediaImage.spotContent.contentID
+                                        findSpotContentLoop: for contentObject in spotObject.spotContent
                                         {
-                                            // Set the local image property to the downloaded image
-                                            contentObject.image = contentImage
-                                            if let filePath = awsGetMediaImage.spotContent.imageFilePath
+                                            if contentObject.contentID == awsDownloadMediaImage.imageID
                                             {
-                                                contentObject.imageFilePath = filePath
+                                                // Set the local image property to the downloaded image
+                                                contentObject.image = contentImage
+                                                if let filePath = awsDownloadMediaImage.imageFilePath
+                                                {
+                                                    contentObject.imageFilePath = filePath
+                                                }
+                                                break findSpotContentLoop
                                             }
-                                            
-                                            break findSpotContentLoop
                                         }
+                                        break findSpotLoop
                                     }
-                                    
-                                    break findSpotLoop
                                 }
                             }
-
-                            
                             // Reload the TableView
                             self.refreshSpotViewTable()
                         }
@@ -803,7 +805,7 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                     else
                     {
                         // Show the error message
-                        let alertController = UtilityFunctions().createAlertOkView("AWSGetMediaImage - Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                        let alertController = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         self.present(alertController, animated: true, completion: nil)
                     }
                 case let awsSpotContentStatusUpdate as AWSSpotContentStatusUpdate:
@@ -828,13 +830,13 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                     else
                     {
                         // Show the error message
-                        let alertController = UtilityFunctions().createAlertOkView("AWSGetMediaImage - Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                        let alertController = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         self.present(alertController, animated: true, completion: nil)
                     }
                 default:
                     print("STVC-DEFAULT: THERE WAS AN ISSUE WITH THE DATA RETURNED FROM AWS")
                     // Show the error message
-                    let alertController = UtilityFunctions().createAlertOkView("DEFAULT - Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                    let alertController = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                     self.present(alertController, animated: true, completion: nil)
                 }
         })

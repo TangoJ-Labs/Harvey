@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="12141" systemVersion="16G29" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13240" systemVersion="16G29" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="CurrentUser" representedClassName="CurrentUser" syncable="YES">
         <attribute name="connection" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="datetime" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
@@ -51,7 +51,10 @@
         <attribute name="stage" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="structureID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="userIDs" optional="YES" attributeType="Transformable" syncable="YES"/>
+    </entity>
+    <entity name="StructureUserCD" representedClassName="StructureUserCD" syncable="YES">
+        <attribute name="structureID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userID" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="TutorialView" representedClassName="TutorialView" syncable="YES">
         <attribute name="tutorialMapViewDatetime" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
@@ -74,8 +77,9 @@
         <element name="MapSetting" positionX="-63" positionY="-18" width="128" height="120"/>
         <element name="RepairCD" positionX="-27" positionY="99" width="128" height="135"/>
         <element name="SkillCD" positionX="-36" positionY="90" width="128" height="120"/>
+        <element name="StructureCD" positionX="-36" positionY="90" width="128" height="150"/>
+        <element name="StructureUserCD" positionX="-36" positionY="99" width="128" height="75"/>
         <element name="TutorialView" positionX="-18" positionY="63" width="128" height="60"/>
         <element name="UserCD" positionX="-27" positionY="54" width="128" height="180"/>
-        <element name="StructureCD" positionX="-36" positionY="90" width="128" height="165"/>
     </elements>
 </model>

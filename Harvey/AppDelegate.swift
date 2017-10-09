@@ -55,7 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AWSRequestDelegate
             AWSPrepRequest(requestToCall: AWSSettings(), delegate: self as AWSRequestDelegate).prepRequest()
             
             // Try to retrieve the current user from Core Data
-            let currentUser = CoreDataFunctions().currentUserRetrieve()
+            let currentUser = CoreDataFunctions().currentUserRetrieve(deleteAll: false)
             if currentUser.userID != nil
             {
                 Constants.Data.currentUser = currentUser

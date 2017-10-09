@@ -1,5 +1,5 @@
 //
-//  ProfileStructureTableViewCell.swift
+//  ProfileTabStructureTableViewCell.swift
 //  Harvey
 //
 //  Created by Sean Hart on 9/16/17.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ProfileStructureTableViewCell: UITableViewCell
+class ProfileTabStructureTableViewCell: UITableViewCell
 {
     var cellContainer: UIView!
     var structureImageView: UIImageView!

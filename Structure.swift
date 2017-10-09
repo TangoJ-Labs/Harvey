@@ -11,21 +11,21 @@ import UIKit
 class Structure
 {
     var structureID: String!
-    var userIDs: [String]! // Should have at least one userID (String)
     var lat: Double!
     var lng: Double!
     var datetime: Date!
-    var type: Constants.Structure = Constants.Structure.other // Defaults to 'other'
+    var type: Constants.StructureType = Constants.StructureType.other // Defaults to 'other'
     var stage: Constants.StructureStage = Constants.StructureStage.waiting // Defaults to 'waiting'
     
+//    var userIDs: [String]? // Should have at least one userID (String) - this data comes from a separate table, both in db and in Core Data
     var image: UIImage? // Image of the structure (just one) - for summary info
+    var repairs = [Repair]()
     
-    convenience init(structureID: String!, userIDs: [String]!, lat: Double!, lng: Double!, datetime: Date!)
+    convenience init(structureID: String!, lat: Double!, lng: Double!, datetime: Date!)
     {
         self.init()
         
         self.structureID = structureID
-        self.userIDs = userIDs
         self.lat = lat
         self.lng = lng
         self.datetime = datetime

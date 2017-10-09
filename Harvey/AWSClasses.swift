@@ -341,7 +341,7 @@ class AWSLoginUser : AWSRequestObject, RequestDelegate
                                                         Constants.Data.currentUser = currentUser
                                                         
                                                         // Save the new login data to Core Data
-                                                        CoreDataFunctions().currentUserSave(user: currentUser, deleteUser: false)
+                                                        CoreDataFunctions().currentUserSave(user: currentUser)
                                                         
 //                                                        // Reset the global User list with Core Data
 //                                                        UtilityFunctions().resetUserListWithCoreData()
@@ -934,7 +934,7 @@ class AWSUserUpdate : AWSRequestObject
                                                 }
                                                 
                                                 // Save to Core Data
-                                                CoreDataFunctions().userSave(user: user, deleteUser: false)
+                                                CoreDataFunctions().userSave(user: user)
                                                 break userLoop
                                             }
                                         }
@@ -957,7 +957,7 @@ class AWSUserUpdate : AWSRequestObject
                                             }
                                             
                                             // Save to Core Data
-                                            CoreDataFunctions().currentUserSave(user: Constants.Data.currentUser, deleteUser: false)
+                                            CoreDataFunctions().currentUserSave(user: Constants.Data.currentUser)
                                         }
                                         
                                         // Notify the parent view that the AWS call completed successfully
@@ -1105,7 +1105,7 @@ class AWSUserQueryActive : AWSRequestObject, RequestDelegate
                                                         }
                                                         
                                                         // Save the current user data to Core Data
-                                                        CoreDataFunctions().userSave(user: newUser, deleteUser: false)
+                                                        CoreDataFunctions().userSave(user: newUser)
                                                         
                                                         // Request FB data for the user
                                                         RequestPrep(requestToCall: FBGetUserData(me: false, facebookID: newUser.facebookID), delegate: self as RequestDelegate).prepRequest()
@@ -1579,7 +1579,7 @@ class AWSSkillQuery : AWSRequestObject
                                                             skillObjects.append(addSkill)
                                                             
                                                             // Save the updated / new skill to Core Data
-                                                            CoreDataFunctions().skillSave(skill: addSkill, deleteSkill: false)
+                                                            CoreDataFunctions().skillSave(skill: addSkill)
                                                         }
                                                     }
                                                     
@@ -1612,7 +1612,7 @@ class AWSSkillQuery : AWSRequestObject
                                                             skillObjects.append(addSkill)
                                                             
                                                             // Save the updated / new skill to Core Data
-                                                            CoreDataFunctions().skillSave(skill: addSkill, deleteSkill: false)
+                                                            CoreDataFunctions().skillSave(skill: addSkill)
                                                         }
                                                     }
                                                     // Now replace the global skill list with the updated version
@@ -1683,7 +1683,6 @@ class AWSSkillPut : AWSRequestObject
     let url = URL(string: Constants.Strings.urlSkillPut)
     
     var skills: [Skill]!
-    
     required init(skills: [Skill]!)
     {
         self.skills = skills
@@ -1806,10 +1805,16 @@ class AWSSkillPut : AWSRequestObject
 
 
 // MARK: STRUCTURE
-
+// Will return data for the passed structureID - get the structure ID from the structureUser data returned
 class AWSStructureQuery : AWSRequestObject
 {
     let url = URL(string: Constants.Strings.urlStructureQuery)
+    
+    var structureID: String!
+    required init(structureID: String!)
+    {
+        self.structureID = structureID
+    }
     
     override func makeRequest()
     {
@@ -1823,7 +1828,7 @@ class AWSStructureQuery : AWSRequestObject
             json["identity_id"] = Constants.credentialsProvider.identityId
             json["login_provider"] = "graph.facebook.com"
             json["login_token"] = facebookToken.tokenString
-            json["user_id"] = Constants.Data.currentUser.userID
+            json["structure_id"] = self.structureID
             let jsonData = try? JSONSerialization.data(withJSONObject: json)
             
             var request = URLRequest(url: url!)
@@ -1858,14 +1863,68 @@ class AWSStructureQuery : AWSRequestObject
                                     if response == "success"
                                     {
                                         print("AC-STRQ - QUERY SUCCESS")
-                                        
-                                        var structureList = [Structure]()
-                                        
-                                        
-                                        // Notify the parent view that the AWS call completed successfully
-                                        if let parentVC = self.awsRequestDelegate
+                                        if let structureData = json["structures"] as? [AnyObject]
                                         {
-                                            parentVC.processAwsReturn(self, success: true)
+                                            for structureObject in structureData
+                                            {
+                                                print("AC-STRQ - CHECK 2")
+                                                if let structureJson = structureObject as? [String: AnyObject]
+                                                {
+                                                    print("AC-STRQ - CHECK 3: \(structureJson)")
+                                                    // Run a check on one json item to see if the data type is correct
+                                                    if let structureID = structureJson["structure_id"] as? String
+                                                    {
+                                                        print("AC-STRQ - CHECK 4: \(structureID)")
+                                                        let newStruct = Structure()
+                                                        newStruct.structureID = structureID
+                                                        newStruct.datetime = Date(timeIntervalSince1970: structureJson["timestamp"] as! Double)
+                                                        newStruct.lat = structureJson["lat"] as! Double
+                                                        newStruct.lng = structureJson["lng"] as! Double
+                                                        newStruct.type = Constants().structureType(structureJson["type"] as! Int)
+                                                        newStruct.stage = Constants().structureStage(structureJson["stage"] as! Int)
+                                                        
+                                                        // Check to see if any data currently exists that is not included in the new data
+                                                        var structureExists = false
+                                                        structureCheckLoop: for structureCheck in Constants.Data.structures
+                                                        {
+                                                            // Check using the structureID
+                                                            if structureCheck.structureID == structureID
+                                                            {
+                                                                // If the user already exists, update with newly downloaded data
+                                                                structureExists = true
+                                                                structureCheck.datetime = newStruct.datetime
+                                                                structureCheck.lat = newStruct.lat
+                                                                structureCheck.lng = newStruct.lng
+                                                                structureCheck.type = newStruct.type
+                                                                structureCheck.stage = newStruct.stage
+                                                                break structureCheckLoop
+                                                            }
+                                                        }
+                                                        if !structureExists
+                                                        {
+                                                            Constants.Data.structures.append(newStruct)
+                                                        }
+                                                        
+                                                        // Save the current user data to Core Data
+                                                        CoreDataFunctions().structureSave(structure: newStruct)
+                                                    }
+                                                    else
+                                                    {
+                                                        self.recordError(stage: "structureID", error: nil)
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    self.recordError(stage: "json", error: nil)
+                                                }
+                                            }
+                                            
+                                            // Notify the parent view that the AWS call completed successfully
+                                            if let parentVC = self.awsRequestDelegate
+                                            {
+                                                print("AC-STRQ - CALLED PARENT")
+                                                parentVC.processAwsReturn(self, success: true)
+                                            }
                                         }
                                     }
                                     else
@@ -1918,12 +1977,12 @@ class AWSStructureQuery : AWSRequestObject
     }
 }
 
+// Upload the Structure data to the db - a StructureUser entry should also be uploaded in parallel
 class AWSStructurePut : AWSRequestObject
 {
     let url = URL(string: Constants.Strings.urlStructurePut)
     
     var structure: Structure!
-    
     required init(structure: Structure!)
     {
         self.structure = structure
@@ -1945,7 +2004,7 @@ class AWSStructurePut : AWSRequestObject
             json["user_id"] = Constants.Data.currentUser.userID
             json["lat"] = String(structure.lat)
             json["lng"] = String(structure.lng)
-            json["datetime"] = String(structure.datetime.timeIntervalSince1970)
+            json["timestamp"] = String(structure.datetime.timeIntervalSince1970)
             json["type"] = String(structure.type.rawValue)
             json["stage"] = String(structure.stage.rawValue)
             let jsonData = try? JSONSerialization.data(withJSONObject: json)
@@ -2039,35 +2098,516 @@ class AWSStructurePut : AWSRequestObject
 }
 
 
+// MARK: STRUCTURE-USER
+// Return all structureIDs connected to the current user
+class AWSStructureUserQuery : AWSRequestObject
+{
+    let url = URL(string: Constants.Strings.urlStructureUserQuery)
+    
+    override func makeRequest()
+    {
+        print("AC-STRUQ: STRUCTURE-USER QUERY")
+        
+        if let facebookToken = FBSDKAccessToken.current()
+        {
+            // Create some JSON to send the Structure data
+            var json = [String: Any]()
+            json["app_version"] = Constants.Settings.appVersion
+            json["identity_id"] = Constants.credentialsProvider.identityId
+            json["login_provider"] = "graph.facebook.com"
+            json["login_token"] = facebookToken.tokenString
+            json["user_id"] = Constants.Data.currentUser.userID
+            let jsonData = try? JSONSerialization.data(withJSONObject: json)
+            
+            var request = URLRequest(url: url!)
+            request.httpMethod = "POST"
+            request.timeoutInterval = Constants.Settings.requestTimeout
+            request.httpBody = jsonData
+            request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+            let session = URLSession(configuration: .default)
+            let dataTask = session.dataTask(with: request)
+            { (responseData, response, error) in
+                if let err = error
+                {
+                    self.recordError(stage: "URLRequest", error: err as? String)
+                }
+                else if let res = response as? HTTPURLResponse
+                {
+                    print("AC-STRUQ - RESPONSE CODE: \(res.statusCode)")
+                    if let data = responseData
+                    {
+                        do
+                        {
+                            let jsonData = try JSONSerialization.jsonObject(with: data, options: [JSONSerialization.ReadingOptions.allowFragments])
+                            print("AC-STRUQ - JSON DATA: \(json)")
+                            // Convert the data to JSON with keys and AnyObject values
+                            if let json = jsonData as? [String: AnyObject]
+                            {
+                                print("AC-STRUQ - JSON: \(json)")
+                                // EXTRACT THE RESPONSE STRING
+                                if let response = json["response"] as? String
+                                {
+                                    print("AC-STRUQ - RESPONSE: \(response)")
+                                    if response == "success"
+                                    {
+                                        print("AC-STRUQ - QUERY SUCCESS")
+                                        if let structureUserData = json["structure_users"] as? [AnyObject]
+                                        {
+                                            print("AC-STRUQ - CHECK 1")
+                                            // Create a local array to hold the new entities
+                                            var newStructureUsers = [StructureUser]()
+                                            for structureUserObject in structureUserData
+                                            {
+                                                print("AC-STRUQ - CHECK 2")
+                                                if let structureUserJson = structureUserObject as? [String: AnyObject]
+                                                {
+                                                    print("AC-STRUQ - CHECK 3: \(structureUserJson)")
+                                                    // Run a check on one json item to see if the data type is correct
+                                                    if let structureID = structureUserJson["structure_id"] as? String
+                                                    {
+                                                        let userID = structureUserJson["user_id"] as! String
+                                                        print("AC-STRUQ - CHECK 4: \(structureID), \(userID)")
+                                                        
+                                                        let newStructUser = StructureUser()
+                                                        newStructUser.structureID = structureID
+                                                        newStructUser.userID = userID
+                                                        newStructUser.datetime = Date(timeIntervalSince1970: structureUserJson["timestamp"] as! Double)
+                                                        
+                                                        // Check to see if any data currently exists that is not included in the new data
+                                                        var structureUserExists = false
+                                                        structureUserCheckLoop: for structureUserCheck in Constants.Data.structureUsers
+                                                        {
+                                                            // Check using the structureID
+                                                            if structureUserCheck.structureID == structureID && structureUserCheck.userID == userID
+                                                            {
+                                                                // If the structureUser already exists, update with newly downloaded data
+                                                                structureUserExists = true
+                                                                break structureUserCheckLoop
+                                                            }
+                                                        }
+                                                        if !structureUserExists
+                                                        {
+                                                            Constants.Data.structureUsers.append(newStructUser)
+                                                        }
+                                                        
+                                                        // Save the current user data to Core Data
+                                                        CoreDataFunctions().structureUserSave(structureUser: newStructUser)
+                                                    }
+                                                    else
+                                                    {
+                                                        self.recordError(stage: "structureID", error: nil)
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    self.recordError(stage: "json", error: nil)
+                                                }
+                                            }
+                                            
+                                            // Notify the parent view that the AWS call completed successfully
+                                            if let parentVC = self.awsRequestDelegate
+                                            {
+                                                print("AC-STRUQ - CALLED PARENT")
+                                                parentVC.processAwsReturn(self, success: true)
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        self.recordError(stage: "response - fail", error: response)
+                                    }
+                                }
+                                else
+                                {
+                                    self.recordError(stage: "response", error: nil)
+                                }
+                            }
+                            else
+                            {
+                                self.recordError(stage: "JSON", error: nil)
+                            }
+                        }
+                        catch let error as NSError
+                        {
+                            self.recordError(stage: "JSONSerlialization", error: error.description)
+                        }
+                    }
+                    else
+                    {
+                        self.recordError(stage: "Response Data - else", error: nil)
+                    }
+                }
+                else
+                {
+                    self.recordError(stage: "URLRequest - else", error: nil)
+                }
+            }
+            dataTask.resume()
+        }
+    }
+    
+    func recordError(stage: String!, error: String?)
+    {
+        print("AC-STRUQ: GET DATA ERROR AT STAGE: \(stage), ERROR: \(String(describing: error))")
+//        CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+        
+        // Record the server request attempt
+        Constants.Data.serverTries += 1
+        
+        // Notify the parent view that the AWS call completed with an error
+        if let parentVC = self.awsRequestDelegate
+        {
+            parentVC.processAwsReturn(self, success: false)
+        }
+    }
+}
+
+// Upload the Structure data to the db - a StructureUser entry should also be uploaded in parallel
+class AWSStructureUserPut : AWSRequestObject
+{
+    let url = URL(string: Constants.Strings.urlStructureUserPut)
+    
+    var structureID: String!
+    var userID: String!
+    var timestamp: Double!
+    required init(structureID: String!, userID: String!, timestamp: Double!)
+    {
+        self.structureID = structureID
+        self.userID = userID
+        self.timestamp = timestamp
+    }
+    
+    override func makeRequest()
+    {
+        print("AC-STRUP: STRUCTURE-USER PUT")
+        if let facebookToken = FBSDKAccessToken.current()
+        {
+            // Create some JSON to send the Structure data
+            var json = [String: Any]()
+            json["app_version"] = Constants.Settings.appVersion
+            json["identity_id"] = Constants.credentialsProvider.identityId
+            json["login_provider"] = "graph.facebook.com"
+            json["login_token"] = facebookToken.tokenString
+            json["structure_user_id"] = structureID + "-" + userID
+            json["structure_id"] = structureID
+            json["user_id"] = userID
+            json["timestamp"] = String(timestamp)
+            let jsonData = try? JSONSerialization.data(withJSONObject: json)
+            
+            var request = URLRequest(url: url!)
+            request.httpMethod = "POST"
+            request.timeoutInterval = Constants.Settings.requestTimeout
+            request.httpBody = jsonData
+            request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+            let session = URLSession(configuration: .default)
+            let dataTask = session.dataTask(with: request)
+            { (responseData, response, error) in
+                if let err = error
+                {
+                    self.recordError(stage: "URLRequest", error: err as? String)
+                }
+                else if let res = response as? HTTPURLResponse
+                {
+                    print("AC-STRUP - RESPONSE CODE: \(res.statusCode)")
+                    if let data = responseData
+                    {
+                        do
+                        {
+                            let jsonData = try JSONSerialization.jsonObject(with: data, options: [JSONSerialization.ReadingOptions.allowFragments])
+                            print("AC-STRUP - JSON DATA: \(json)")
+                            // Convert the data to JSON with keys and AnyObject values
+                            if let json = jsonData as? [String: AnyObject]
+                            {
+                                print("AC-STRUP - JSON: \(json)")
+                                // EXTRACT THE RESPONSE STRING
+                                if let response = json["response"] as? String
+                                {
+                                    print("AC-STRUP - RESPONSE: \(response)")
+                                    if response == "success"
+                                    {
+                                        print("AC-STRUP - UPLOAD SUCCESS")
+                                        // Notify the parent view that the AWS call completed successfully
+                                        if let parentVC = self.awsRequestDelegate
+                                        {
+                                            parentVC.processAwsReturn(self, success: true)
+                                        }
+                                    }
+                                    else
+                                    {
+                                        self.recordError(stage: "response - fail", error: response)
+                                    }
+                                }
+                                else
+                                {
+                                    self.recordError(stage: "response", error: nil)
+                                }
+                            }
+                            else
+                            {
+                                self.recordError(stage: "JSON", error: nil)
+                            }
+                        }
+                        catch let error as NSError
+                        {
+                            self.recordError(stage: "JSONSerlialization", error: error.description)
+                        }
+                    }
+                    else
+                    {
+                        self.recordError(stage: "Response Data - else", error: nil)
+                    }
+                }
+                else
+                {
+                    self.recordError(stage: "URLRequest - else", error: nil)
+                }
+            }
+            dataTask.resume()
+        }
+    }
+    
+    func recordError(stage: String!, error: String?)
+    {
+        print("AC-STRUP: GET DATA ERROR AT STAGE: \(stage), ERROR: \(String(describing: error))")
+//        CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+        
+        // Record the server request attempt
+        Constants.Data.serverTries += 1
+        
+        // Notify the parent view that the AWS call completed with an error
+        if let parentVC = self.awsRequestDelegate
+        {
+            parentVC.processAwsReturn(self, success: false)
+        }
+    }
+}
+
+
 // MARK: REPAIR
+
+// Return all repairs connected to the passed structureID
+class AWSRepairQuery : AWSRequestObject
+{
+    let url = URL(string: Constants.Strings.urlRepairQuery)
+    
+    var structureID: String!
+    var repairs = [Repair]()
+    required init(structureID: String!)
+    {
+        self.structureID = structureID
+    }
+    
+    override func makeRequest()
+    {
+        print("AC-RQ: STRUCTURE-USER QUERY")
+        
+        if let facebookToken = FBSDKAccessToken.current()
+        {
+            // Create some JSON to send the Structure data
+            var json = [String: Any]()
+            json["app_version"] = Constants.Settings.appVersion
+            json["identity_id"] = Constants.credentialsProvider.identityId
+            json["login_provider"] = "graph.facebook.com"
+            json["login_token"] = facebookToken.tokenString
+            json["structure_id"] = self.structureID
+            let jsonData = try? JSONSerialization.data(withJSONObject: json)
+            
+            var request = URLRequest(url: url!)
+            request.httpMethod = "POST"
+            request.timeoutInterval = Constants.Settings.requestTimeout
+            request.httpBody = jsonData
+            request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+            let session = URLSession(configuration: .default)
+            let dataTask = session.dataTask(with: request)
+            { (responseData, response, error) in
+                if let err = error
+                {
+                    self.recordError(stage: "URLRequest", error: err as? String)
+                }
+                else if let res = response as? HTTPURLResponse
+                {
+                    print("AC-RQ - RESPONSE CODE: \(res.statusCode)")
+                    if let data = responseData
+                    {
+                        do
+                        {
+                            let jsonData = try JSONSerialization.jsonObject(with: data, options: [JSONSerialization.ReadingOptions.allowFragments])
+                            print("AC-RQ - JSON DATA: \(json)")
+                            // Convert the data to JSON with keys and AnyObject values
+                            if let json = jsonData as? [String: AnyObject]
+                            {
+                                print("AC-RQ - JSON: \(json)")
+                                // EXTRACT THE RESPONSE STRING
+                                if let response = json["response"] as? String
+                                {
+                                    print("AC-RQ - RESPONSE: \(response)")
+                                    if response == "success"
+                                    {
+                                        print("AC-RQ - QUERY SUCCESS")
+                                        // Create an empty json to hold the repair settings
+                                        var repairSettings = [String: AnyObject]()
+                                        if let repairSettingsJson = json["repair_settings"] as? [String: AnyObject]
+                                        {
+                                            repairSettings = repairSettingsJson
+                                        }
+                                        if let repairData = json["repairs"] as? [AnyObject]
+                                        {
+                                            print("AC-RQ - CHECK 1")
+                                            // Create a local array to hold the new entities
+                                            var newRepairs = [Repair]()
+                                            for repairObject in repairData
+                                            {
+                                                print("AC-RQ - CHECK 2")
+                                                if let repairJson = repairObject as? [String: AnyObject]
+                                                {
+                                                    print("AC-RQ - CHECK 3: \(repairJson)")
+                                                    // Run a check on one json item to see if the data type is correct
+                                                    if let repairID = repairJson["repair_id"] as? String
+                                                    {
+                                                        print("AC-RQ - CHECK 4: \(repairID), \(self.structureID)")
+                                                        
+                                                        let newRepair = Repair()
+                                                        newRepair.repairID = repairID
+                                                        newRepair.structureID = self.structureID
+                                                        newRepair.repair = repairJson["repair"] as! String
+                                                        newRepair.datetime = Date(timeIntervalSince1970: repairJson["timestamp"] as! Double)
+                                                        newRepair.stage = Constants().repairStage(repairJson["stage"] as! Int)
+                                                        if let repairImages = repairJson["repair_images"] as? [AnyObject]
+                                                        {
+                                                            var repairImagesObjects = [RepairImage]()
+                                                            for repairImageObject in repairImages
+                                                            {
+                                                                if let repairImageJson = repairImageObject as? [String: AnyObject]
+                                                                {
+                                                                    let newRepairImage = RepairImage()
+                                                                    newRepairImage.imageID = repairImageJson["image_id"] as! String
+                                                                    newRepairImage.repairID = repairID
+                                                                    newRepairImage.datetime = newRepair.datetime
+                                                                    repairImagesObjects.append(newRepairImage)
+                                                                }
+                                                            }
+                                                            newRepair.repairImages = repairImagesObjects
+                                                        }
+                                                        // Try to find the repair in the settings list and assign the order
+                                                        if let repairOrder = repairSettings[newRepair.repair]
+                                                        {
+                                                            newRepair.order = repairOrder as! Int
+                                                            print("AC-RQ - ADDED REPAIR ORDER: \(newRepair.repair): \(newRepair.order)")
+                                                        }
+                                                        newRepairs.append(newRepair)
+                                                        
+                                                        // Save the downloaded repair data to the local array to pass to the parent VC
+                                                        self.repairs.append(newRepair)
+                                                        
+                                                        // Save the current user data to Core Data
+                                                        CoreDataFunctions().repairSave(repair: newRepair)
+                                                    }
+                                                    else
+                                                    {
+                                                        self.recordError(stage: "structureID", error: nil)
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    self.recordError(stage: "json", error: nil)
+                                                }
+                                            }
+                                            
+                                            // Save the repair to the appropriate global structure object
+                                            structureLoop: for structure in Constants.Data.structures
+                                            {
+                                                if structure.structureID == self.structureID
+                                                {
+                                                    structure.repairs = newRepairs
+                                                    break structureLoop
+                                                }
+                                            }
+                                            
+                                            // Notify the parent view that the AWS call completed successfully
+                                            if let parentVC = self.awsRequestDelegate
+                                            {
+                                                print("AC-RQ - CALLED PARENT")
+                                                parentVC.processAwsReturn(self, success: true)
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        self.recordError(stage: "response - fail", error: response)
+                                    }
+                                }
+                                else
+                                {
+                                    self.recordError(stage: "response", error: nil)
+                                }
+                            }
+                            else
+                            {
+                                self.recordError(stage: "JSON", error: nil)
+                            }
+                        }
+                        catch let error as NSError
+                        {
+                            self.recordError(stage: "JSONSerlialization", error: error.description)
+                        }
+                    }
+                    else
+                    {
+                        self.recordError(stage: "Response Data - else", error: nil)
+                    }
+                }
+                else
+                {
+                    self.recordError(stage: "URLRequest - else", error: nil)
+                }
+            }
+            dataTask.resume()
+        }
+    }
+    
+    func recordError(stage: String!, error: String?)
+    {
+        print("AC-RQ: GET DATA ERROR AT STAGE: \(stage), ERROR: \(String(describing: error))")
+//        CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+        
+        // Record the server request attempt
+        Constants.Data.serverTries += 1
+        
+        // Notify the parent view that the AWS call completed with an error
+        if let parentVC = self.awsRequestDelegate
+        {
+            parentVC.processAwsReturn(self, success: false)
+        }
+    }
+}
 
 class AWSRepairPut : AWSRequestObject
 {
     let url = URL(string: Constants.Strings.urlRepairPut)
     
-    var repairs: [Repair]!
-    
-    required init(repairs: [Repair]!)
+    var repair: Repair!
+    var updatedImages: Int = 0 // 0=False, 1=True
+    required init(repair: Repair!)
     {
-        self.repairs = repairs
+        self.repair = repair
     }
     
     override func makeRequest()
     {
         print("AC-RP: PUT REPAIR")
-        
         if let facebookToken = FBSDKAccessToken.current()
         {
             // Create some JSON to send the Skill data
-            // This method is only used to send the structure repairs to the db
-            var repairDict = [Any]()
-            for repair in repairs
+            // Add all associated RepairImages to a json array
+            var repairImageDict = [Any]()
+            for repairImage in repair.repairImages
             {
-                var repairObj = [String: Any]()
-                repairObj["structure_id"] = repair.structureID
-                repairObj["repair"] = repair.repair
-                repairObj["stage"] = String(describing: repair.stage.rawValue)
-                repairDict.append(repairObj)
+                var repairImageObj = [String: Any]()
+                repairImageObj["image_id"] = repairImage.imageID
+                repairImageObj["repair_id"] = repairImage.repairID
+                repairImageObj["timestamp"] = String(describing: repairImage.datetime.timeIntervalSince1970)
+                repairImageObj["status"] = "active"
+                repairImageDict.append(repairImageObj)
             }
             
             var json = [String: Any]()
@@ -2076,8 +2616,15 @@ class AWSRepairPut : AWSRequestObject
             json["login_provider"] = "graph.facebook.com"
             json["login_token"] = facebookToken.tokenString
             json["user_id"] = Constants.Data.currentUser.userID
-            json["repairs"] = repairDict
+            json["structure_id"] = repair.structureID
+            json["repair"] = repair.repair
+            json["stage"] = String(describing: repair.stage.rawValue)
+            json["timestamp"] = String(repair.datetime.timeIntervalSince1970)
+            json["status"] = "active"
+            json["repair_images"] = repairImageDict
+            json["updated_images"] = updatedImages
             let jsonData = try? JSONSerialization.data(withJSONObject: json)
+            print("AC-RP: PUT REPAIR JSON: \(json)")
             
             var request = URLRequest(url: url!)
             request.httpMethod = "POST"
@@ -2175,7 +2722,6 @@ class AWSSpotQueryActive : AWSRequestObject
     let url = URL(string: Constants.Strings.urlSpotQueryActive)
     
     var userLocation = [String : Double]()
-    
     required init(userLocation: [String : Double]!)
     {
         if let userLocation = userLocation
@@ -3914,113 +4460,103 @@ class AWSUploadMediaToBucket : AWSRequestObject
     }
 }
 
-class AWSGetMediaImage : AWSRequestObject
+class AWSDownloadMediaImage : AWSRequestObject
 {
-    var spotContent: SpotContent!
+    var imageID: String!
+    var imageParentID: String?
+    var imageFilePath: String?
     var contentImage: UIImage?
     
-    required init(spotContent: SpotContent)
+    required init(imageID: String)
     {
-        self.spotContent = spotContent
+        self.imageID = imageID
     }
     
     // Download SpotContent Image
     override func makeRequest()
     {
-//        print("AC - GMI - ATTEMPTING TO DOWNLOAD IMAGE: \(self.spotContent.contentID)")
+        print("AC-DMI - ATTEMPTING TO DOWNLOAD IMAGE: \(imageID)")
         
-        // Verify the type of content (image)
-        if self.spotContent.type == Constants.ContentType.image
-        {
-            if let contentID = self.spotContent.contentID
-            {
-                let downloadingFilePath = NSTemporaryDirectory() + contentID + ".jpg" // + Constants.Settings.frameImageFileType)
-                let downloadingFileURL = URL(fileURLWithPath: downloadingFilePath)
-                let transferManager = AWSS3TransferManager.default()
-                
-                // Download the Frame
-                let downloadRequest : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
-                downloadRequest.bucket = Constants.Strings.S3BucketMedia
-                downloadRequest.key =  contentID + ".jpg"
-                downloadRequest.downloadingFileURL = downloadingFileURL
-                
-                transferManager?.download(downloadRequest).continue(
-                    { (task) -> AnyObject! in
+        imageFilePath = NSTemporaryDirectory() + imageID + ".jpg" // + Constants.Settings.frameImageFileType)
+        let imageFileURL = URL(fileURLWithPath: imageFilePath!)
+        let transferManager = AWSS3TransferManager.default()
+        
+        // Download the Frame
+        let downloadRequest : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
+        downloadRequest.bucket = Constants.Strings.S3BucketMedia
+        downloadRequest.key =  imageID + ".jpg"
+        downloadRequest.downloadingFileURL = imageFileURL
+        transferManager?.download(downloadRequest).continue(
+            { (task) -> AnyObject! in
+                print("AC-DMI - TASK: \(task)")
+                if let error = task.error
+                {
+                    if error._domain == AWSS3TransferManagerErrorDomain as String
+                        && AWSS3TransferManagerErrorType(rawValue: error._code) == AWSS3TransferManagerErrorType.paused
+                    {
+                        print("AC-DMI - Download paused.")
+//                        CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: "IMAGE NOT DOWNLOADED")
+                    }
+                    else
+                    {
+                        print("AC-DMI - Download failed: [\(error)]")
+//                        CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: error.localizedDescription)
                         
-                        if let error = task.error
+                        // Record the server request attempt
+                        Constants.Data.serverTries += 1
+                    }
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else if let exception = task.exception
+                {
+                    print("AC-DMI - Download failed: [\(exception)]")
+//                    CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: exception.debugDescription)
+                    
+                    // Record the server request attempt
+                    Constants.Data.serverTries += 1
+                    
+                    // Notify the parent view that the AWS call completed with an error
+                    if let parentVC = self.awsRequestDelegate
+                    {
+                        parentVC.processAwsReturn(self, success: false)
+                    }
+                }
+                else
+                {
+                    print("AC-DMI - COMPLETED")
+                    // Assign the image to the Preview Image View
+                    if FileManager().fileExists(atPath: self.imageFilePath!)
+                    {
+                        let imageData = try? Data(contentsOf: URL(fileURLWithPath: self.imageFilePath!))
+                        
+                        // Save the image to the local UIImage
+                        self.contentImage = UIImage(data: imageData!)
+                        
+                        // Notify the parent view that the AWS call completed successfully
+                        if let parentVC = self.awsRequestDelegate
                         {
-                            if error._domain == AWSS3TransferManagerErrorDomain as String
-                                && AWSS3TransferManagerErrorType(rawValue: error._code) == AWSS3TransferManagerErrorType.paused
-                            {
-                                print("AC - GMI - 3: Download paused.")
-//                                CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: "IMAGE NOT DOWNLOADED")
-                            }
-                            else
-                            {
-                                print("AC - GMI - 3: Download failed: [\(error)]")
-//                                CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: error.localizedDescription)
-                                
-                                // Record the server request attempt
-                                Constants.Data.serverTries += 1
-                            }
-                            
-                            // Notify the parent view that the AWS call completed with an error
-                            if let parentVC = self.awsRequestDelegate
-                            {
-                                parentVC.processAwsReturn(self, success: false)
-                            }
+                            print("AC-DMI - CALLING PARENT")
+                            parentVC.processAwsReturn(self, success: true)
                         }
-                        else if let exception = task.exception
+                    }
+                    else
+                    {
+                        print("AC-DMI - FRAME FILE NOT AVAILABLE")
+//                        CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: "IMAGE NOT DOWNLOADED")
+                        
+                        // Notify the parent view that the AWS call completed with an error
+                        if let parentVC = self.awsRequestDelegate
                         {
-                            print("AC - GMI - 3: Download failed: [\(exception)]")
-//                            CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: exception.debugDescription)
-                            
-                            // Record the server request attempt
-                            Constants.Data.serverTries += 1
-                            
-                            // Notify the parent view that the AWS call completed with an error
-                            if let parentVC = self.awsRequestDelegate
-                            {
-                                parentVC.processAwsReturn(self, success: false)
-                            }
+                            parentVC.processAwsReturn(self, success: false)
                         }
-                        else
-                        {
-                            // Assign the image to the Preview Image View
-                            if FileManager().fileExists(atPath: downloadingFilePath)
-                            {
-                                self.spotContent.imageFilePath = downloadingFilePath
-                                
-                                let imageData = try? Data(contentsOf: URL(fileURLWithPath: downloadingFilePath))
-                                
-                                // Save the image to the local UIImage
-                                self.contentImage = UIImage(data: imageData!)
-                                
-                                // Notify the parent view that the AWS call completed successfully
-                                if let parentVC = self.awsRequestDelegate
-                                {
-                                    parentVC.processAwsReturn(self, success: true)
-                                }
-                            }
-                            else
-                            {
-                                print("AC - GMI - FRAME FILE NOT AVAILABLE")
-//                                CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: "IMAGE NOT DOWNLOADED")
-                                
-                                // Notify the parent view that the AWS call completed with an error
-                                if let parentVC = self.awsRequestDelegate
-                                {
-                                    parentVC.processAwsReturn(self, success: false)
-                                }
-                            }
-                        }
-                        return nil
-                })
-            }
-        }
-        else
-        {
-            print("AC - GMI - VIDEOS ARE NOT CURRENTLY SUPPORTED")
-        }
+                    }
+                }
+                return nil
+        })
     }
 }

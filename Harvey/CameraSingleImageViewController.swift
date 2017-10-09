@@ -55,6 +55,8 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
     
     var structureID: String?
     var image: UIImage?
+    var datetime: Date?
+    var coords: CLLocationCoordinate2D?
     
     // MARK: INITIALIZING
     
@@ -347,22 +349,34 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
         print("CSIVC - UPLOAD IMAGE")
         if let capturedImage = self.image
         {
-            confirmButtonLabel.removeFromSuperview()
-            confirmLoadingIndicator.startAnimating()
-            let imagePath: String = NSTemporaryDirectory().stringByAppendingPathComponent(path: "path" + ".jpg")
-            print("CVC - IMAGE PATH: \(imagePath)")
-//            let imageURL = URL(fileURLWithPath: imagePath)
-//            
-//            // Write the image to the file
-////            if let imageData = UIImagePNGRepresentation(content.contentImage)
-//            if let imageData = UIImageJPEGRepresentation(image, 0.6)
-//            {
-//                try? imageData.write(to: imageURL)
-//                AWSPrepRequest(requestToCall: AWSUploadMediaToBucket(bucket: Constants.Strings.S3BucketMedia, uploadKey: "\(content.contentID!).jpg", mediaURL: imageURL, imageIndex: index), delegate: self as AWSRequestDelegate).prepRequest()
-//                
-//                // Start the activity indicator
-//                self.confirmLoadingIndicator.startAnimating()
-//            }
+            // Check whether the randomID was already downloaded - if not display a popup to wait
+            if let randomID = self.structureID
+            {
+                confirmButtonLabel.removeFromSuperview()
+                confirmLoadingIndicator.startAnimating()
+                let imagePath: String = NSTemporaryDirectory().stringByAppendingPathComponent(path: "path" + ".jpg")
+                print("CVC - IMAGE PATH: \(imagePath)")
+                let imageURL = URL(fileURLWithPath: imagePath)
+                
+                // Write the image to the file
+                if let imageData = UIImageJPEGRepresentation(capturedImage, 0.6)  // Decrease the quality slightly (second parameter)
+                {
+                    try? imageData.write(to: imageURL)
+                    AWSPrepRequest(requestToCall: AWSUploadMediaToBucket(bucket: Constants.Strings.S3BucketMedia, uploadKey: "\(randomID).jpg", mediaURL: imageURL, imageIndex: 0), delegate: self as AWSRequestDelegate).prepRequest()
+                }
+                else
+                {
+                    // Show the error message
+                    let alert = UtilityFunctions().createAlertOkView("Image Error", message: "I'm sorry, there was an issue saving your image.  Please try again.")
+                    alert.show()
+                }
+            }
+            else
+            {
+                // Show the error message
+                let alert = UtilityFunctions().createAlertOkView("Slow Network", message: "I'm sorry, there was an issue gathering the needed data.  Please try again.")
+                alert.show()
+            }
         }
     }
     
@@ -408,6 +422,7 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
             {
                 captureDeviceInput = try AVCaptureDeviceInput(device: captureDevice)
                 captureSession.addInput(captureDeviceInput)
+                captureSession.removeOutput(stillImageOutput)
             }
             catch _
             {
@@ -467,6 +482,10 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                         let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer)
                         if let dataProvider = CGDataProvider(data: imageData! as CFData)
                         {
+                            // Save the context data when the image is recorded
+                            self.datetime = Date(timeIntervalSinceNow: 0)
+                            self.coords = self.mapView.userLocation.coordinate
+                            
                             // UIImage orientation assumes a landscape (left) orientation
                             // We must correct this difference and set the image to default to portrait
                             
@@ -589,6 +608,7 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                             if awsCreateRandomID.randomIdType == Constants.randomIdType.random_structure_id
                             {
                                 // Save the randomID
+                                print("CSIVC - RANDOM ID: \(randomID)")
                                 self.structureID = randomID
                             }
                         }
@@ -600,6 +620,7 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                         let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default)
                         { (result : UIAlertAction) -> Void in
                             print("OK")
+                            // If the randomID cannot be retrieved, return to the parent view
                             self.popViewController()
                         }
                         alertController.addAction(okAction)
@@ -607,13 +628,29 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                         
                         // Stop the activity indicator and shoow the send image
                         self.confirmLoadingIndicator.stopAnimating()
+                        self.confirmButton.addSubview(self.confirmButtonLabel)
                     }
                 case let awsUploadMediaToBucket as AWSUploadMediaToBucket:
                     if success
                     {
                         print("CSIVC - AWSUploadMediaToBucket SUCCESS")
-                        // The image was successfully uploaded, so
-//                        AWSPrepRequest(requestToCall: AWSSpotPut(spot: self.spot), delegate: self as AWSRequestDelegate).prepRequest()
+                        // The image was successfully uploaded, so close the camera view and send the media data to the parentVC
+                        // Ensure that the context data is not nil
+                        if self.datetime != nil && self.coords != nil
+                        {
+                            // Add an entry in StructureUser
+                            if let randomID = self.structureID
+                            {
+                                print("CSIVC - UPLOADING STRUCTURE: \(randomID)")
+                                AWSPrepRequest(requestToCall: AWSStructureUserPut(structureID: randomID, userID: Constants.Data.currentUser.userID, timestamp: self.datetime!.timeIntervalSince1970), delegate: self as AWSRequestDelegate).prepRequest()
+                            }
+                        }
+                        else
+                        {
+                            // Show the error message
+                            let alert = UtilityFunctions().createAlertOkView("Data Error", message: "I'm sorry, there was an issue with the data.  Please try again.")
+                            alert.show()
+                        }
                     }
                     else
                     {
@@ -621,15 +658,35 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
                     }
-                case _ as AWSStructurePut:
+                case let awsStructureUserPut as AWSStructureUserPut:
+                    if success
+                    {
+                        print("CSIVC - AWSStructureUserPut SUCCESS")
+                        // Upload the Structure data
+                        var structure = Structure(structureID: awsStructureUserPut.structureID, lat: self.coords!.latitude, lng: self.coords!.longitude, datetime: self.datetime!)
+//                        structure.type = Constants.StructureType.residence
+                        AWSPrepRequest(requestToCall: AWSStructurePut(structure: structure), delegate: self as AWSRequestDelegate).prepRequest()
+                    }
+                    else
+                    {
+                        print("CSIVC - AWSStructureUserPut FAILURE")
+                        // Show the error message
+                        let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                        alert.show()
+                    }
+                case let awsStructurePut as AWSStructurePut:
                     if success
                     {
                         print("CSIVC - AWSStructurePut SUCCESS")
+                        // Add the Structure and StructureUser info to the global arrays
+                        Constants.Data.structures.append(awsStructurePut.structure)
+                        let newStructureUser = StructureUser(structureID: awsStructurePut.structure.structureID, userID: Constants.Data.currentUser.userID, datetime: awsStructurePut.structure.datetime)
+                        Constants.Data.structureUsers.append(newStructureUser)
                         
                         // Notify the parent view that the AWS Put completed
                         if let parentVC = self.cameraDelegate
                         {
-                            parentVC.returnFromCamera()
+                            parentVC.returnFromCamera(updatedRow: nil)
                         }
                         
                         // Stop the activity indicator and shoow the send image
@@ -646,22 +703,20 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
                         
-                        // Stop the activity indicator
+                        // Stop the activity indicator and shoow the send image
                         self.confirmLoadingIndicator.stopAnimating()
+                        self.confirmButton.addSubview(self.confirmButtonLabel)
                     }
                 default:
                     print("CSIVC-DEFAULT: THERE WAS AN ISSUE WITH THE DATA RETURNED FROM AWS")
                     
                     // Show the error message
-                    let alertController = UIAlertController(title: "Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.", preferredStyle: UIAlertControllerStyle.alert)
-                    let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default)
-                    { (result : UIAlertAction) -> Void in
-                        print("OK")
-                        // Stop the activity indicator
-                        self.confirmLoadingIndicator.stopAnimating()
-                    }
-                    alertController.addAction(okAction)
-                    alertController.show()
+                    let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                    alert.show()
+                    
+                    // Stop the activity indicator and shoow the send image
+                    self.confirmLoadingIndicator.stopAnimating()
+                    self.confirmButton.addSubview(self.confirmButtonLabel)
                 }
         })
     }

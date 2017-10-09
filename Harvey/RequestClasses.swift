@@ -125,7 +125,7 @@ class FBGetUserData: RequestObject, RequestDelegate
                                     user.name = self.facebookName
                                     
                                     // Save the new data to Core Data
-                                    CoreDataFunctions().userSave(user: user, deleteUser: false)
+                                    CoreDataFunctions().userSave(user: user)
                                     break userLoop
                                 }
                             }
@@ -140,7 +140,7 @@ class FBGetUserData: RequestObject, RequestDelegate
                                     Constants.Data.currentUser.name = self.facebookName
                                     print("RC-FBUD UPDATED CURRENT USER NAME")
                                     // Save the new data to Core Data
-                                    CoreDataFunctions().currentUserSave(user: Constants.Data.currentUser, deleteUser: false)
+                                    CoreDataFunctions().currentUserSave(user: Constants.Data.currentUser)
                                 }
                             }
                             
@@ -273,7 +273,7 @@ class FBDownloadUserImage: RequestObject
                                     }
                                     
                                     // Save the new data to Core Data
-                                    CoreDataFunctions().userSave(user: user, deleteUser: false)
+                                    CoreDataFunctions().userSave(user: user)
                                     break userLoop
                                 }
                             }
@@ -304,7 +304,7 @@ class FBDownloadUserImage: RequestObject
                                     }
                                     
                                     // Save the new data to Core Data
-                                    CoreDataFunctions().currentUserSave(user: Constants.Data.currentUser, deleteUser: false)
+                                    CoreDataFunctions().currentUserSave(user: Constants.Data.currentUser)
                                 }
                             }
                             

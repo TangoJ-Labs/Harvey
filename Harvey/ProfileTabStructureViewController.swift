@@ -9,7 +9,7 @@
 import UIKit
 
 
-class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, CameraViewControllerDelegate
+class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, AWSRequestDelegate, CameraViewControllerDelegate
 {
     // Save device settings to adjust view if needed
     var screenSize: CGRect!
@@ -30,6 +30,7 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     var structureTableView: UITableView!
     var addStructureButton: UIView!
     var addStructureLabel: UILabel!
+    var tableBorder: CALayer!
     
     var addButton: UIView!
     var addButtonLabel: UILabel!
@@ -38,6 +39,7 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     let addButtonHeight: CGFloat = 70
     
     var structureList = [Structure]()
+    var userStructureCount = 0
     
     override func viewDidLoad()
     {
@@ -67,14 +69,13 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
         backgroundLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
         backgroundLabel.textAlignment = .center
         backgroundLabel.font = UIFont(name: "HelveticaNeue-UltraLight", size: 20)
-        backgroundLabel.text = "You haven't added any houses needing repair.  Tap the button below to add one."
-        viewContainer.addSubview(backgroundLabel)
+        backgroundLabel.text = "You haven't added any buildings needing repair.  Tap the button above to add one."
         
         // A tableview will hold all structures
         structureTableView = UITableView(frame: CGRect(x: 0, y: 0, width: viewContainer.frame.width, height: viewContainer.frame.height - addButtonHeight))
         structureTableView.dataSource = self
         structureTableView.delegate = self
-        structureTableView.register(ProfileStructureTableViewCell.self, forCellReuseIdentifier: Constants.Strings.profileStructureTableViewCellReuseIdentifier)
+        structureTableView.register(ProfileTabStructureTableViewCell.self, forCellReuseIdentifier: Constants.Strings.profileTabStructureTableViewCellReuseIdentifier)
         structureTableView.separatorStyle = .none
         structureTableView.backgroundColor = UIColor.clear //Constants.Colors.standardBackground
         structureTableView.isScrollEnabled = true
@@ -84,10 +85,9 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
         structureTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         viewContainer.addSubview(structureTableView)
         
-        let border1 = CALayer()
-        border1.frame = CGRect(x: 0, y: 0, width: structureTableView.frame.width, height: 1)
-        border1.backgroundColor = Constants.Colors.standardBackgroundGrayUltraLight.cgColor
-        structureTableView.layer.addSublayer(border1)
+        tableBorder = CALayer()
+        tableBorder.frame = CGRect(x: 0, y: 0, width: structureTableView.frame.width, height: 1)
+        tableBorder.backgroundColor = Constants.Colors.standardBackgroundGrayUltraLight.cgColor
         
         addButton = UIView(frame: CGRect(x: 0, y: viewContainer.frame.height - addButtonHeight, width: viewContainer.frame.width, height: addButtonHeight))
         addButton.backgroundColor = Constants.Colors.colorGrayDark
@@ -110,17 +110,14 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
         addButton.addGestureRecognizer(addButtonTapGestureRecognizer)
         
         NotificationCenter.default.addObserver(self, selector: #selector(ProfileTabStructureViewController.statusBarHeightChange(_:)), name: Notification.Name("UIApplicationWillChangeStatusBarFrameNotification"), object: nil)
+        
+        requestData()
     }
     
     override func viewWillAppear(_ animated: Bool)
     {
         prepVcLayout()
-        statusBarView.frame = CGRect(x: 0, y: 0, width: screenSize.width, height: statusBarHeight)
-        viewContainer.frame = CGRect(x: 0, y: vcOffsetY, width: screenSize.width, height: vcHeight)
-        viewSpinner.frame = CGRect(x: 0, y: 0, width: viewContainer.frame.width, height: viewContainer.frame.height)
-        structureTableView.frame = CGRect(x: 0, y: viewContainer.frame.height - (viewContainer.frame.height / 2), width: viewContainer.frame.width, height: viewContainer.frame.height / 2)
-        addButton.frame = CGRect(x: 0, y: viewContainer.frame.height - addButtonHeight, width: viewContainer.frame.width, height: addButtonHeight)
-        addButtonLabel.frame = CGRect(x: 5, y: 5, width: addButton.frame.width - 10, height: addButton.frame.height - 10)
+        prepFrames()
     }
     
     override func didReceiveMemoryWarning()
@@ -134,10 +131,15 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     func statusBarHeightChange(_ notification: Notification)
     {
         prepVcLayout()
+        prepFrames()
+    }
+    
+    func prepFrames()
+    {
         statusBarView.frame = CGRect(x: 0, y: 0, width: screenSize.width, height: statusBarHeight)
         viewContainer.frame = CGRect(x: 0, y: vcOffsetY, width: screenSize.width, height: vcHeight)
         viewSpinner.frame = CGRect(x: 0, y: 0, width: viewContainer.frame.width, height: viewContainer.frame.height)
-        structureTableView.frame = CGRect(x: 0, y: viewContainer.frame.height - (viewContainer.frame.height / 2), width: viewContainer.frame.width, height: viewContainer.frame.height / 2)
+        structureTableView.frame = CGRect(x: 0, y: 0, width: viewContainer.frame.width, height: viewContainer.frame.height - addButtonHeight)
         addButton.frame = CGRect(x: 0, y: viewContainer.frame.height - addButtonHeight, width: viewContainer.frame.width, height: addButtonHeight)
         addButtonLabel.frame = CGRect(x: 5, y: 5, width: addButton.frame.width - 10, height: addButton.frame.height - 10)
     }
@@ -166,6 +168,11 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
         ncTitleText.font = UIFont(name: Constants.Strings.fontAlt, size: 16)
         ncTitleText.textAlignment = .center
         ncTitle.addSubview(ncTitleText)
+        
+        // Assign the created Nav Bar settings to the Tab Bar Controller
+        self.navigationItem.titleView = ncTitle
+        self.navigationItem.hidesBackButton = true
+        self.navigationItem.setLeftBarButton(leftButtonItem, animated: false)
         
         // Device and Status Bar Settings
         UIApplication.shared.isStatusBarHidden = false
@@ -256,29 +263,69 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
-        return structureList.count
+        let rowCount = structureList.count
+        // Only add the table border if it contains data
+        if rowCount > 0
+        {
+            structureTableView.layer.addSublayer(tableBorder)
+        }
+        else
+        {
+            tableBorder.removeFromSuperlayer()
+        }
+        return rowCount
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
     {
-        return Constants.Dim.structureCellHeight
+        return screenSize.width //Constants.Dim.structureCellHeight
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
         print("PTSTVC - CREATING CELL: \(indexPath.row)")
-        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.Strings.profileStructureTableViewCellReuseIdentifier, for: indexPath) as! ProfileStructureTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.Strings.profileTabStructureTableViewCellReuseIdentifier, for: indexPath) as! ProfileTabStructureTableViewCell
         
-        cell.cellContainer = UIView(frame: CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height))
-        cell.structureImageView = UIImageView(frame: CGRect(x: 10, y: 0, width: 50, height: cell.cellContainer.frame.height))
+        // Remove all subviews
+        for subview in cell.subviews
+        {
+            subview.removeFromSuperview()
+        }
+        
+        cell.cellContainer = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: tableView.frame.width))
+        cell.addSubview(cell.cellContainer)
+        
+        cell.structureImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: cell.cellContainer.frame.width, height: cell.cellContainer.frame.width))
+        cell.structureImageView.contentMode = UIViewContentMode.scaleAspectFill
+        cell.structureImageView.clipsToBounds = true
+//        cellContainer.addSubview(structureImageView)
+        
         cell.imageSpinner = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: cell.structureImageView.frame.width, height: cell.structureImageView.frame.height))
-        cell.border1.frame = CGRect(x: 0, y: Constants.Dim.structureCellHeight - 1, width: cell.cellContainer.frame.width, height: 1)
+        cell.imageSpinner.color = Constants.Colors.colorGrayDark
+        cell.cellContainer.addSubview(cell.imageSpinner)
+        
+        cell.border1.frame = CGRect(x: 0, y: cell.cellContainer.frame.height - 1, width: cell.cellContainer.frame.width, height: 1)
+        cell.border1.backgroundColor = Constants.Colors.standardBackgroundGrayUltraLight.cgColor
+        cell.cellContainer.layer.addSublayer(cell.border1)
+        
+//        cell.cellContainer = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: tableView.frame.width))
+////        cell.cellContainer = UIView(frame: CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height))
+//        cell.structureImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: cell.cellContainer.frame.width, height: cell.cellContainer.frame.width))
+//        cell.imageSpinner = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: cell.structureImageView.frame.width, height: cell.structureImageView.frame.height))
+//        cell.border1.frame = CGRect(x: 0, y: cell.cellContainer.frame.height - 1, width: cell.cellContainer.frame.width, height: 1)
         
         cell.imageSpinner.startAnimating()
         if let image = structureList[indexPath.row].image
         {
+            cell.cellContainer.addSubview(cell.structureImageView)
             cell.structureImageView.image = image
             cell.imageSpinner.stopAnimating()
+        }
+        else
+        {
+            // Download the image
+            print("PTSVC - DOWNLOAD IMAGE: \(structureList[indexPath.row].structureID)")
+            AWSPrepRequest(requestToCall: AWSDownloadMediaImage(imageID: structureList[indexPath.row].structureID), delegate: self as AWSRequestDelegate).prepRequest()
         }
         
         return cell
@@ -295,6 +342,13 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
         
         // Unhighlight the cell
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        // Load the Repair table view controller with repair data for this Structure
+        let repairVC = ProfileRepairViewController(structure: self.structureList[indexPath.row])
+        if let navController = self.navigationController
+        {
+            navController.pushViewController(repairVC, animated: true)
+        }
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath)
@@ -320,10 +374,11 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     
     // MARK: DELEGATE METHODS
     
-    func returnFromCamera()
+    func returnFromCamera(updatedRow: Int?)
     {
         print("PTSVC - RETURN FROM CAMERA")
-        
+        // The new Structure and StructureUser data was added to the global arrays - reload the data and table to show
+        reloadStructureTable()
     }
     
     
@@ -344,21 +399,34 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     }
     func reloadStructureTable()
     {
-//        self.structureList = Constants.Data.structures
+        self.structureList = Constants.Data.structures
         
-//        // Order the StructureList
-//        let structureListSort = self.structureList.sorted {
-//            $0.name < $1.name
-//        }
-//        self.structureList = structureListSort
+        // Order the StructureList
+        let structureListSort = self.structureList.sorted {
+            $0.datetime > $1.datetime
+        }
+        self.structureList = structureListSort
+        print("PTSVC - STRUCTURE COUNT: \(self.structureList.count)")
+        
+        // If the list of shown structures is at least as large as the count of how many structures the current user controls,
+        // then hide the spinner and display the background text if needed
+        if self.structureList.count >= self.userStructureCount
+        {
+            self.viewSpinner.stopAnimating()
+            if self.userStructureCount == 0
+            {
+                self.structureTableView.addSubview(self.backgroundLabel)
+            }
+        }
         
         refreshStructureTable()
     }
     
     func requestData()
     {
-//        // Request the user's skill history
-//        AWSPrepRequest(requestToCall: AWSSkillQuery(userID: Constants.Data.currentUser.userID), delegate: self as AWSRequestDelegate).prepRequest()
+        print("PTSVC - REQUEST DATA")
+        // Request all structureIDs associated with the current user
+        AWSPrepRequest(requestToCall: AWSStructureUserQuery(), delegate: self as AWSRequestDelegate).prepRequest()
     }
     
     
@@ -380,49 +448,98 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
                 // Process the return data based on the method used
                 switch objectType
                 {
-//                case let awsCreateRandomID as AWSCreateRandomID:
-//                    if success
-//                    {
-//                        print("PTSTVC - AWS GET RANDOM ID: \(awsCreateRandomID)")
-//                        if let randomID = awsCreateRandomID
-//                        {
-//                            
-//                        }
-//                    }
-//                    else
-//                    {
-//                        print("PTSTVC - AWS GET RANDOM ID - FAILURE")
-//                        // Show the error message
-//                        let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
-//                        alert.show()
-//                    }
-//                case _ as AWSGetStructure:
-//                    if success
-//                    {
-//                        print("PTSTVC - AWS GET STRUCTURE - SUCCESS")
-//                        self.reloadSkillTable()
-//                        self.titleSpinner.stopAnimating()
-//                        self.titleContainer.addSubview(self.titleText)
-//                    }
-//                    else
-//                    {
-//                        print("PTSTVC - AWS GET STRUCTURE - FAILURE")
-//                        // Show the error message
-//                        let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
-//                        alert.show()
-//                    }
-//                case _ as AWSPutStructure:
-//                    if success
-//                    {
-//                        print("PTSTVC - AWS PUT STRUCTURE - SUCCESS")
-//                    }
-//                    else
-//                    {
-//                        print("PTSTVC - AWS PUT STRUCTURE - FAILURE")
-//                        // Show the error message
-//                        let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
-//                        alert.show()
-//                    }
+                case let awsCreateRandomID as AWSCreateRandomID:
+                    if success
+                    {
+                        print("PTSTVC - AWS GET RANDOM ID: \(awsCreateRandomID)")
+                        if let randomID = awsCreateRandomID.randomID
+                        {
+                            print("PRSTVC - RANDOM ID: \(randomID)")
+                        }
+                    }
+                    else
+                    {
+                        print("PTSTVC - AWS GET RANDOM ID - FAILURE")
+                        // Show the error message
+                        let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                        alert.show()
+                    }
+                case _ as AWSStructureUserQuery:
+                    if success
+                    {
+                        print("PTSTVC - AWS STRUCTURE-USER QUERY - SUCCESS")
+                        // Reset the counter for structures that the current user controls
+                        self.userStructureCount = 0
+                        // Request the structure data for all structures associated with this user
+                        for structureUser in Constants.Data.structureUsers
+                        {
+                            if structureUser.userID == Constants.Data.currentUser.userID
+                            {
+                                // Record the number of structures that should be returned - to know when all of them have returned a response
+                                self.userStructureCount += 1
+                                AWSPrepRequest(requestToCall: AWSStructureQuery(structureID: structureUser.structureID), delegate: self as AWSRequestDelegate).prepRequest()
+                            }
+                        }
+                        // Reload the table in case the list is 0
+                        self.reloadStructureTable()
+                    }
+                    else
+                    {
+                        print("PTSTVC - AWS STRUCTURE-USER QUERY - FAILURE")
+                        // Show the error message
+                        let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                        alert.show()
+                    }
+                case _ as AWSStructureQuery:
+                    if success
+                    {
+                        print("PTSTVC - AWS STRUCTURE QUERY - SUCCESS")
+                        self.reloadStructureTable()
+                    }
+                    else
+                    {
+                        print("PTSTVC - AWS STRUCTURE QUERY - FAILURE")
+                        // Show the error message
+                        let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                        alert.show()
+                    }
+                case let awsDownloadMediaImage as AWSDownloadMediaImage:
+                    if success
+                    {
+                        print("PTSTVC - AWSDownloadMediaImage - SUCCESS")
+                        if let structureImage = awsDownloadMediaImage.contentImage
+                        {
+                            // Find the structure Object in the local array and add the downloaded image to the object variable
+                            findStructureLoop: for structureObject in self.structureList
+                            {
+                                if structureObject.structureID == awsDownloadMediaImage.imageID
+                                {
+                                    print("PTSTVC - AWSDownloadMediaImage - ADDED IMAGE TO LOCAL LIST")
+                                    structureObject.image = structureImage
+                                    break findStructureLoop
+                                }
+                            }
+                            
+                            // Find the structure Object in the global array and add the downloaded image to the object variable
+                            findStructureLoop: for structureObject in Constants.Data.structures
+                            {
+                                if structureObject.structureID == awsDownloadMediaImage.imageID
+                                {
+                                    print("PTSTVC - AWSDownloadMediaImage - ADDED IMAGE TO GLOBAL LIST")
+                                    structureObject.image = structureImage
+                                    break findStructureLoop
+                                }
+                            }
+                            // Reload the TableView
+                            self.reloadStructureTable()
+                        }
+                    }
+                    else
+                    {
+                        // Show the error message
+                        let alertController = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                        self.present(alertController, animated: true, completion: nil)
+                    }
                 default:
                     print("PTSTVC-DEFAULT: THERE WAS AN ISSUE WITH THE DATA RETURNED FROM AWS")
                     
