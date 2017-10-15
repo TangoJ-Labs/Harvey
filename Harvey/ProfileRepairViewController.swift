@@ -39,13 +39,13 @@ class ProfileRepairViewController: UIViewController, UIGestureRecognizerDelegate
     var repairTableView: UITableView!
     var repairTableTapGestureRecognizer: UITapGestureRecognizer!
     
-    var structureInfoContainer: UIView!
-    var structureImageView: UIImageView!
-    var structureImageViewTapGestureRecognizer: UITapGestureRecognizer!
-    var structureDeleteButton: UILabel!
-    var structureDeleteButtonTapGestureRecognizer: UITapGestureRecognizer!
+//    var structureInfoContainer: UIView!
+//    var structureImageView: UIImageView!
+//    var structureImageViewTapGestureRecognizer: UITapGestureRecognizer!
+//    var structureDeleteButton: UILabel!
+//    var structureDeleteButtonTapGestureRecognizer: UITapGestureRecognizer!
     
-    let structureInfoContainerHeight: CGFloat = 70
+    let structureInfoContainerHeight: CGFloat = 0 //70
     
     override func viewDidLoad()
     {
@@ -88,6 +88,7 @@ class ProfileRepairViewController: UIViewController, UIGestureRecognizerDelegate
         repairTableView.bounces = true
         repairTableView.alwaysBounceVertical = true
         repairTableView.showsVerticalScrollIndicator = false
+        repairTableView.allowsSelection = false
         repairTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         viewContainer.addSubview(repairTableView)
         
@@ -99,37 +100,6 @@ class ProfileRepairViewController: UIViewController, UIGestureRecognizerDelegate
         border1.frame = CGRect(x: 0, y: 0, width: repairTableView.frame.width, height: 1)
         border1.backgroundColor = Constants.Colors.standardBackgroundGrayUltraLight.cgColor
         repairTableView.layer.addSublayer(border1)
-        
-        structureInfoContainer = UIView(frame: CGRect(x: 0, y: viewContainer.frame.height - structureInfoContainerHeight, width: viewContainer.frame.width, height: structureInfoContainerHeight))
-        structureInfoContainer.backgroundColor = Constants.Colors.standardBackground
-        structureInfoContainer.layer.shadowOffset = CGSize(width: 0, height: 0.6)
-        structureInfoContainer.layer.shadowOpacity = 0.5
-        structureInfoContainer.layer.shadowRadius = 1.0
-        viewContainer.addSubview(structureInfoContainer)
-        
-        structureImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: structureInfoContainer.frame.width / 2, height: structureInfoContainer.frame.height))
-        structureImageView.contentMode = UIViewContentMode.scaleAspectFit
-        structureImageView.clipsToBounds = true
-        structureImageView.isUserInteractionEnabled = true
-        structureImageView.image = nil
-        structureInfoContainer.addSubview(structureImageView)
-        
-        structureImageViewTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ProfileRepairViewController.structureImageViewTap(_:)))
-        structureImageViewTapGestureRecognizer.delegate = self
-        structureImageView.addGestureRecognizer(structureImageViewTapGestureRecognizer)
-        
-        structureDeleteButton = UILabel(frame: CGRect(x: 0, y: 0, width: structureInfoContainer.frame.width / 2, height: structureInfoContainer.frame.height))
-        structureDeleteButton.textColor = Constants.Colors.colorTextDark
-        structureDeleteButton.numberOfLines = 2
-        structureDeleteButton.lineBreakMode = NSLineBreakMode.byWordWrapping
-        structureDeleteButton.textAlignment = .center
-        structureDeleteButton.font = UIFont(name: "HelveticaNeue-UltraLight", size: 20)
-        structureDeleteButton.isUserInteractionEnabled = true
-        structureDeleteButton.text = "Delete House"
-        
-        structureDeleteButtonTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ProfileRepairViewController.structureDeleteButtonTap(_:)))
-        structureDeleteButtonTapGestureRecognizer.delegate = self
-        structureDeleteButton.addGestureRecognizer(structureDeleteButtonTapGestureRecognizer)
         
         NotificationCenter.default.addObserver(self, selector: #selector(ProfileRepairViewController.statusBarHeightChange(_:)), name: Notification.Name("UIApplicationWillChangeStatusBarFrameNotification"), object: nil)
         
@@ -162,8 +132,8 @@ class ProfileRepairViewController: UIViewController, UIGestureRecognizerDelegate
         viewContainer.frame = CGRect(x: 0, y: vcOffsetY, width: screenSize.width, height: vcHeight)
         viewSpinner.frame = CGRect(x: 0, y: 0, width: viewContainer.frame.width, height: viewContainer.frame.height)
         repairTableView.frame = CGRect(x: 0, y: 0, width: viewContainer.frame.width, height: viewContainer.frame.height - structureInfoContainerHeight)
-        structureImageView.frame = CGRect(x: 0, y: 0, width: structureInfoContainer.frame.width / 2, height: structureInfoContainer.frame.height)
-        structureDeleteButton.frame = CGRect(x: 0, y: 0, width: structureInfoContainer.frame.width / 2, height: structureInfoContainer.frame.height)
+//        structureImageView.frame = CGRect(x: 0, y: 0, width: structureInfoContainer.frame.width / 2, height: structureInfoContainer.frame.height)
+//        structureDeleteButton.frame = CGRect(x: 0, y: 0, width: structureInfoContainer.frame.width / 2, height: structureInfoContainer.frame.height)
     }
     
     func prepVcLayout()
@@ -374,7 +344,7 @@ class ProfileRepairViewController: UIViewController, UIGestureRecognizerDelegate
         cell.addSubview(cell.cellContainer)
         
         cell.iconImageView = UIImageView(frame: CGRect(x: 0, y: (cell.cellContainer.frame.height - iconSize) / 2, width: iconSize, height: iconSize))
-        cell.iconImageView.backgroundColor = UIColor.gray
+//        cell.iconImageView.backgroundColor = UIColor.gray
         cell.iconImageView.contentMode = UIViewContentMode.scaleAspectFit
         cell.iconImageView.clipsToBounds = true
         cell.cellContainer.addSubview(cell.iconImageView)
@@ -382,6 +352,16 @@ class ProfileRepairViewController: UIViewController, UIGestureRecognizerDelegate
         cell.imageSpinner = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: iconSize, height: iconSize))
         cell.imageSpinner.color = Constants.Colors.colorGrayDark
         cell.iconImageView.addSubview(cell.imageSpinner)
+        cell.imageSpinner.startAnimating()
+        print("PRTVC - CELL ICON: \(structure.repairs[indexPath.row].icon)")
+//        print("PRTVC - WINDOW ICON: \(UIImage(named: "window.png"))")
+//        print("PRTVC - PROFILE ICON: \(UIImage(named: "PROFILE_DEFAULT.png"))")
+//        cell.iconImageView.image = UIImage(named: "window.png")
+        if let icon = structure.repairs[indexPath.row].icon
+        {
+            cell.iconImageView.image = icon
+            cell.imageSpinner.stopAnimating()
+        }
         
         cell.repairTitle = UILabel(frame: CGRect(x: iconSize + 10, y: 0, width: cell.cellContainer.frame.width - iconSize - 150, height: cell.cellContainer.frame.height))
 //        cell.repairTitle.backgroundColor = UIColor.red
@@ -413,18 +393,6 @@ class ProfileRepairViewController: UIViewController, UIGestureRecognizerDelegate
         cell.border1.backgroundColor = Constants.Colors.standardBackgroundGrayUltraLight.cgColor
         cell.cellContainer.layer.addSublayer(cell.border1)
         
-//        cell.cellContainer = UIView(frame: CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height))
-//        cell.iconImageView = UIImageView(frame: CGRect(x: 10, y: 0, width: 50, height: cell.cellContainer.frame.height))
-//        cell.imageSpinner = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: cell.iconImageView.frame.width, height: cell.iconImageView.frame.height))
-//        cell.border1.frame = CGRect(x: 0, y: Constants.Dim.structureCellHeight - 1, width: cell.cellContainer.frame.width, height: 1)
-        
-        cell.imageSpinner.startAnimating()
-//        if structure.repairs[indexPath.row].repairImages.count > 0
-//        {
-//            cell.iconImageView.image = structure.repairs[indexPath.row].repairImages[0]
-//            cell.imageSpinner.stopAnimating()
-//        }
-        
         return cell
     }
     
@@ -433,73 +401,15 @@ class ProfileRepairViewController: UIViewController, UIGestureRecognizerDelegate
         print("PRTVC - WILL DISPLAY CELL: \(indexPath.row)")
     }
     
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
-//    {
-//        print("PRTVC - SELECTED CELL: \(indexPath.row)")
-//
-//        // Unhighlight the cell
-//        tableView.deselectRow(at: indexPath, animated: true)
-//
-//        // Check whether the image button was seleted
-//
-//
-//        // Toggle the stage of this repair
-//        let newStage = Constants().repairStageToggle(structure.repairs[indexPath.row].stage) //Constants.RepairStage.na
-////        if structure.repairs[indexPath.row].stage == Constants.RepairStage.na
-////        {
-////            newStage = Constants.RepairStage.waiting
-////        }
-////        else if structure.repairs[indexPath.row].stage == Constants.RepairStage.waiting
-////        {
-////            newStage = Constants.RepairStage.repairing
-////        }
-////        else if structure.repairs[indexPath.row].stage == Constants.RepairStage.repairing
-////        {
-////            newStage = Constants.RepairStage.complete
-////        }
-////        else if structure.repairs[indexPath.row].stage == Constants.RepairStage.complete
-////        {
-////            newStage = Constants.RepairStage.other
-////        }
-////        else if structure.repairs[indexPath.row].stage == Constants.RepairStage.other
-////        {
-////            newStage = Constants.RepairStage.na
-////        }
-//        structure.repairs[indexPath.row].stage = newStage
-////        structure.repairs[indexPath.row].stage = Constants().repairStageToggle(structure.repairs[indexPath.row].stage)
-//        reloadTable()
-//
-//        // Change the setting in the global array and upload the changes
-//        structureLoop: for structure in Constants.Data.structures
-//        {
-//            if structure.structureID == self.structure.structureID
-//            {
-//                repairLoop: for repair in structure.repairs
-//                {
-//                    if repair.repairID == structure.repairs[indexPath.row].repairID
-//                    {
-//                        repair.stage = newStage
-//
-//                        // Save the updated / new repair stage to Core Data
-//                        CoreDataFunctions().repairSave(repair: structure.repairs[indexPath.row])
-//                        break repairLoop
-//                    }
-//                }
-//                break structureLoop
-//            }
-//        }
-//        // Upload the changes
-//        AWSPrepRequest(requestToCall: AWSRepairPut(repair: structure.repairs[indexPath.row]), delegate: self as AWSRequestDelegate).prepRequest()
-//    }
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+    {
+    }
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath)
     {
     }
-    
     func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath)
     {
     }
-    
     func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath)
     {
     }
@@ -538,7 +448,7 @@ class ProfileRepairViewController: UIViewController, UIGestureRecognizerDelegate
             {
                 if self.repairTableView != nil
                 {
-                    print("PRTVC - REFRESH SKILL TABLE")
+                    print("PRTVC - REFRESH REPAIR TABLE")
                     
                     // Reload the TableView
                     self.repairTableView.reloadData()

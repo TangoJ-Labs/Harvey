@@ -6,7 +6,7 @@
 //  Copyright © 2017 TangoJ Labs, LLC. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 class Skill
 {
@@ -17,6 +17,7 @@ class Skill
     
     // For use when listing a user's skills
     var order: Int = 0
+    var icon: UIImage?
     
     convenience init(skillID: String!, skill: String!, userID: String!)
     {

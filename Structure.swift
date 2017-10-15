@@ -18,6 +18,7 @@ class Structure
     var stage: Constants.StructureStage = Constants.StructureStage.waiting // Defaults to 'waiting'
     
 //    var userIDs: [String]? // Should have at least one userID (String) - this data comes from a separate table, both in db and in Core Data
+    var imageID: String?
     var image: UIImage? // Image of the structure (just one) - for summary info
     var repairs = [Repair]()
     

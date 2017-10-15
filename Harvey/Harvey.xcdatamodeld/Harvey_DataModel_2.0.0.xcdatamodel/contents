@@ -46,6 +46,7 @@
     <entity name="StructureCD" representedClassName="StructureCD" syncable="YES">
         <attribute name="datetime" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="image" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="imageID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="lat" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="lng" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="stage" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
@@ -77,7 +78,7 @@
         <element name="MapSetting" positionX="-63" positionY="-18" width="128" height="120"/>
         <element name="RepairCD" positionX="-27" positionY="99" width="128" height="135"/>
         <element name="SkillCD" positionX="-36" positionY="90" width="128" height="120"/>
-        <element name="StructureCD" positionX="-36" positionY="90" width="128" height="150"/>
+        <element name="StructureCD" positionX="-36" positionY="90" width="128" height="165"/>
         <element name="StructureUserCD" positionX="-36" positionY="99" width="128" height="75"/>
         <element name="TutorialView" positionX="-18" positionY="63" width="128" height="60"/>
         <element name="UserCD" positionX="-27" positionY="54" width="128" height="180"/>

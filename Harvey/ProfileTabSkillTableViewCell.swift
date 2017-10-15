@@ -11,7 +11,7 @@ import UIKit
 class ProfileTabSkillTableViewCell: UITableViewCell
 {
     var cellContainer: UIView!
-    var skillImageView: UIImageView!
+    var iconImageView: UIImageView!
     var skillTitle: UILabel!
     var checkContainer: UIView!
     var checkText: UILabel!
@@ -29,10 +29,10 @@ class ProfileTabSkillTableViewCell: UITableViewCell
         cellContainer = UIView(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height))
         self.addSubview(cellContainer)
         
-        skillImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: cellContainer.frame.height, height: cellContainer.frame.height))
-        skillImageView.contentMode = UIViewContentMode.scaleAspectFit
-        skillImageView.clipsToBounds = true
-        cellContainer.addSubview(skillImageView)
+        iconImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: cellContainer.frame.height, height: cellContainer.frame.height))
+        iconImageView.contentMode = UIViewContentMode.scaleAspectFit
+        iconImageView.clipsToBounds = true
+        cellContainer.addSubview(iconImageView)
         
         skillTitle = UILabel(frame: CGRect(x: cellContainer.frame.height + 10, y: 0, width: cellContainer.frame.width - cellContainer.frame.height - 70 - 20, height: cellContainer.frame.height))
         skillTitle.font = UIFont(name: Constants.Strings.fontAlt, size: 14)

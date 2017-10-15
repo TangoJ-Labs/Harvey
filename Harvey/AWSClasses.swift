@@ -1557,17 +1557,25 @@ class AWSSkillQuery : AWSRequestObject
                                                             let skillType = skill["skill"] as! String
                                                             let skillLevel = skill["level"] as! Int
                                                             
-                                                            // Default the order to 0 if it does not exist in the settings list
+                                                            print("AC-SKQ - skillType: \(skillType)")
+                                                            // Default the order to 0 and icon to nil if they do not exist in the settings list
                                                             var order: Int = 0
-                                                            orderLoop: for orderEnt in skillSettings
+                                                            var icon: UIImage?
+                                                            // Find the skill needed
+                                                            if let skillSettingObj = skillSettings[skillType]
                                                             {
-                                                                // Once the skill type setting is found, convert the value to Int (the order value)
-                                                                if orderEnt.key == skillType
+                                                                // Create a json object
+                                                                if let skillSettingJson = skillSettingObj as? [String: AnyObject]
                                                                 {
-                                                                    if let orderValue = orderEnt.value as? Int
+                                                                    if let skillOrderSetting = skillSettingJson["order"] as? Int
                                                                     {
-                                                                        order = orderValue
-                                                                        break orderLoop
+                                                                        print("AC-SKQ - skill order: \(skillOrderSetting)")
+                                                                        order = skillOrderSetting
+                                                                    }
+                                                                    if let skillIconFilename = skillSettingJson["image"] as? String
+                                                                    {
+                                                                        print("AC-SKQ - skill icon: \(skillIconFilename)")
+                                                                        icon = UIImage(named: skillIconFilename)
                                                                     }
                                                                 }
                                                             }
@@ -1576,6 +1584,10 @@ class AWSSkillQuery : AWSRequestObject
                                                             let addSkill = Skill(skillID: skillID, skill: skillType, userID: Constants.Data.currentUser.userID)
                                                             addSkill.order = order
                                                             addSkill.level = Constants().experience(skillLevel)
+                                                            if let iconImage = icon
+                                                            {
+                                                                addSkill.icon = iconImage
+                                                            }
                                                             skillObjects.append(addSkill)
                                                             
                                                             // Save the updated / new skill to Core Data
@@ -1882,6 +1894,10 @@ class AWSStructureQuery : AWSRequestObject
                                                         newStruct.lng = structureJson["lng"] as! Double
                                                         newStruct.type = Constants().structureType(structureJson["type"] as! Int)
                                                         newStruct.stage = Constants().structureStage(structureJson["stage"] as! Int)
+                                                        if let imageID = structureJson["image_id"] as? String
+                                                        {
+                                                            newStruct.imageID = imageID
+                                                        }
                                                         
                                                         // Check to see if any data currently exists that is not included in the new data
                                                         var structureExists = false
@@ -1897,6 +1913,10 @@ class AWSStructureQuery : AWSRequestObject
                                                                 structureCheck.lng = newStruct.lng
                                                                 structureCheck.type = newStruct.type
                                                                 structureCheck.stage = newStruct.stage
+                                                                if let imageID = newStruct.imageID
+                                                                {
+                                                                    structureCheck.imageID = imageID
+                                                                }
                                                                 break structureCheckLoop
                                                             }
                                                         }
@@ -1907,6 +1927,45 @@ class AWSStructureQuery : AWSRequestObject
                                                         
                                                         // Save the current user data to Core Data
                                                         CoreDataFunctions().structureSave(structure: newStruct)
+                                                        
+                                                        // Now extract the structure users and save them separately
+                                                        print("AC-STRQ - CHECK 5: \(structureID)")
+                                                        if let usersData = structureJson["users"] as? [AnyObject]
+                                                        {
+                                                            for structureUserObject in usersData
+                                                            {
+                                                                print("AC-STRQ - CHECK 6")
+                                                                if let structureUserJson = structureUserObject as? [String: AnyObject]
+                                                                {
+                                                                    print("AC-STRQ - CHECK 7: \(structureUserJson)")
+                                                                    let newStructUser = StructureUser()
+                                                                    newStructUser.structureID = structureUserJson["structure_id"] as! String
+                                                                    newStructUser.userID = structureUserJson["user_id"] as! String
+                                                                    newStructUser.datetime = Date(timeIntervalSince1970: structureUserJson["timestamp"] as! Double)
+                                                                    
+                                                                    // Check to see if any data currently exists that is not included in the new data
+                                                                    var structureUserExists = false
+                                                                    structureUserCheckLoop: for structureUserCheck in Constants.Data.structureUsers
+                                                                    {
+                                                                        // Check using the structureID
+                                                                        if structureUserCheck.structureID == newStructUser.structureID && structureUserCheck.userID == newStructUser.userID
+                                                                        {
+                                                                            // If the structureUser already exists, update with newly downloaded data
+                                                                            structureUserExists = true
+                                                                            break structureUserCheckLoop
+                                                                        }
+                                                                    }
+                                                                    if !structureUserExists
+                                                                    {
+                                                                        Constants.Data.structureUsers.append(newStructUser)
+                                                                    }
+                                                                    print("AC-STRQ - CHECK 8: \(Constants.Data.structureUsers.count)")
+                                                                    
+                                                                    // Save the current user data to Core Data
+                                                                    CoreDataFunctions().structureUserSave(structureUser: newStructUser)
+                                                                }
+                                                            }
+                                                        }
                                                     }
                                                     else
                                                     {
@@ -2006,6 +2065,7 @@ class AWSStructurePut : AWSRequestObject
             json["lng"] = String(structure.lng)
             json["timestamp"] = String(structure.datetime.timeIntervalSince1970)
             json["type"] = String(structure.type.rawValue)
+            json["image_id"] = structure.imageID
             json["stage"] = String(structure.stage.rawValue)
             let jsonData = try? JSONSerialization.data(withJSONObject: json)
             
@@ -2488,11 +2548,18 @@ class AWSRepairQuery : AWSRequestObject
                                                             }
                                                             newRepair.repairImages = repairImagesObjects
                                                         }
-                                                        // Try to find the repair in the settings list and assign the order
-                                                        if let repairOrder = repairSettings[newRepair.repair]
+                                                        // Try to find the repair in the settings list and assign the order and add the image
+                                                        if let repairSetting = repairSettings[newRepair.repair]
                                                         {
-                                                            newRepair.order = repairOrder as! Int
-                                                            print("AC-RQ - ADDED REPAIR ORDER: \(newRepair.repair): \(newRepair.order)")
+                                                            if let repairSettingJson = repairSetting as? [String: AnyObject]
+                                                            {
+                                                                newRepair.order = repairSettingJson["order"] as! Int
+                                                                print("AC-RQ - ADDED REPAIR ORDER: \(newRepair.repair): \(newRepair.order)")
+                                                                
+                                                                let repairIconFilename = repairSettingJson["image"] as! String
+                                                                newRepair.icon = UIImage(named: repairIconFilename)
+                                                                print("AC-RQ - ADDED REPAIR ICON: \(newRepair.icon) FROM IMAGE: \(repairIconFilename)")
+                                                            }
                                                         }
                                                         newRepairs.append(newRepair)
                                                         
@@ -2622,7 +2689,7 @@ class AWSRepairPut : AWSRequestObject
             json["timestamp"] = String(repair.datetime.timeIntervalSince1970)
             json["status"] = "active"
             json["repair_images"] = repairImageDict
-            json["updated_images"] = updatedImages
+            json["updated_images"] = String(updatedImages)
             let jsonData = try? JSONSerialization.data(withJSONObject: json)
             print("AC-RP: PUT REPAIR JSON: \(json)")
             

@@ -94,6 +94,7 @@ class FBGetUserData: RequestObject, RequestDelegate
                 {
                     if let resultDict = result as? [String:AnyObject]
                     {
+                        print("RC-FBUD - RESULT DICT: \(resultDict)")
 //                        if let resultPicture = resultDict["picture"] as? [String:AnyObject]
 //                        {
 //                            if let resultPictureData = resultPicture["data"] as? [String:AnyObject]

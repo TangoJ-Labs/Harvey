@@ -241,7 +241,12 @@ class ProfileTabSkillViewController: UIViewController, UITableViewDataSource, UI
         cell.selectionStyle = .none
         
         cell.cellContainer.frame = CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height)
-        cell.skillImageView.frame = CGRect(x: 10, y: 0, width: 50, height: cell.cellContainer.frame.height)
+        cell.iconImageView.frame = CGRect(x: 10, y: 0, width: 50, height: cell.cellContainer.frame.height)
+        if let icon = skillList[indexPath.row].icon
+        {
+            cell.iconImageView.image = icon
+        }
+        
         cell.skillTitle.frame = CGRect(x: 70, y: 0, width: 150, height: cell.cellContainer.frame.height)
         cell.checkContainer.frame = CGRect(x: cell.cellContainer.frame.width - 70, y: 0, width: 70, height: cell.cellContainer.frame.height)
         cell.checkText.frame = CGRect(x: 0, y: 0, width: cell.checkContainer.frame.width, height: cell.checkContainer.frame.height)

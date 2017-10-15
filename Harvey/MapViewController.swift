@@ -27,6 +27,11 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     var viewContainer: UIView!
     
     var menuView: UIView!
+    var menuIconsScrollView: UIScrollView!
+    var menuMapStructureContainer: UIView!
+    var menuMapStructureImage: UIImageView!
+    var menuMapStructureIndicator: UIImageView!
+    var menuMapStructureTapGesture: UITapGestureRecognizer!
     var menuMapTrafficContainer: UIView!
     var menuMapTrafficImage: UIImageView!
     var menuMapTrafficIndicator: UIImageView!
@@ -101,12 +106,14 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     var defaultCamera: GMSCameraPosition!
     
     let menuWidth: CGFloat = 80
+    let menuFilterContainerHeight: CGFloat = 200
     var menuVisible: Bool = false
     var pinContainerVisible: Bool = false
     var spotMarkersVisible: Bool = false //Start this off false since the 'toggle' will be called to add features
     var initialDataRequest: Bool = false //Record whether the initial data request has occured - request does not happen until the user's location is determined
     
     // Record whether a data download is in progress
+    var downloadingStructure: Bool = false
     var downloadingSpot: Bool = false
     var downloadingHydro: Bool = false
     var downloadingShelter: Bool = false
@@ -168,8 +175,13 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         menuView.backgroundColor = Constants.Colors.standardBackground
         viewContainer.addSubview(menuView)
         
+        menuIconsScrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: menuWidth, height: menuView.frame.height - menuFilterContainerHeight - 70))
+        menuIconsScrollView.showsVerticalScrollIndicator = false
+        menuIconsScrollView.showsHorizontalScrollIndicator = false
+        menuView.addSubview(menuIconsScrollView)
+        
         menuMapTrafficContainer = UIView(frame: CGRect(x: 0, y: 0, width: menuView.frame.width, height: 50))
-        menuView.addSubview(menuMapTrafficContainer)
+        menuIconsScrollView.addSubview(menuMapTrafficContainer)
         menuMapTrafficImage = UIImageView(frame: CGRect(x: 5, y: 5, width: 40, height: 40))
         menuMapTrafficImage.contentMode = UIViewContentMode.scaleAspectFit
         menuMapTrafficImage.clipsToBounds = true
@@ -183,8 +195,23 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         menuMapTrafficTapGesture.numberOfTapsRequired = 1  // add single tap
         menuMapTrafficContainer.addGestureRecognizer(menuMapTrafficTapGesture)
         
-        menuMapSpotContainer = UIView(frame: CGRect(x: 0, y: 50, width: menuView.frame.width, height: 50))
-        menuView.addSubview(menuMapSpotContainer)
+        menuMapStructureContainer = UIView(frame: CGRect(x: 0, y: 50, width: menuView.frame.width, height: 50))
+        menuIconsScrollView.addSubview(menuMapStructureContainer)
+        menuMapStructureImage = UIImageView(frame: CGRect(x: 5, y: 5, width: 40, height: 40))
+        menuMapStructureImage.contentMode = UIViewContentMode.scaleAspectFit
+        menuMapStructureImage.clipsToBounds = true
+        menuMapStructureImage.image = UIImage(named: Constants.Strings.markerIconStructure)
+        menuMapStructureContainer.addSubview(menuMapStructureImage)
+        menuMapStructureIndicator = UIImageView(frame: CGRect(x: menuMapStructureImage.frame.width + 10, y: 5, width: 25, height: 40))
+        menuMapStructureIndicator.contentMode = UIViewContentMode.scaleAspectFit
+        menuMapStructureIndicator.clipsToBounds = true
+        menuMapStructureIndicator.image = UIImage(named: Constants.Strings.iconCheckOrange)
+        menuMapStructureTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.menuMapStructureTap(_:)))
+        menuMapStructureTapGesture.numberOfTapsRequired = 1  // add single tap
+        menuMapStructureContainer.addGestureRecognizer(menuMapStructureTapGesture)
+        
+        menuMapSpotContainer = UIView(frame: CGRect(x: 0, y: 100, width: menuView.frame.width, height: 50))
+        menuIconsScrollView.addSubview(menuMapSpotContainer)
         menuMapSpotImage = UIImageView(frame: CGRect(x: 5, y: 5, width: 40, height: 40))
         menuMapSpotImage.contentMode = UIViewContentMode.scaleAspectFit
         menuMapSpotImage.clipsToBounds = true
@@ -198,8 +225,8 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         menuMapSpotTapGesture.numberOfTapsRequired = 1  // add single tap
         menuMapSpotContainer.addGestureRecognizer(menuMapSpotTapGesture)
         
-        menuMapHazardContainer = UIView(frame: CGRect(x: 0, y: 100, width: menuView.frame.width, height: 50))
-        menuView.addSubview(menuMapHazardContainer)
+        menuMapHazardContainer = UIView(frame: CGRect(x: 0, y: 150, width: menuView.frame.width, height: 50))
+        menuIconsScrollView.addSubview(menuMapHazardContainer)
         menuMapHazardImage = UIImageView(frame: CGRect(x: 5, y: 5, width: 40, height: 40))
         menuMapHazardImage.contentMode = UIViewContentMode.scaleAspectFit
         menuMapHazardImage.clipsToBounds = true
@@ -213,8 +240,8 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         menuMapHazardTapGesture.numberOfTapsRequired = 1  // add single tap
         menuMapHazardContainer.addGestureRecognizer(menuMapHazardTapGesture)
         
-        menuMapShelterContainer = UIView(frame: CGRect(x: 0, y: 150, width: menuView.frame.width, height: 50))
-        menuView.addSubview(menuMapShelterContainer)
+        menuMapShelterContainer = UIView(frame: CGRect(x: 0, y: 200, width: menuView.frame.width, height: 50))
+//        menuIconsScrollView.addSubview(menuMapShelterContainer)
         menuMapShelterImage = UIImageView(frame: CGRect(x: 5, y: 5, width: 40, height: 40))
         menuMapShelterImage.contentMode = UIViewContentMode.scaleAspectFit
         menuMapShelterImage.clipsToBounds = true
@@ -228,8 +255,8 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         menuMapShelterTapGesture.numberOfTapsRequired = 1  // add single tap
         menuMapShelterContainer.addGestureRecognizer(menuMapShelterTapGesture)
         
-        menuMapHydroContainer = UIView(frame: CGRect(x: 0, y: 200, width: menuView.frame.width, height: 50))
-        menuView.addSubview(menuMapHydroContainer)
+        menuMapHydroContainer = UIView(frame: CGRect(x: 0, y: 250, width: menuView.frame.width, height: 50))
+//        menuIconsScrollView.addSubview(menuMapHydroContainer)
         menuMapHydroImage = UIImageView(frame: CGRect(x: 5, y: 5, width: 40, height: 40))
         menuMapHydroImage.contentMode = UIViewContentMode.scaleAspectFit
         menuMapHydroImage.clipsToBounds = true
@@ -244,7 +271,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         menuMapHydroContainer.addGestureRecognizer(menuMapHydroTapGesture)
         
         // The time selections for the map spots
-        menuTimeContainer = UIView(frame: CGRect(x: 0, y: menuView.frame.height - 250, width: menuWidth, height: 200))
+        menuTimeContainer = UIView(frame: CGRect(x: 0, y: menuView.frame.height - menuFilterContainerHeight - 50, width: menuWidth, height: menuFilterContainerHeight))
         menuView.addSubview(menuTimeContainer)
         let border1 = CALayer()
         border1.frame = CGRect(x: 5, y: 25, width: 2, height: 150)
@@ -684,7 +711,22 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     {
 //        print("MVC - DID TAP: \(marker)")
         let markerData = marker.userData as? Any
-        if let markerHydro = markerData as? Hydro
+        if let markerStructure = markerData as? Structure
+        {
+            print(markerStructure.structureID)
+            // Center the map on the tapped marker
+            let markerCoords = CLLocationCoordinate2DMake(markerStructure.lat, markerStructure.lng)
+            mapCameraPositionAdjust(target: markerCoords)
+            
+            //Load the Structure View and pass the structure data
+            if let navCon = self.navigationController
+            {
+                // Load the CameraVC
+                let structureVC = StructureViewController(structure: markerStructure)
+                navCon.pushViewController(structureVC, animated: true)
+            }
+        }
+        else if let markerHydro = markerData as? Hydro
         {
 //            print(markerHydro.title)
             // Center the map on the tapped marker
@@ -890,6 +932,24 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         // Record the setting update in Core Data
         CoreDataFunctions().mapSettingSaveFromGlobalSettings()
     }
+    func menuMapStructureTap(_ gesture: UITapGestureRecognizer)
+    {
+        if Constants.Settings.menuMapStructure == Constants.MenuMapStructure.yes
+        {
+            removeStructureMapFeatures()
+            menuMapStructureIndicator.removeFromSuperview()
+            Constants.Settings.menuMapStructure = Constants.MenuMapStructure.no
+        }
+        else
+        {
+            addStructureMapFeatures()
+            menuMapStructureContainer.addSubview(menuMapStructureIndicator)
+            Constants.Settings.menuMapStructure = Constants.MenuMapStructure.yes
+        }
+        
+        // Record the setting update in Core Data
+        CoreDataFunctions().mapSettingSaveFromGlobalSettings()
+    }
     func menuMapSpotTap(_ gesture: UITapGestureRecognizer)
     {
         if Constants.Settings.menuMapSpot == Constants.MenuMapSpot.yes
@@ -982,7 +1042,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         ncTitleText.textAlignment = .center
         ncTitle.addSubview(ncTitleText)
         
-        // Instantiate the SpotTableViewController and add the nav bar settings
+        // Instantiate the AboutVC and add the nav bar settings
         let aboutVC = AboutViewController()
         aboutVC.navigationItem.setLeftBarButton(backButtonItem, animated: true)
         aboutVC.navigationItem.titleView = ncTitle
@@ -1037,12 +1097,14 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     
     func addImageButtonTap(_ gesture: UITapGestureRecognizer)
     {
-        // Load the CameraVC
-        let cameraVC = CameraMultiImageViewController()
-        cameraVC.cameraDelegate = self
-        cameraVC.forSpot = true
-        self.navigationController!.pushViewController(cameraVC, animated: true)
-//        self.present(cameraVC, animated: true, completion: nil)
+        if let navCon = self.navigationController
+        {
+            // Load the CameraVC
+            let cameraVC = CameraMultiImageViewController()
+            cameraVC.cameraDelegate = self
+            cameraVC.forSpot = true
+            navCon.pushViewController(cameraVC, animated: true)
+        }
     }
     
     func infoWindowExitTap(_ gesture: UITapGestureRecognizer)
@@ -1253,7 +1315,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     func resetIndicators()
     {
         // Check to see whether any data is still downloading - if not, stop the spinner
-        if !downloadingSpot && !downloadingHydro && !downloadingShelter && !downloadingHazard
+        if !downloadingStructure && !downloadingSpot && !downloadingHydro && !downloadingShelter && !downloadingHazard
         {
             // All the data has been loaded - Hide the loading indicator
             self.refreshViewSpinner.stopAnimating()
@@ -1268,12 +1330,17 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     {
         print("MVC - RELOAD MAP")
         // Before populating the map, delete all markers
+        self.removeStructureMapFeatures()
         self.removeSpotMapFeatures()
         self.removeHydroMapFeatures()
         self.removeShelterMapFeatures()
         self.removeHazardMapFeatures()
         
         // Now populate the map, if settings are true
+        if Constants.Settings.menuMapStructure == Constants.MenuMapStructure.yes
+        {
+            self.addStructureMapFeatures()
+        }
         if Constants.Settings.menuMapSpot == Constants.MenuMapSpot.yes
         {
             self.addSpotMapFeatures()
@@ -1331,7 +1398,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     }
     func requestMapData(userLocation: CLLocation)
     {
-//        print("MVC - REFRESH MAP DATA")
+        print("MVC - REFRESH MAP DATA")
         // Reload all data - Show the loading indicator
         self.refreshViewImage.removeFromSuperview()
         self.refreshViewSpinner.startAnimating()
@@ -1341,18 +1408,21 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         userLoc["lat"] = userLocation.coordinate.latitude
         userLoc["lng"] = userLocation.coordinate.longitude
         
+        AWSPrepRequest(requestToCall: AWSStructureUserQuery(), delegate: self as AWSRequestDelegate).prepRequest()
+        
         AWSPrepRequest(requestToCall: AWSSpotQueryActive(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
-        AWSPrepRequest(requestToCall: AWSHydroQuery(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
-        AWSPrepRequest(requestToCall: AWSShelterQuery(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
         AWSPrepRequest(requestToCall: AWSHazardQuery(), delegate: self as AWSRequestDelegate).prepRequest()
         AWSPrepRequest(requestToCall: AWSUserQueryActive(), delegate: self as AWSRequestDelegate).prepRequest()
         AWSPrepRequest(requestToCall: AWSUserConnectionQuery(userID: Constants.Data.currentUser.userID), delegate: self as AWSRequestDelegate).prepRequest()
+//        AWSPrepRequest(requestToCall: AWSHydroQuery(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
+//        AWSPrepRequest(requestToCall: AWSShelterQuery(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
         
         // Set all the downloading indicators to true
+        downloadingStructure = true
         downloadingSpot = true
-        downloadingHydro = true
-        downloadingShelter = true
         downloadingHazard = true
+//        downloadingHydro = true
+//        downloadingShelter = true
         
         // Ensure that the initialDataRequest is true
         initialDataRequest = true
@@ -1408,6 +1478,10 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         {
             menuMapTrafficContainer.addSubview(menuMapTrafficIndicator)
             mapView.isTrafficEnabled = true
+        }
+        if Constants.Settings.menuMapStructure == Constants.MenuMapStructure.yes
+        {
+            menuMapStructureContainer.addSubview(menuMapStructureIndicator)
         }
         if Constants.Settings.menuMapSpot == Constants.MenuMapSpot.yes
         {
@@ -1694,6 +1768,14 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     
     // MARK: DATA METHODS
     
+    func removeStructureMapFeatures()
+    {
+        for marker in Constants.Data.structureMarkers
+        {
+            marker.map = nil
+        }
+        Constants.Data.structureMarkers = [GMSMarker]()
+    }
     func removeSpotMapFeatures()
     {
         for circle in Constants.Data.spotCircles
@@ -1737,6 +1819,25 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         Constants.Data.hazardMarkers = [GMSMarker]()
     }
     
+    func addStructureMapFeatures()
+    {
+        print("MVC - STRUCTURE DATA COUNT: \(Constants.Data.structures.count)")
+        for structure in Constants.Data.structures
+        {
+            // Ensure the structure datetime falls within the filter setting
+            if structure.datetime.timeIntervalSince1970 >= Date().timeIntervalSince1970 - Constants().menuMapTimeFilterSeconds(Constants.Settings.menuMapTimeFilter)
+            {
+                // Create a marker at the Structure location
+                let marker = GMSMarker()
+                marker.position = CLLocationCoordinate2DMake(structure.lat, structure.lng)
+                marker.zIndex = Constants.Settings.mapMarkerStructure
+                marker.userData = structure
+                marker.icon = UIImage(named: Constants.Strings.markerIconStructure)
+                marker.map = self.mapView
+                Constants.Data.structureMarkers.append(marker)
+            }
+        }
+    }
     func addSpotMapFeatures()
     {
         for spot in Constants.Data.allSpot
@@ -1817,7 +1918,8 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
 //        print("MVC - Hazard DATA:")
         for hazard in Constants.Data.allHazard
         {
-            if hazard.status == "active"
+            // Ensure the hazard is active and the datetime falls within the filter setting
+            if hazard.status == "active" && hazard.datetime.timeIntervalSince1970 >= Date().timeIntervalSince1970 - Constants().menuMapTimeFilterSeconds(Constants.Settings.menuMapTimeFilter)
             {
                 // Creates a marker at the Hazard location
                 let marker = GMSMarker()
@@ -1892,6 +1994,43 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                 // Process the return data based on the method used
                 switch objectType
                 {
+                case _ as AWSStructureUserQuery:
+                    if success
+                    {
+                        print("MVC - AWS STRUCTURE-USER QUERY - SUCCESS")
+                        // Request the structure data for all structures associated with this user
+                        for structureUser in Constants.Data.structureUsers
+                        {
+                            if structureUser.userID == Constants.Data.currentUser.userID
+                            {
+                                // Record the number of structures that should be returned - to know when all of them have returned a response
+                                AWSPrepRequest(requestToCall: AWSStructureQuery(structureID: structureUser.structureID), delegate: self as AWSRequestDelegate).prepRequest()
+                            }
+                        }
+                    }
+                    else
+                    {
+                        print("MVC - AWS STRUCTURE-USER QUERY - FAILURE")
+                        // Show the error message
+                        let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                        alert.show()
+                    }
+                case _ as AWSStructureQuery:
+                    if success
+                    {
+                        print("MVC - AWS STRUCTURE QUERY - SUCCESS")
+                        self.reloadData()
+                        
+                        // Mark the proper data as downloaded
+                        self.downloadingStructure = false
+                    }
+                    else
+                    {
+                        print("MVC - AWS STRUCTURE QUERY - FAILURE")
+                        // Show the error message
+                        let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                        alert.show()
+                    }
                 case _ as AWSSpotQueryActive:
                     if success
                     {
@@ -2092,10 +2231,11 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             }
             else
             {
+                // This error might occur if the user deleted the app - the app scoped id will not work
                 print("ERROR: FBGetUserData")
-                // Show the error message
-                let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
-                alert.show()
+//                // Show the error message
+//                let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+//                alert.show()
             }
         case let fbDownloadUserImage as FBDownloadUserImage:
             if success
@@ -2104,10 +2244,11 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             }
             else
             {
+                // This error might occur if the user deleted the app - the app scoped id will not work
                 print("MVC-ERROR: FBDownloadUserImage")
-                // Show the error message
-                let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
-                alert.show()
+//                // Show the error message
+//                let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+//                alert.show()
             }
         default:
             // Show the error message

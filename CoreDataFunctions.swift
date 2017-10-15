@@ -643,6 +643,10 @@ class CoreDataFunctions: AWSRequestDelegate
                     structureArray[sIndex].datetime = structure.datetime as! NSDate
                     structureArray[sIndex].type = Int32(structure.type.rawValue)
                     structureArray[sIndex].stage = Int32(structure.stage.rawValue)
+                    if let structureImageID = structure.imageID
+                    {
+                        structureArray[sIndex].imageID = structureImageID
+                    }
                     if let structureImage = structure.image
                     {
                         structureArray[sIndex].image = UIImagePNGRepresentation(structureImage)! as NSData
@@ -663,6 +667,10 @@ class CoreDataFunctions: AWSRequestDelegate
             newStructure.setValue(structure.datetime, forKey: "datetime")
             newStructure.setValue(structure.type.rawValue, forKey: "type")
             newStructure.setValue(structure.stage.rawValue, forKey: "stage")
+            if let structureImageID = structure.imageID
+            {
+                newStructure.setValue(structureImageID, forKey: "imageID")
+            }
             if let structureImage = structure.image
             {
                 newStructure.setValue(UIImagePNGRepresentation(structureImage)! as NSData, forKey: "image")
@@ -711,6 +719,10 @@ class CoreDataFunctions: AWSRequestDelegate
             structure.type = Constants().structureType(Int(structureObj.type))
             structure.stage = Constants().structureStage(Int(structureObj.stage))
             structure.repairs = repairRetrieveForStructure(structureID: structureObj.structureID)
+            if let structureImageID = structureObj.imageID
+            {
+                structure.imageID = structureImageID
+            }
             if let structureImage = structureObj.image
             {
                 structure.image = UIImage(data: structureImage as Data)

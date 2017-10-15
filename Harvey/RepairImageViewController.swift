@@ -331,20 +331,16 @@ class RepairImageViewController: UIViewController, UIGestureRecognizerDelegate, 
     {
         print("RIVC - WILL DISPLAY CELL: \(indexPath.row)")
     }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
         print("RIVC - SELECTED CELL: \(indexPath.row)")
     }
-    
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath)
     {
     }
-    
     func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath)
     {
     }
-    
     func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath)
     {
     }

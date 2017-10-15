@@ -75,6 +75,23 @@ struct Constants
     }
     
     // CORE DATA NOTE: SOME SETTINGS MIGHT START AT 1, NOT 0 - OBJ-C DEFAULTS TO 0, SO CORE DATA UNSURE IF PREVIOUSLY FILLED IF USING 0
+    enum MenuMapStructure: Int
+    {
+        case no = 1
+        case yes = 2
+    }
+    func menuMapStructure(_ menuMapStructureInt: Int) -> Constants.MenuMapStructure
+    {
+        switch menuMapStructureInt
+        {
+        case 1:
+            return Constants.MenuMapStructure.no
+        case 2:
+            return Constants.MenuMapStructure.yes
+        default:
+            return Constants.MenuMapStructure.yes
+        }
+    }
     enum MenuMapHydro: Int
     {
         case no = 1
@@ -361,7 +378,7 @@ struct Constants
         case waiting = 1
         case repairing = 2
         case complete = 3
-        case other = 4
+//        case other = 4
     }
     func repairStage(_ repairStageInt: Int) -> Constants.RepairStage
     {
@@ -376,8 +393,8 @@ struct Constants
             return Constants.RepairStage.repairing
         case 3:
             return Constants.RepairStage.complete
-        case 4:
-            return Constants.RepairStage.other
+//        case 4:
+//            return Constants.RepairStage.other
         default:
             return Constants.RepairStage.waiting
         }
@@ -394,9 +411,9 @@ struct Constants
         case RepairStage.repairing:
             return Constants.RepairStage.complete
         case RepairStage.complete:
-            return Constants.RepairStage.other
-        case RepairStage.other:
             return Constants.RepairStage.na
+//        case RepairStage.other:
+//            return Constants.RepairStage.na
 //        default:
 //            return Constants.RepairStage.na
         }
@@ -414,8 +431,8 @@ struct Constants
             return "Repair in Progress"
         case 3:
             return "Repair Completed"
-        case 4:
-            return "Other Repair Stage"
+//        case 4:
+//            return "Other Repair Stage"
         default:
             return "Waiting for Repair"
         }
@@ -433,8 +450,8 @@ struct Constants
             return Constants.Colors.colorYellow
         case 3:
             return Constants.Colors.colorBlue
-        case 4:
-            return Constants.Colors.colorGrayDark
+//        case 4:
+//            return Constants.Colors.colorGrayDark
         default:
             return Constants.Colors.spotGrayLight
         }
@@ -506,6 +523,7 @@ struct Constants
         static var allHazard = [Hazard]()
         static var allSOS = [SOS]()
         
+        static var structureMarkers = [GMSMarker]()
         static var spotCircles = [GMSCircle]()
         static var spotMarkers = [GMSMarker]()
         static var spotRequestMarkers = [GMSMarker]()
@@ -530,7 +548,7 @@ struct Constants
         static let cameraViewImageCellSize: CGFloat = 60
         
         static let userTableCellHeight: CGFloat = 50
-        static let repairCellHeight: CGFloat = 100
+        static let repairCellHeight: CGFloat = 60
         static let skillCellHeight: CGFloat = 100
         
         static let spotRadius: Double = 50 // in meters - see radius in Spot
@@ -552,19 +570,21 @@ struct Constants
         static let mapViewAngledZoom: Float = 16
         static let mapViewAngledDegrees: Double = 60.0
         
-        static let mapMarkerSpot: Int32 = 1
-        static let mapMarkerSpotRequest: Int32 = 2
-        static let mapMarkerHydro: Int32 = 3
-        static let mapMarkerShelter: Int32 = 4
-        static let mapMarkerHazard: Int32 = 5
-        static let mapMarkerSOS: Int32 = 6
+        static let mapMarkerStructure: Int32 = 1
+        static let mapMarkerSpot: Int32 = 2
+        static let mapMarkerSpotRequest: Int32 = 3
+        static let mapMarkerHydro: Int32 = 4
+        static let mapMarkerShelter: Int32 = 5
+        static let mapMarkerHazard: Int32 = 6
+        static let mapMarkerSOS: Int32 = 7
         static let mapMyLocationTapZoom: Float = 18
         
-        static var menuMapHydro: Constants.MenuMapHydro = Constants.MenuMapHydro.yes
+        static var menuMapStructure: Constants.MenuMapStructure = Constants.MenuMapStructure.yes
         static var menuMapSpot: Constants.MenuMapSpot = Constants.MenuMapSpot.yes
         static var menuMapTraffic: Constants.MenuMapTraffic = Constants.MenuMapTraffic.no
-        static var menuMapShelter: Constants.MenuMapShelter = Constants.MenuMapShelter.yes
         static var menuMapHazard: Constants.MenuMapHazard = Constants.MenuMapHazard.yes
+        static var menuMapHydro: Constants.MenuMapHydro = Constants.MenuMapHydro.yes
+        static var menuMapShelter: Constants.MenuMapShelter = Constants.MenuMapShelter.yes
         static var menuMapSOS: Constants.MenuMapSOS = Constants.MenuMapSOS.yes
         static var menuMapTimeFilter: Constants.MenuMapTimeFilter = Constants.MenuMapTimeFilter.month
         
@@ -592,6 +612,7 @@ struct Constants
         static let profileTabStructureTableViewCellReuseIdentifier = "profileTabStructureTableViewCell"
         static let profileRepairTableViewCellReuseIdentifier = "profileRepairTableViewCell"
         static let repairImageTableViewCellReuseIdentifier = "repairImageTableViewCell"
+        static let structureTableViewCellReuseIdentifier = "structureTableViewCellReuseIdentifier"
         
         static let imageHarvey = "Harvey.png"
         static let iconAccountGray = "icon_account_gray.png"
@@ -616,59 +637,59 @@ struct Constants
         static let markerIconCamera = "marker_icon_camera_yellow.png"
         static let markerIconCameraTemp = "marker_icon_camera_temp_yellow.png"
         static let markerIconGauge = "marker_icon_gauge_blue_opaque.png"
-        static let markerIconHouse = "marker_icon_house.png"
+        static let markerIconStructure = "marker_icon_structure.png"
         static let markerIconShelter = "marker_icon_shelter.png"
         static let markerIconSOS = "marker_icon_flag_red.png"
         
-        static let urlRandomId = "http://192.168.1.5:5000/app/randomid"
-        static let urlLogin = "http://192.168.1.5:5000/app/login"
-        static let urlSettings = "http://192.168.1.5:5000/app/settings"
-        static let urlUserCheck = "http://192.168.1.5:5000/app/user/check"
-        static let urlUserUpdate = "http://192.168.1.5:5000/app/user/update"
-        static let urlUserQueryActive = "http://192.168.1.5:5000/app/user/query/active"
-        static let urlUserConnectionQuery = "http://192.168.1.5:5000/app/user/connection/query"
-        static let urlUserConnectionPut = "http://192.168.1.5:5000/app/user/connection/put"
-        static let urlSkillQuery = "http://192.168.1.5:5000/app/skill/query"
-        static let urlSkillPut = "http://192.168.1.5:5000/app/skill/put"
-        static let urlStructureQuery = "http://192.168.1.5:5000/app/structure/query"
-        static let urlStructurePut = "http://192.168.1.5:5000/app/structure/put"
-        static let urlStructureUserQuery = "http://192.168.1.5:5000/app/structure-user/query"
-        static let urlStructureUserPut = "http://192.168.1.5:5000/app/structure-user/put"
-        static let urlRepairQuery = "http://192.168.1.5:5000/app/repair/query"
-        static let urlRepairPut = "http://192.168.1.5:5000/app/repair/put"
-        static let urlSpotQueryActive = "http://192.168.1.5:5000/app/spot/query/active"
-        static let urlSpotPut = "http://192.168.1.5:5000/app/spot/put"
-        static let urlSpotContentStatusUpdate = "http://192.168.1.5:5000/app/spot/spotcontent/statusupdate"
-        static let urlSpotRequestPut = "http://192.168.1.5:5000/app/spot/spotrequest/put"
-        static let urlShelterQueryActive = "http://192.168.1.5:5000/app/shelter/query/active"
-        static let urlHazardQueryActive = "http://192.168.1.5:5000/app/hazard/query/active"
-        static let urlHazardPut = "http://192.168.1.5:5000/app/hazard/put"
-        static let urlHydroQuery = "http://192.168.1.5:5000/app/hydro/query/active"
+//        static let urlRandomId = "http://192.168.1.5:5000/app/randomid"
+//        static let urlLogin = "http://192.168.1.5:5000/app/login"
+//        static let urlSettings = "http://192.168.1.5:5000/app/settings"
+//        static let urlUserCheck = "http://192.168.1.5:5000/app/user/check"
+//        static let urlUserUpdate = "http://192.168.1.5:5000/app/user/update"
+//        static let urlUserQueryActive = "http://192.168.1.5:5000/app/user/query/active"
+//        static let urlUserConnectionQuery = "http://192.168.1.5:5000/app/user/connection/query"
+//        static let urlUserConnectionPut = "http://192.168.1.5:5000/app/user/connection/put"
+//        static let urlSkillQuery = "http://192.168.1.5:5000/app/skill/query"
+//        static let urlSkillPut = "http://192.168.1.5:5000/app/skill/put"
+//        static let urlStructureQuery = "http://192.168.1.5:5000/app/structure/query"
+//        static let urlStructurePut = "http://192.168.1.5:5000/app/structure/put"
+//        static let urlStructureUserQuery = "http://192.168.1.5:5000/app/structure-user/query"
+//        static let urlStructureUserPut = "http://192.168.1.5:5000/app/structure-user/put"
+//        static let urlRepairQuery = "http://192.168.1.5:5000/app/repair/query"
+//        static let urlRepairPut = "http://192.168.1.5:5000/app/repair/put"
+//        static let urlSpotQueryActive = "http://192.168.1.5:5000/app/spot/query/active"
+//        static let urlSpotPut = "http://192.168.1.5:5000/app/spot/put"
+//        static let urlSpotContentStatusUpdate = "http://192.168.1.5:5000/app/spot/spotcontent/statusupdate"
+//        static let urlSpotRequestPut = "http://192.168.1.5:5000/app/spot/spotrequest/put"
+//        static let urlShelterQueryActive = "http://192.168.1.5:5000/app/shelter/query/active"
+//        static let urlHazardQueryActive = "http://192.168.1.5:5000/app/hazard/query/active"
+//        static let urlHazardPut = "http://192.168.1.5:5000/app/hazard/put"
+//        static let urlHydroQuery = "http://192.168.1.5:5000/app/hydro/query/active"
         
-//        static let urlRandomId = "http://127.0.0.1:5000/app/randomid"
-//        static let urlLogin = "http://127.0.0.1:5000/app/login"
-//        static let urlSettings = "http://127.0.0.1:5000/app/settings"
-//        static let urlUserCheck = "http://127.0.0.1:5000/app/user/check"
-//        static let urlUserUpdate = "http://127.0.0.1:5000/app/user/update"
-//        static let urlUserQueryActive = "http://127.0.0.1:5000/app/user/query/active"
-//        static let urlUserConnectionQuery = "http://127.0.0.1:5000/app/user/connection/query"
-//        static let urlUserConnectionPut = "http://127.0.0.1:5000/app/user/connection/put"
-//        static let urlSkillQuery = "http://127.0.0.1:5000/app/skill/query"
-//        static let urlSkillPut = "http://127.0.0.1:5000/app/skill/put"
-//        static let urlStructureQuery = "http://127.0.0.1:5000/app/structure/query"
-//        static let urlStructurePut = "http://127.0.0.1:5000/app/structure/put"
-//        static let urlStructureUserQuery = "http://127.0.0.1:5000/app/structure-user/query"
-//        static let urlStructureUserPut = "http://127.0.0.1:5000/app/structure-user/put"
-//        static let urlRepairQuery = "http://127.0.0.1:5000/app/repair/query"
-//        static let urlRepairPut = "http://127.0.0.1:5000/app/repair/put"
-//        static let urlSpotQueryActive = "http://127.0.0.1:5000/app/spot/query/active"
-//        static let urlSpotPut = "http://127.0.0.1:5000/app/spot/put"
-//        static let urlSpotContentStatusUpdate = "http://127.0.0.1:5000/app/spot/spotcontent/statusupdate"
-//        static let urlSpotRequestPut = "http://127.0.0.1:5000/app/spot/spotrequest/put"
-//        static let urlShelterQueryActive = "http://127.0.0.1:5000/app/shelter/query/active"
-//        static let urlHazardQueryActive = "http://127.0.0.1:5000/app/hazard/query/active"
-//        static let urlHazardPut = "http://127.0.0.1:5000/app/hazard/put"
-//        static let urlHydroQuery = "http://127.0.0.1:5000/app/hydro/query/active"
+        static let urlRandomId = "http://127.0.0.1:5000/app/randomid"
+        static let urlLogin = "http://127.0.0.1:5000/app/login"
+        static let urlSettings = "http://127.0.0.1:5000/app/settings"
+        static let urlUserCheck = "http://127.0.0.1:5000/app/user/check"
+        static let urlUserUpdate = "http://127.0.0.1:5000/app/user/update"
+        static let urlUserQueryActive = "http://127.0.0.1:5000/app/user/query/active"
+        static let urlUserConnectionQuery = "http://127.0.0.1:5000/app/user/connection/query"
+        static let urlUserConnectionPut = "http://127.0.0.1:5000/app/user/connection/put"
+        static let urlSkillQuery = "http://127.0.0.1:5000/app/skill/query"
+        static let urlSkillPut = "http://127.0.0.1:5000/app/skill/put"
+        static let urlStructureQuery = "http://127.0.0.1:5000/app/structure/query"
+        static let urlStructurePut = "http://127.0.0.1:5000/app/structure/put"
+        static let urlStructureUserQuery = "http://127.0.0.1:5000/app/structure-user/query"
+        static let urlStructureUserPut = "http://127.0.0.1:5000/app/structure-user/put"
+        static let urlRepairQuery = "http://127.0.0.1:5000/app/repair/query"
+        static let urlRepairPut = "http://127.0.0.1:5000/app/repair/put"
+        static let urlSpotQueryActive = "http://127.0.0.1:5000/app/spot/query/active"
+        static let urlSpotPut = "http://127.0.0.1:5000/app/spot/put"
+        static let urlSpotContentStatusUpdate = "http://127.0.0.1:5000/app/spot/spotcontent/statusupdate"
+        static let urlSpotRequestPut = "http://127.0.0.1:5000/app/spot/spotrequest/put"
+        static let urlShelterQueryActive = "http://127.0.0.1:5000/app/shelter/query/active"
+        static let urlHazardQueryActive = "http://127.0.0.1:5000/app/hazard/query/active"
+        static let urlHazardPut = "http://127.0.0.1:5000/app/hazard/put"
+        static let urlHydroQuery = "http://127.0.0.1:5000/app/hydro/query/active"
         
 //        static let urlRandomId = "http://www.harveytown.org/app/randomid"
 //        static let urlLogin = "http://www.harveytown.org/app/login"

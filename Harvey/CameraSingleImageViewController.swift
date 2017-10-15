@@ -53,10 +53,12 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
     var mapViewSize: CGFloat = 100
     let reviewButtonHeight: CGFloat = 60
     
-    var structureID: String?
-    var image: UIImage?
-    var datetime: Date?
-    var coords: CLLocationCoordinate2D?
+    var newStructure: Bool = true
+    var structure = Structure()
+//    var imageID: String?
+//    var image: UIImage?
+//    var datetime: Date?
+//    var coords: CLLocationCoordinate2D?
     
     // MARK: INITIALIZING
     
@@ -186,8 +188,15 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
         self.view.sendSubview(toBack: self.loadingScreen)
 //        clearTmpDirectory()
         
-        // Request a random id for the Spot
-        AWSPrepRequest(requestToCall: AWSCreateRandomID(randomIdType: Constants.randomIdType.random_structure_id), delegate: self as AWSRequestDelegate).prepRequest()
+        print("CSIVC - VIEW DID APPEAR - STRUCTURE ID: \(structure.structureID)")
+        // Request a random id for the Structure if one is not already present
+        if structure.structureID == nil
+        {
+            AWSPrepRequest(requestToCall: AWSCreateRandomID(randomIdType: Constants.randomIdType.random_structure_id), delegate: self as AWSRequestDelegate).prepRequest()
+        }
+        
+        // Request a random id for the Image
+        AWSPrepRequest(requestToCall: AWSCreateRandomID(randomIdType: Constants.randomIdType.random_media_id), delegate: self as AWSRequestDelegate).prepRequest()
     }
     
     // Perform setup before the view loads
@@ -280,8 +289,8 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
             else if cancelButton.frame.contains(touch.location(in: imageReviewView))
             {
                 print("CSIVC - DELETE BUTTON TAPPED")
-                // Set the image to nil and hide the popup
-                image = nil
+                // Reset the structure and hide the popup
+                structure = Structure()
                 imageReviewView.removeFromSuperview()
             }
         }
@@ -347,10 +356,10 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
     func uploadImage()
     {
         print("CSIVC - UPLOAD IMAGE")
-        if let capturedImage = self.image
+        if let capturedImage = structure.image
         {
             // Check whether the randomID was already downloaded - if not display a popup to wait
-            if let randomID = self.structureID
+            if let mediaID = structure.imageID
             {
                 confirmButtonLabel.removeFromSuperview()
                 confirmLoadingIndicator.startAnimating()
@@ -362,7 +371,7 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                 if let imageData = UIImageJPEGRepresentation(capturedImage, 0.6)  // Decrease the quality slightly (second parameter)
                 {
                     try? imageData.write(to: imageURL)
-                    AWSPrepRequest(requestToCall: AWSUploadMediaToBucket(bucket: Constants.Strings.S3BucketMedia, uploadKey: "\(randomID).jpg", mediaURL: imageURL, imageIndex: 0), delegate: self as AWSRequestDelegate).prepRequest()
+                    AWSPrepRequest(requestToCall: AWSUploadMediaToBucket(bucket: Constants.Strings.S3BucketMedia, uploadKey: "\(mediaID).jpg", mediaURL: imageURL, imageIndex: 0), delegate: self as AWSRequestDelegate).prepRequest()
                 }
                 else
                 {
@@ -377,6 +386,15 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                 let alert = UtilityFunctions().createAlertOkView("Slow Network", message: "I'm sorry, there was an issue gathering the needed data.  Please try again.")
                 alert.show()
             }
+        }
+    }
+    
+    func uploadStructure(structureID: String!)
+    {
+        // Upload the Structure data
+        if structure.imageID != nil && structure.lat != nil && structure.lng != nil && structure.datetime != nil
+        {
+            AWSPrepRequest(requestToCall: AWSStructurePut(structure: structure), delegate: self as AWSRequestDelegate).prepRequest()
         }
     }
     
@@ -483,8 +501,14 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                         if let dataProvider = CGDataProvider(data: imageData! as CFData)
                         {
                             // Save the context data when the image is recorded
-                            self.datetime = Date(timeIntervalSinceNow: 0)
-                            self.coords = self.mapView.userLocation.coordinate
+                            // Only update the datetime if it is nil
+                            print("CSIVC - CAPTURE IMAGE - DATETIME: \(self.structure.datetime)")
+                            if self.structure.datetime == nil
+                            {
+                                self.structure.datetime = Date(timeIntervalSinceNow: 0)
+                            }
+                            self.structure.lat = self.mapView.userLocation.coordinate.latitude
+                            self.structure.lng = self.mapView.userLocation.coordinate.longitude
                             
                             // UIImage orientation assumes a landscape (left) orientation
                             // We must correct this difference and set the image to default to portrait
@@ -521,12 +545,12 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                                 print("CSIVC - OLD IMAGE ORIENTATION: \(imageRaw.imageOrientation.hashValue)")
                                 
                                 // Remove the orientation of the image and save to the local image
-                                self.image = imageRaw.imageByNormalizingOrientation()
+                                self.structure.image = imageRaw.imageByNormalizingOrientation()
                                 
-                                print("CSIVC - NEW IMAGE ORIENTATION: \(self.image?.imageOrientation.hashValue)")
+                                print("CSIVC - NEW IMAGE ORIENTATION: \(self.structure.image?.imageOrientation.hashValue)")
                                 
                                 // Show the image in the review popup
-                                self.imageReviewImage.image = self.image
+                                self.imageReviewImage.image = self.structure.image
                                 self.viewContainer.addSubview(self.imageReviewView)
                             }
                         }
@@ -608,8 +632,14 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                             if awsCreateRandomID.randomIdType == Constants.randomIdType.random_structure_id
                             {
                                 // Save the randomID
-                                print("CSIVC - RANDOM ID: \(randomID)")
-                                self.structureID = randomID
+                                print("CSIVC - RANDOM ID - STRUCTURE: \(randomID)")
+                                self.structure.structureID = randomID
+                            }
+                            else if awsCreateRandomID.randomIdType == Constants.randomIdType.random_media_id
+                            {
+                                // Save the randomID
+                                print("CSIVC - RANDOM ID - IMAGE: \(randomID)")
+                                self.structure.imageID = randomID
                             }
                         }
                     }
@@ -630,19 +660,30 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                         self.confirmLoadingIndicator.stopAnimating()
                         self.confirmButton.addSubview(self.confirmButtonLabel)
                     }
-                case let awsUploadMediaToBucket as AWSUploadMediaToBucket:
+                case _ as AWSUploadMediaToBucket:
                     if success
                     {
                         print("CSIVC - AWSUploadMediaToBucket SUCCESS")
                         // The image was successfully uploaded, so close the camera view and send the media data to the parentVC
                         // Ensure that the context data is not nil
-                        if self.datetime != nil && self.coords != nil
+                        if self.structure.datetime != nil && self.structure.lat != nil && self.structure.lng != nil
                         {
-                            // Add an entry in StructureUser
-                            if let randomID = self.structureID
+                            // If the structure is new, upload the data as a new object, else replace the existing structure image with the new image
+                            if self.newStructure
                             {
-                                print("CSIVC - UPLOADING STRUCTURE: \(randomID)")
-                                AWSPrepRequest(requestToCall: AWSStructureUserPut(structureID: randomID, userID: Constants.Data.currentUser.userID, timestamp: self.datetime!.timeIntervalSince1970), delegate: self as AWSRequestDelegate).prepRequest()
+                                // Add an entry in StructureUser
+                                if self.structure.structureID != nil && self.structure.datetime != nil
+                                {
+                                    print("CSIVC - UPLOADING STRUCTURE: \(self.structure.structureID)")
+                                    AWSPrepRequest(requestToCall: AWSStructureUserPut(structureID: self.structure.structureID, userID: Constants.Data.currentUser.userID, timestamp: self.structure.datetime.timeIntervalSince1970), delegate: self as AWSRequestDelegate).prepRequest()
+                                }
+                            }
+                            else
+                            {
+                                if let currentStructureID = self.structure.structureID
+                                {
+                                    self.uploadStructure(structureID: currentStructureID)
+                                }
                             }
                         }
                         else
@@ -662,10 +703,7 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                     if success
                     {
                         print("CSIVC - AWSStructureUserPut SUCCESS")
-                        // Upload the Structure data
-                        var structure = Structure(structureID: awsStructureUserPut.structureID, lat: self.coords!.latitude, lng: self.coords!.longitude, datetime: self.datetime!)
-//                        structure.type = Constants.StructureType.residence
-                        AWSPrepRequest(requestToCall: AWSStructurePut(structure: structure), delegate: self as AWSRequestDelegate).prepRequest()
+                        self.uploadStructure(structureID: awsStructureUserPut.structureID)
                     }
                     else
                     {
@@ -678,10 +716,24 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                     if success
                     {
                         print("CSIVC - AWSStructurePut SUCCESS")
-                        // Add the Structure and StructureUser info to the global arrays
-                        Constants.Data.structures.append(awsStructurePut.structure)
-                        let newStructureUser = StructureUser(structureID: awsStructurePut.structure.structureID, userID: Constants.Data.currentUser.userID, datetime: awsStructurePut.structure.datetime)
-                        Constants.Data.structureUsers.append(newStructureUser)
+                        // Add the Structure and StructureUser info to the global arrays, or replace, if it already exists
+                        var structExists = false
+                        structLoop: for (sIndex, structure) in Constants.Data.structures.enumerated()
+                        {
+                            if structure.structureID == awsStructurePut.structure.structureID
+                            {
+                                structExists = true
+                                Constants.Data.structures[sIndex] = awsStructurePut.structure
+                                break structLoop
+                            }
+                        }
+                        if !structExists
+                        {
+                            Constants.Data.structures.append(awsStructurePut.structure)
+                            // Since the structure is new, add the user to the structure's user list (otherwise it should already exist)
+                            let newStructureUser = StructureUser(structureID: awsStructurePut.structure.structureID, userID: Constants.Data.currentUser.userID, datetime: awsStructurePut.structure.datetime)
+                            Constants.Data.structureUsers.append(newStructureUser)
+                        }
                         
                         // Notify the parent view that the AWS Put completed
                         if let parentVC = self.cameraDelegate

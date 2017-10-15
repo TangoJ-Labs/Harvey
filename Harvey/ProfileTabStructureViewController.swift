@@ -182,16 +182,16 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
         if let tabCon = self.tabBarController
         {
             tabBarHeight = tabCon.tabBar.frame.height
-            print("PTSTVC - STATUS BAR HEIGHT: \(statusBarHeight)")
-            print("PTSTVC - TAB BAR HEIGHT: \(tabBarHeight)")
+            print("PTSVC - STATUS BAR HEIGHT: \(statusBarHeight)")
+            print("PTSVC - TAB BAR HEIGHT: \(tabBarHeight)")
             tabCon.navigationItem.titleView = ncTitle
             tabCon.navigationItem.hidesBackButton = true
             tabCon.navigationItem.setLeftBarButton(leftButtonItem, animated: false)
             
-            print("PTSTVC - TAB CON: \(tabCon)")
+            print("PTSVC - TAB CON: \(tabCon)")
             if let navCon = tabCon.navigationController
             {
-                print("PTSTVC - NAV CON: \(navCon)")
+                print("PTSVC - NAV CON: \(navCon)")
                 navBarHeight = navCon.navigationBar.frame.height
                 navCon.isNavigationBarHidden = false
                 navCon.navigationBar.barTintColor = Constants.Colors.colorOrangeOpaque
@@ -206,7 +206,7 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
         {
             vcOffsetY = navBarHeight + 20
         }
-        print("PTSTVC - CHECK DIMS: \(screenSize), \(vcHeight), \(statusBarHeight), \(navBarHeight), \(tabBarHeight)")
+        print("PTSVC - CHECK DIMS: \(screenSize), \(vcHeight), \(statusBarHeight), \(navBarHeight), \(tabBarHeight)")
     }
     
     
@@ -283,7 +283,7 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
-        print("PTSTVC - CREATING CELL: \(indexPath.row)")
+        print("PTSVC - CREATING CELL: \(indexPath.row), FOR STRUCTURE: \(structureList[indexPath.row].structureID)")
         let cell = tableView.dequeueReusableCell(withIdentifier: Constants.Strings.profileTabStructureTableViewCellReuseIdentifier, for: indexPath) as! ProfileTabStructureTableViewCell
         
         // Remove all subviews
@@ -323,9 +323,12 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
         }
         else
         {
-            // Download the image
-            print("PTSVC - DOWNLOAD IMAGE: \(structureList[indexPath.row].structureID)")
-            AWSPrepRequest(requestToCall: AWSDownloadMediaImage(imageID: structureList[indexPath.row].structureID), delegate: self as AWSRequestDelegate).prepRequest()
+            // Download the image if the stringID is available
+            if let mediaID = structureList[indexPath.row].imageID
+            {
+                print("PTSVC - DOWNLOAD IMAGE FOR STRUCTURE: \(structureList[indexPath.row].structureID)")
+                AWSPrepRequest(requestToCall: AWSDownloadMediaImage(imageID: mediaID), delegate: self as AWSRequestDelegate).prepRequest()
+            }
         }
         
         return cell
@@ -333,12 +336,12 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
     {
-        print("PTSTVC - WILL DISPLAY CELL: \(indexPath.row)")
+        print("PTSVC - WILL DISPLAY CELL: \(indexPath.row)")
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
-        print("PTVVC - SELECTED CELL: \(indexPath.row)")
+        print("PTSVC - SELECTED CELL: \(indexPath.row)")
         
         // Unhighlight the cell
         tableView.deselectRow(at: indexPath, animated: true)
@@ -354,13 +357,45 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath)
     {
     }
-    
     func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath)
     {
     }
-    
     func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath)
     {
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath)
+    {
+        print("PTSVC - EDIT STYLE FOR ROW: \(indexPath.row)")
+    }
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool
+    {
+        return true
+    }
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]?
+    {
+        print("PTSVC - EDIT ACTIONS FOR ROW: \(indexPath.row)")
+        let replaceImageAction = UITableViewRowAction(style: .normal, title: "Replace\nImage")
+        { action, index in
+            print("PTSVC - REPLACE IMAGE FOR STRUCTURE AT ROW: \(indexPath.row)")
+            // Load the camera view and only allow one photo to be taken
+            if let navCon = self.navigationController
+            {
+                let cameraVC = CameraSingleImageViewController()
+                cameraVC.cameraDelegate = self
+                cameraVC.newStructure = false
+                cameraVC.structure = self.structureList[indexPath.row]
+                navCon.pushViewController(cameraVC, animated: true)
+            }
+        }
+        replaceImageAction.backgroundColor = Constants.Colors.colorBlue
+        
+        let deleteAction = UITableViewRowAction(style: .normal, title: "Delete")
+        { action, index in
+            print("PTSVC - DELETE STRUCTURE AT ROW: \(indexPath.row)")
+        }
+        deleteAction.backgroundColor = Constants.Colors.colorGrayDark
+        return [replaceImageAction,deleteAction]
     }
     
     
@@ -390,7 +425,7 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
             {
                 if self.structureTableView != nil
                 {
-                    print("PTSTVC - REFRESH SKILL TABLE")
+                    print("PTSVC - REFRESH SKILL TABLE")
                     
                     // Reload the TableView
                     self.structureTableView.reloadData()
@@ -434,7 +469,7 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     
     func showLoginScreen()
     {
-        print("PTSTVC - SHOW LOGIN SCREEN")
+        print("PTSVC - SHOW LOGIN SCREEN")
         
         // Load the LoginVC
         let loginVC = LoginViewController()
@@ -451,7 +486,7 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
                 case let awsCreateRandomID as AWSCreateRandomID:
                     if success
                     {
-                        print("PTSTVC - AWS GET RANDOM ID: \(awsCreateRandomID)")
+                        print("PTSVC - AWS GET RANDOM ID: \(awsCreateRandomID)")
                         if let randomID = awsCreateRandomID.randomID
                         {
                             print("PRSTVC - RANDOM ID: \(randomID)")
@@ -459,7 +494,7 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
                     }
                     else
                     {
-                        print("PTSTVC - AWS GET RANDOM ID - FAILURE")
+                        print("PTSVC - AWS GET RANDOM ID - FAILURE")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
@@ -467,7 +502,7 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
                 case _ as AWSStructureUserQuery:
                     if success
                     {
-                        print("PTSTVC - AWS STRUCTURE-USER QUERY - SUCCESS")
+                        print("PTSVC - AWS STRUCTURE-USER QUERY - SUCCESS")
                         // Reset the counter for structures that the current user controls
                         self.userStructureCount = 0
                         // Request the structure data for all structures associated with this user
@@ -485,7 +520,7 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
                     }
                     else
                     {
-                        print("PTSTVC - AWS STRUCTURE-USER QUERY - FAILURE")
+                        print("PTSVC - AWS STRUCTURE-USER QUERY - FAILURE")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
@@ -493,12 +528,12 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
                 case _ as AWSStructureQuery:
                     if success
                     {
-                        print("PTSTVC - AWS STRUCTURE QUERY - SUCCESS")
+                        print("PTSVC - AWS STRUCTURE QUERY - SUCCESS")
                         self.reloadStructureTable()
                     }
                     else
                     {
-                        print("PTSTVC - AWS STRUCTURE QUERY - FAILURE")
+                        print("PTSVC - AWS STRUCTURE QUERY - FAILURE")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
@@ -506,15 +541,15 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
                 case let awsDownloadMediaImage as AWSDownloadMediaImage:
                     if success
                     {
-                        print("PTSTVC - AWSDownloadMediaImage - SUCCESS")
+                        print("PTSVC - AWSDownloadMediaImage - SUCCESS")
                         if let structureImage = awsDownloadMediaImage.contentImage
                         {
                             // Find the structure Object in the local array and add the downloaded image to the object variable
                             findStructureLoop: for structureObject in self.structureList
                             {
-                                if structureObject.structureID == awsDownloadMediaImage.imageID
+                                if structureObject.imageID == awsDownloadMediaImage.imageID
                                 {
-                                    print("PTSTVC - AWSDownloadMediaImage - ADDED IMAGE TO LOCAL LIST")
+                                    print("PTSVC - AWSDownloadMediaImage - ADDED IMAGE TO LOCAL LIST")
                                     structureObject.image = structureImage
                                     break findStructureLoop
                                 }
@@ -523,9 +558,9 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
                             // Find the structure Object in the global array and add the downloaded image to the object variable
                             findStructureLoop: for structureObject in Constants.Data.structures
                             {
-                                if structureObject.structureID == awsDownloadMediaImage.imageID
+                                if structureObject.imageID == awsDownloadMediaImage.imageID
                                 {
-                                    print("PTSTVC - AWSDownloadMediaImage - ADDED IMAGE TO GLOBAL LIST")
+                                    print("PTSVC - AWSDownloadMediaImage - ADDED IMAGE TO GLOBAL LIST")
                                     structureObject.image = structureImage
                                     break findStructureLoop
                                 }
@@ -541,7 +576,7 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
                         self.present(alertController, animated: true, completion: nil)
                     }
                 default:
-                    print("PTSTVC-DEFAULT: THERE WAS AN ISSUE WITH THE DATA RETURNED FROM AWS")
+                    print("PTSVC-DEFAULT: THERE WAS AN ISSUE WITH THE DATA RETURNED FROM AWS")
                     
                     // Show the error message
                     let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
