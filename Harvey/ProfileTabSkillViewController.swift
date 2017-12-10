@@ -92,9 +92,6 @@ class ProfileTabSkillViewController: UIViewController, UITableViewDataSource, UI
         
         // Fill the global arrays with Core Data (if available)
         Constants.Data.skills = CoreDataFunctions().skillRetrieveForUser(userID: Constants.Data.currentUser.userID)
-        
-        // Copy the global array locally and sort the data
-        reloadSkillTable()
     }
     
     override func viewWillAppear(_ animated: Bool)
@@ -107,6 +104,7 @@ class ProfileTabSkillViewController: UIViewController, UITableViewDataSource, UI
         titleText.frame = CGRect(x: 5, y: 5, width: titleContainer.frame.width - 10, height: titleContainer.frame.height - 10)
         titleSpinner.frame = CGRect(x: 0, y: 0, width: titleContainer.frame.width, height: titleContainer.frame.height)
         
+        // Refresh the user's skill data
         requestData()
         self.titleText.removeFromSuperview()
         titleSpinner.startAnimating()
@@ -163,6 +161,10 @@ class ProfileTabSkillViewController: UIViewController, UITableViewDataSource, UI
         navBarHeight = 44
         if let tabCon = self.tabBarController
         {
+//            let tabImage = UIImage(named: "tab1.png")
+//            tabImage!.withRenderingMode(UIImageRenderingMode.alwaysOriginal)
+//            self.tabBarItem.image = tabImage
+            
             tabBarHeight = tabCon.tabBar.frame.height
             print("PTSKVC - STATUS BAR HEIGHT: \(statusBarHeight)")
             print("PTSKVC - TAB BAR HEIGHT: \(tabBarHeight)")
@@ -252,7 +254,7 @@ class ProfileTabSkillViewController: UIViewController, UITableViewDataSource, UI
         cell.checkText.frame = CGRect(x: 0, y: 0, width: cell.checkContainer.frame.width, height: cell.checkContainer.frame.height)
         cell.border1.frame = CGRect(x: 0, y: Constants.Dim.skillCellHeight - 1, width: cell.cellContainer.frame.width, height: 1)
         
-        cell.skillTitle.text = skillList[indexPath.row].skill
+        cell.skillTitle.text = skillList[indexPath.row].title
         cell.checkContainer.backgroundColor = Constants().experienceColor(skillList[indexPath.row].level.rawValue)
         cell.checkText.text = Constants().experienceTitle(skillList[indexPath.row].level.rawValue)
         
@@ -330,6 +332,11 @@ class ProfileTabSkillViewController: UIViewController, UITableViewDataSource, UI
     
     func refreshSkillTable()
     {
+        for skill in Constants.Data.skills
+        {
+            print("PTSKVC - GLOBAL SKILL: \(skill.skill), \(skill.title), \(skill.level)")
+        }
+        
         DispatchQueue.main.async(execute:
             {
                 if self.skillTableView != nil

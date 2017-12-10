@@ -16,6 +16,7 @@ class Skill
     var level: Constants.Experience = Constants.Experience.none // Defaults to 'no experience'
     
     // For use when listing a user's skills
+    var title: String = ""
     var order: Int = 0
     var icon: UIImage?
     

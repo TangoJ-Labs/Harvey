@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AWSRequestDelegate
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool
     {
-        print("didFinishLaunchingWithOptions")
+//        print("didFinishLaunchingWithOptions")
         if let infoDict = Bundle.main.infoDictionary
         {
             if let bundleVersion =  infoDict["CFBundleShortVersionString"]
@@ -31,8 +31,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AWSRequestDelegate
                 Constants.Settings.appVersion = bundleVersion as! String
             }
         }
-        print("AD-TIMESTAMP: \(Date().timeIntervalSince1970)")
-        print("AD-TIMESTAMP - 12hr: \(Date().timeIntervalSince1970 - (60 * 60 * 12))")
+//        print("AD-TIMESTAMP: \(Date().timeIntervalSince1970)")
+//        print("AD-TIMESTAMP - 12hr: \(Date().timeIntervalSince1970 - (60 * 60 * 12))")
         // Google Maps Prep
         GMSServices.provideAPIKey(Constants.Settings.gKey)
 //        GMSPlacesClient.provideAPIKey(Constants.Settings.gKey)
@@ -50,7 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AWSRequestDelegate
         // Check to see if the facebook user id is already in the FBSDK
         if let facebookToken = FBSDKAccessToken.current()
         {
-            print(facebookToken.tokenString)
+//            print(facebookToken.tokenString)
             // Request the global app settings
             AWSPrepRequest(requestToCall: AWSSettings(), delegate: self as AWSRequestDelegate).prepRequest()
             

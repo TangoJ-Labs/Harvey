@@ -69,7 +69,7 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
         backgroundLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
         backgroundLabel.textAlignment = .center
         backgroundLabel.font = UIFont(name: "HelveticaNeue-UltraLight", size: 20)
-        backgroundLabel.text = "You haven't added any buildings needing repair.  Tap the button above to add one."
+        backgroundLabel.text = "You haven't added any homes needing repair.  Tap the button below to add one."
         
         // A tableview will hold all structures
         structureTableView = UITableView(frame: CGRect(x: 0, y: 0, width: viewContainer.frame.width, height: viewContainer.frame.height - addButtonHeight))
@@ -118,6 +118,8 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     {
         prepVcLayout()
         prepFrames()
+        
+        reloadStructureTable()
     }
     
     override func didReceiveMemoryWarning()
@@ -232,7 +234,7 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     func addButtonTap(_ gesture: UITapGestureRecognizer)
     {
         // Explain that a photo is needed to create the Structure - allow the user to cancel
-        let alertController = UIAlertController(title: "Photo Required", message: "New Structures require a photo - Take a photo of the outside of the structure.  Other users will see this photo when viewing information regarding this structure.", preferredStyle: UIAlertControllerStyle.alert)
+        let alertController = UIAlertController(title: "Photo Required", message: "A house profile photo is required - Please take a photo of the outside of the house.  Other users will see this photo when viewing information regarding this house.", preferredStyle: UIAlertControllerStyle.alert)
         let laterAction = UIAlertAction(title: "Later", style: UIAlertActionStyle.default)
         { (result : UIAlertAction) -> Void in
             print("PTSVC - CAMERA POPUP - LATER")
@@ -247,6 +249,7 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
             {
                 let cameraVC = CameraSingleImageViewController()
                 cameraVC.cameraDelegate = self
+                cameraVC.newStructure = true
                 navCon.pushViewController(cameraVC, animated: true)
             }
         }
@@ -392,7 +395,23 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
         
         let deleteAction = UITableViewRowAction(style: .normal, title: "Delete")
         { action, index in
-            print("PTSVC - DELETE STRUCTURE AT ROW: \(indexPath.row)")
+            // Show the popup message confirming the deletion request
+            let alertController = UIAlertController(title: "Confirm Delete", message: "Are you sure you want to delete this house profile?", preferredStyle: UIAlertControllerStyle.alert)
+            let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default)
+            { (result : UIAlertAction) -> Void in
+                print("PTSVC - POPUP DELETE CANCEL")
+                
+            }
+            let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.default)
+            { (result : UIAlertAction) -> Void in
+                print("PTSVC - POPUP DELETE CONFIRM")
+                print("PTSVC - DELETE STRUCTURE AT ROW: \(indexPath.row)")
+                // Indicate this structure as deleted in the database
+                AWSPrepRequest(requestToCall: AWSStructureDelete(structure: self.structureList[indexPath.row]), delegate: self as AWSRequestDelegate).prepRequest()
+            }
+            alertController.addAction(cancelAction)
+            alertController.addAction(deleteAction)
+            alertController.show()
         }
         deleteAction.backgroundColor = Constants.Colors.colorGrayDark
         return [replaceImageAction,deleteAction]
@@ -441,7 +460,19 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
             $0.datetime > $1.datetime
         }
         self.structureList = structureListSort
-        print("PTSVC - STRUCTURE COUNT: \(self.structureList.count)")
+        
+        // Recount the user structures
+        // Reset the counter for structures that the current user controls
+        self.userStructureCount = 0
+        // Request the structure data for all structures associated with this user
+        for structureUser in Constants.Data.structureUsers
+        {
+            if structureUser.userID == Constants.Data.currentUser.userID
+            {
+                // Record the number of structures that should be returned - to know when all of them have returned a response
+                self.userStructureCount += 1
+            }
+        }
         
         // If the list of shown structures is at least as large as the count of how many structures the current user controls,
         // then hide the spinner and display the background text if needed
@@ -452,6 +483,10 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
             {
                 self.structureTableView.addSubview(self.backgroundLabel)
             }
+            else
+            {
+                self.backgroundLabel.removeFromSuperview()
+            }
         }
         
         refreshStructureTable()
@@ -461,7 +496,9 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
     {
         print("PTSVC - REQUEST DATA")
         // Request all structureIDs associated with the current user
-        AWSPrepRequest(requestToCall: AWSStructureUserQuery(), delegate: self as AWSRequestDelegate).prepRequest()
+        let awsStructureUserQuery = AWSStructureUserQuery()
+        awsStructureUserQuery.userID = Constants.Data.currentUser.userID
+        AWSPrepRequest(requestToCall: awsStructureUserQuery, delegate: self as AWSRequestDelegate).prepRequest()
     }
     
     
@@ -534,6 +571,23 @@ class ProfileTabStructureViewController: UIViewController, UIGestureRecognizerDe
                     else
                     {
                         print("PTSVC - AWS STRUCTURE QUERY - FAILURE")
+                        // Show the error message
+                        let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                        alert.show()
+                    }
+                case _ as AWSStructureDelete:
+                    if success
+                    {
+                        print("PTSVC - AWS STRUCTURE DELETE - SUCCESS")
+                        // Update the user structure count
+                        print("PTSVC - DELETE - USER STRUCTURE COUNT: \(self.userStructureCount)")
+                        self.userStructureCount -= 1
+                        print("PTSVC - DELETE - USER STRUCTURE COUNT: \(self.userStructureCount)")
+                        self.reloadStructureTable()
+                    }
+                    else
+                    {
+                        print("PTSVC - AWS STRUCTURE DELETE - FAILURE")
                         // Show the error message
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()

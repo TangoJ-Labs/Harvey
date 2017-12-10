@@ -6,11 +6,15 @@
 //  Copyright © 2017 TangoJ Labs, LLC. All rights reserved.
 //
 
+import CoreData
+import MobileCoreServices
 import FBSDKLoginKit
 import UIKit
 
-class ProfileViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, FBSDKLoginButtonDelegate, SpotTableViewControllerDelegate, AWSRequestDelegate, RequestDelegate
+class ProfileViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, FBSDKLoginButtonDelegate, SpotTableViewControllerDelegate, AWSRequestDelegate, RequestDelegate, HoleViewDelegate
 {
+    var showedTutorial = false
+    
     var user: User = Constants.Data.currentUser
     
     // Save device settings to adjust view if needed
@@ -102,6 +106,24 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         refreshUserFeatures()
         
         NotificationCenter.default.addObserver(self, selector: #selector(ProfileViewController.statusBarHeightChange(_:)), name: Notification.Name("UIApplicationWillChangeStatusBarFrameNotification"), object: nil)
+        
+        // Only show the tutorial view when the repairs are visible - otherwise it won't make sense
+        // Recall the Tutorial Views data in Core Data.  If it is empty for the current ViewController's tutorial, it has not been seen by the curren user.
+        let tutorialView = CoreDataFunctions().tutorialViewRetrieve()
+        print("PVC: TUTORIAL VIEW STRUCTURE: \(String(describing: tutorialView.tutorialProfileViewDatetime))")
+        if tutorialView.tutorialProfileViewDatetime == nil
+//        if 2 == 2
+        {
+            // Double-check that the tutorial isn't already showing
+            if !showedTutorial
+            {
+                showedTutorial = true
+                print("PVC-CHECK 1")
+                let holeView = HoleView(holeViewPosition: 1, frame: viewContainer.bounds, circleOffsetX: (viewContainer.frame.width / 2), circleOffsetY: viewContainer.frame.height * (3/4) - 73, circleRadius: 50, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 10, textWidth: 260, textFontSize: 20, text: "Volunteers: Fill out your profile with your volunteer skills to find houses that match.\n\nHomeowners: Take photos of the needed repairs in your house to find skilled volunteers.")
+                holeView.holeViewDelegate = self
+                viewContainer.addSubview(holeView)
+            }
+        }
         
 //        RequestPrep(requestToCall: APITest(), delegate: self as RequestDelegate).prepRequest()
     }
@@ -242,10 +264,40 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         let cellContainer = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: cellHeight))
         cell.addSubview(cellContainer)
         
-        let cellImageView = UIImageView(frame: CGRect(x: (cellContainer.frame.width / 2) - 20, y: 5, width: 40, height: 40))
-        cellImageView.contentMode = UIViewContentMode.scaleAspectFit
-        cellImageView.clipsToBounds = true
-        cellContainer.addSubview(cellImageView)
+        if indexPath.row == 0
+        {
+            let cellImageView = UIImageView(frame: CGRect(x: (cellContainer.frame.width / 2) - 35, y: 5, width: 40, height: 40))
+            cellImageView.contentMode = UIViewContentMode.scaleAspectFit
+            cellImageView.clipsToBounds = true
+            cellImageView.image = UIImage(named: Constants.Strings.iconHouse)
+            cellContainer.addSubview(cellImageView)
+            
+            let cellImageView2 = UIImageView(frame: CGRect(x: (cellContainer.frame.width / 2) - 5, y: 5, width: 40, height: 40))
+            cellImageView2.contentMode = UIViewContentMode.scaleAspectFit
+            cellImageView2.clipsToBounds = true
+            cellImageView2.image = UIImage(named: Constants.Strings.iconTools)
+            cellContainer.addSubview(cellImageView2)
+        }
+        else
+        {
+            let cellImageView = UIImageView(frame: CGRect(x: (cellContainer.frame.width / 2) - 20, y: 5, width: 40, height: 40))
+            cellImageView.contentMode = UIViewContentMode.scaleAspectFit
+            cellImageView.clipsToBounds = true
+            cellContainer.addSubview(cellImageView)
+            
+            if indexPath.row == 1
+            {
+                cellImageView.image = UIImage(named: Constants.Strings.iconCamera)
+            }
+            else if indexPath.row == 2
+            {
+                cellImageView.image = UIImage(named: Constants.Strings.markerIconCamera)
+            }
+            else if indexPath.row == 3
+            {
+                cellImageView.image = UIImage(named: Constants.Strings.iconHazard)
+            }
+        }
         
         let cellArrow = UILabel(frame: CGRect(x: cellContainer.frame.width - 50, y: 5, width: 40, height: 40))
         cellArrow.backgroundColor = UIColor.clear
@@ -258,23 +310,6 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         border1.frame = CGRect(x: 0, y: cellHeight - 1, width: cellContainer.frame.width, height: 1)
         border1.backgroundColor = Constants.Colors.standardBackgroundGrayUltraLight.cgColor
         cellContainer.layer.addSublayer(border1)
-        
-        if indexPath.row == 0
-        {
-            cellImageView.image = UIImage(named: Constants.Strings.iconSettings)
-        }
-        else if indexPath.row == 1
-        {
-            cellImageView.image = UIImage(named: Constants.Strings.iconCamera)
-        }
-        else if indexPath.row == 2
-        {
-            cellImageView.image = UIImage(named: Constants.Strings.markerIconCamera)
-        }
-        else if indexPath.row == 3
-        {
-            cellImageView.image = UIImage(named: Constants.Strings.iconHazard)
-        }
         
         return cell
     }
@@ -303,10 +338,24 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             print("PVC - LAUNCH PROFILE SETTINGS VC")
             
             let tab1VC = ProfileTabSkillViewController()
-            tab1VC.tabBarItem = UITabBarItem(title: "Volunteer", image: nil, selectedImage: nil)
+//            tab1VC.tabBarItem = UITabBarItem(title: "Volunteer", image: nil, selectedImage: nil)
+            tab1VC.tabBarItem = UITabBarItem(title: nil, image: UIImage(named: "tab_tools.png"), selectedImage: nil)
+            tab1VC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 5, bottom: -5, right: 5)
+            
+//            let tab1VC = ProfileTabSkillViewController()
+////            tab1VC.peopleViewDelegate = self
+////            tab1VC.tabBarUsed = true
+//            let tab1BarItem = UITabBarItem()
+//            tab1BarItem.tag = 1
+//            tab1BarItem.image = UIImage(named: "favicon-32x32.png")
+//            tab1BarItem.selectedImage = UIImage(named: "favicon-32x32.png")
+//            tab1BarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
+//            tab1VC.tabBarItem = tab1BarItem
             
             let tab2VC = ProfileTabStructureViewController()
-            tab2VC.tabBarItem = UITabBarItem(title: "My House", image: nil, selectedImage: nil)
+//            tab2VC.tabBarItem = UITabBarItem(title: "My House", image: nil, selectedImage: nil)
+            tab2VC.tabBarItem = UITabBarItem(title: nil, image: UIImage(named: "tab_house.png"), selectedImage: nil)
+            tab2VC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 5, bottom: -5, right: 5)
             
             // Navigation Bar settings
             let profileTabBarController = UITabBarController()
@@ -595,6 +644,35 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             // Show the error message
             let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
             alert.show()
+        }
+    }
+    
+    // MARK: HOLE VIEW DELEGATE
+    func holeViewRemoved(removingViewAtPosition: Int)
+    {
+        // Give a short tutorial for new users
+        switch removingViewAtPosition
+        {
+        case 1:
+            // Show users how to add photo requests (SpotRequests)
+            print("PVC-CHECK TUTORIAL 1")
+            let holeView = HoleView(holeViewPosition: 2, frame: viewContainer.bounds, circleOffsetX: (viewContainer.frame.width / 2), circleOffsetY: viewContainer.frame.height * (3/4) - 25, circleRadius: 20, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 230, textWidth: 260, textFontSize: 20, text: "Manage any photos you added to the map.")
+            holeView.holeViewDelegate = self
+            viewContainer.addSubview(holeView)
+        case 2:
+            // Show users how to add photo requests (SpotRequests)
+            print("PVC-CHECK TUTORIAL 2")
+            let holeView = HoleView(holeViewPosition: 3, frame: viewContainer.bounds, circleOffsetX: (viewContainer.frame.width / 2), circleOffsetY: viewContainer.frame.height * (3/4) + 50, circleRadius: 40, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 230, textWidth: 260, textFontSize: 20, text: "Manage any other pins you added to the map.")
+            holeView.holeViewDelegate = self
+            viewContainer.addSubview(holeView)
+            
+        default:
+            // The tutorial has ended - Record the Tutorial View in Core Data
+            print("PVC-CHECK TUTORIAL DEFAULT")
+            let moc = DataController().managedObjectContext
+            let tutorialView = NSEntityDescription.insertNewObject(forEntityName: "TutorialView", into: moc) as! TutorialView
+            tutorialView.setValue(NSDate(), forKey: "tutorialProfileViewDatetime")
+            CoreDataFunctions().tutorialViewSave(tutorialView: tutorialView)
         }
     }
 }

@@ -177,7 +177,7 @@ class RepairImageViewController: UIViewController, UIGestureRecognizerDelegate, 
         
         if let repair = self.repair
         {
-            ncTitleText.text = repair.repair
+            ncTitleText.text = repair.title
         }
         
         // Assign the created Nav Bar settings

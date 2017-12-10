@@ -57,12 +57,16 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     var menuTimeWeekIndicator: UIImageView!
     var menuTimeMonthIndicator: UIImageView!
     var menuTimeYearIndicator: UIImageView!
-    var menuAboutContainer: UIView!
-    var menuAboutLabel: UILabel!
-    var menuAboutTapGesture: UITapGestureRecognizer!
+//    var menuAboutContainer: UIView!
+//    var menuAboutLabel: UILabel!
+//    var menuAboutTapGesture: UITapGestureRecognizer!
     
     var mapContainer: UIView!
     var mapView: GMSMapView!
+    
+    var structureSkillMatchView: UIView!
+    var structureSkillMatchImageView: UIImageView!
+    var structureSkillMatchLabel: UILabel!
     
     var refreshView: UIView!
     var refreshViewImage: UILabel!
@@ -271,7 +275,8 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         menuMapHydroContainer.addGestureRecognizer(menuMapHydroTapGesture)
         
         // The time selections for the map spots
-        menuTimeContainer = UIView(frame: CGRect(x: 0, y: menuView.frame.height - menuFilterContainerHeight - 50, width: menuWidth, height: menuFilterContainerHeight))
+//        menuTimeContainer = UIView(frame: CGRect(x: 0, y: menuView.frame.height - menuFilterContainerHeight - 50, width: menuWidth, height: menuFilterContainerHeight))
+        menuTimeContainer = UIView(frame: CGRect(x: 0, y: menuView.frame.height - menuFilterContainerHeight, width: menuWidth, height: menuFilterContainerHeight))
         menuView.addSubview(menuTimeContainer)
         let border1 = CALayer()
         border1.frame = CGRect(x: 5, y: 25, width: 2, height: 150)
@@ -351,18 +356,18 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         menuTimeYearTapGesture.numberOfTapsRequired = 1  // add single tap
         menuTimeLabelYear.addGestureRecognizer(menuTimeYearTapGesture)
         
-        // The about button at the bottom of the menu
-        menuAboutContainer = UIView(frame: CGRect(x: 0, y: menuView.frame.height - 50, width: menuWidth, height: 50))
-        menuView.addSubview(menuAboutContainer)
-        menuAboutLabel = UILabel(frame: CGRect(x: 5, y: 5, width: menuAboutContainer.frame.width - 10, height: 40))
-        menuAboutLabel.font = UIFont(name: Constants.Strings.fontAltThick, size: 38)
-        menuAboutLabel.textColor = Constants.Colors.colorGrayLight
-        menuAboutLabel.textAlignment = .center
-        menuAboutLabel.text = "?"
-        menuAboutContainer.addSubview(menuAboutLabel)
-        menuAboutTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.menuAboutTap(_:)))
-        menuAboutTapGesture.numberOfTapsRequired = 1  // add single tap
-        menuAboutContainer.addGestureRecognizer(menuAboutTapGesture)
+//        // The about button at the bottom of the menu
+//        menuAboutContainer = UIView(frame: CGRect(x: 0, y: menuView.frame.height - 50, width: menuWidth, height: 50))
+//        menuView.addSubview(menuAboutContainer)
+//        menuAboutLabel = UILabel(frame: CGRect(x: 5, y: 5, width: menuAboutContainer.frame.width - 10, height: 40))
+//        menuAboutLabel.font = UIFont(name: Constants.Strings.fontAltThick, size: 38)
+//        menuAboutLabel.textColor = Constants.Colors.colorGrayLight
+//        menuAboutLabel.textAlignment = .center
+//        menuAboutLabel.text = "?"
+//        menuAboutContainer.addSubview(menuAboutLabel)
+//        menuAboutTapGesture = UITapGestureRecognizer(target: self, action: #selector(MapViewController.menuAboutTap(_:)))
+//        menuAboutTapGesture.numberOfTapsRequired = 1  // add single tap
+//        menuAboutContainer.addGestureRecognizer(menuAboutTapGesture)
         
         // Add the map container to allow the map to be moved with all subviews
         mapContainer = UIView(frame: CGRect(x: 0, y: 0, width: viewContainer.frame.width, height: viewContainer.frame.height))
@@ -399,6 +404,27 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         mapContainer.addSubview(mapView)
         
         // Load the additional view components
+        structureSkillMatchView = UIView(frame: CGRect(x: 5, y: 5, width: 170, height: 50))
+        structureSkillMatchView.backgroundColor = Constants.Colors.standardBackground
+        structureSkillMatchView.layer.shadowOffset = CGSize(width: 0, height: 0.6)
+        structureSkillMatchView.layer.shadowOpacity = 0.5
+        structureSkillMatchView.layer.shadowRadius = 1.0
+        
+        structureSkillMatchImageView = UIImageView(frame: CGRect(x: 5, y: 5, width: 40, height: 40))
+        structureSkillMatchImageView.contentMode = UIViewContentMode.scaleAspectFit
+        structureSkillMatchImageView.clipsToBounds = true
+        structureSkillMatchImageView.image = UIImage(named: Constants.Strings.markerIconStructureSkillMatch)
+        structureSkillMatchView.addSubview(structureSkillMatchImageView)
+        
+        structureSkillMatchLabel = UILabel(frame: CGRect(x: 50, y: 5, width: 115, height: 40))
+        structureSkillMatchLabel.backgroundColor = UIColor.clear
+        structureSkillMatchLabel.text = "These home repairs match your skills."
+        structureSkillMatchLabel.textAlignment = .left
+        structureSkillMatchLabel.numberOfLines = 2
+        structureSkillMatchLabel.font = UIFont(name: "HelveticaNeue-UltraLight", size: 14)
+        structureSkillMatchView.addSubview(structureSkillMatchLabel)
+        
+        
         refreshView = UIView(frame: CGRect(x: mapContainer.frame.width - 66, y: 10, width: 56, height: 56))
         refreshView.backgroundColor = Constants.Colors.standardBackground
         refreshView.layer.cornerRadius = 28
@@ -554,7 +580,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
 //        if 2 == 2
         {
             print("MVC-CHECK 1")
-            let holeView = HoleView(holeViewPosition: 1, frame: viewContainer.bounds, circleOffsetX: 0, circleOffsetY: 0, circleRadius: 0, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 60, textWidth: 260, textFontSize: 24, text: "Welcome to Harveytown!\n\nHarveytown is a disaster recovery app currently focused on hurricane-impacted areas.")
+            let holeView = HoleView(holeViewPosition: 1, frame: viewContainer.bounds, circleOffsetX: 0, circleOffsetY: 0, circleRadius: 0, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 60, textWidth: 260, textFontSize: 24, text: "Welcome to Harveytown!\n\nHundreds of Southeast Texas families are still displaced from their homes due to Hurricane Harvey.")
             holeView.holeViewDelegate = self
             viewContainer.addSubview(holeView)
         }
@@ -568,6 +594,13 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         
         // Request a random id for the Spot
         AWSPrepRequest(requestToCall: AWSCreateRandomID(randomIdType: Constants.randomIdType.random_structure_id), delegate: self as AWSRequestDelegate).prepRequest()
+        
+        // Request the user's skill history
+        AWSPrepRequest(requestToCall: AWSSkillQuery(userID: Constants.Data.currentUser.userID), delegate: self as AWSRequestDelegate).prepRequest()
+        
+        // Request common user info
+        AWSPrepRequest(requestToCall: AWSUserQueryActive(), delegate: self as AWSRequestDelegate).prepRequest()
+        AWSPrepRequest(requestToCall: AWSUserConnectionQuery(userID: Constants.Data.currentUser.userID), delegate: self as AWSRequestDelegate).prepRequest()
     }
     
     override func viewWillAppear(_ animated: Bool)
@@ -939,6 +972,9 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             removeStructureMapFeatures()
             menuMapStructureIndicator.removeFromSuperview()
             Constants.Settings.menuMapStructure = Constants.MenuMapStructure.no
+            
+            // Remove the structure-skill match notification box
+            structureSkillMatchView.removeFromSuperview()
         }
         else
         {
@@ -1329,6 +1365,9 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     func reloadData()
     {
         print("MVC - RELOAD MAP")
+        // Remove the structure-skill match notification box
+        structureSkillMatchView.removeFromSuperview()
+        
         // Before populating the map, delete all markers
         self.removeStructureMapFeatures()
         self.removeSpotMapFeatures()
@@ -1412,8 +1451,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         
         AWSPrepRequest(requestToCall: AWSSpotQueryActive(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
         AWSPrepRequest(requestToCall: AWSHazardQuery(), delegate: self as AWSRequestDelegate).prepRequest()
-        AWSPrepRequest(requestToCall: AWSUserQueryActive(), delegate: self as AWSRequestDelegate).prepRequest()
-        AWSPrepRequest(requestToCall: AWSUserConnectionQuery(userID: Constants.Data.currentUser.userID), delegate: self as AWSRequestDelegate).prepRequest()
 //        AWSPrepRequest(requestToCall: AWSHydroQuery(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
 //        AWSPrepRequest(requestToCall: AWSShelterQuery(userLocation: userLoc), delegate: self as AWSRequestDelegate).prepRequest()
         
@@ -1437,11 +1474,10 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
             case .notDetermined, .restricted, .denied:
                 print("MVC - LOCATION SERVICES - No access")
                 // Show the popup message instructing the user to change the phone location settings for the app
-                let alertController = UIAlertController(title: "Your Location Not Authorized", message: "Harveytown needs permission to determine your current location in order to provide all app features.  Please go to your phone settings to allow access.", preferredStyle: UIAlertControllerStyle.alert)
-                let okAction = UIAlertAction(title: "Close", style: UIAlertActionStyle.default)
+                let alertController = UIAlertController(title: "Is Your Location Authorized?", message: "Harveytown is having trouble determining your current location, which is needed to provide all app features.  Please check your phone settings to allow access.", preferredStyle: UIAlertControllerStyle.alert)
+                let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default)
                 { (result : UIAlertAction) -> Void in
-                    print("CVC - POPUP CLOSE")
-                    self.popViewController()
+                    print("MVC - POPUP CLOSE")
                 }
                 alertController.addAction(okAction)
                 alertController.show()
@@ -1453,11 +1489,10 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         {
             print("MVC - Location services are not enabled")
             // Show the popup message instructing the user to change the phone location settings for the app
-            let alertController = UIAlertController(title: "Your Location Not Authorized", message: "Harveytown needs permission to determine your current location in order to provide all app features.  Please go to your phone settings to allow access.", preferredStyle: UIAlertControllerStyle.alert)
-            let okAction = UIAlertAction(title: "Close", style: UIAlertActionStyle.default)
+            let alertController = UIAlertController(title: "Is Your Location Authorized?", message: "Harveytown is having trouble determining your current location, which is needed to provide all app features.  Please check your phone settings to allow access.", preferredStyle: UIAlertControllerStyle.alert)
+            let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default)
             { (result : UIAlertAction) -> Void in
-                print("CVC - POPUP CLOSE")
-                self.popViewController()
+                print("MVC - POPUP CLOSE")
             }
             alertController.addAction(okAction)
             alertController.show()
@@ -1472,6 +1507,18 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         {
             requestMapData(userLocation: userLocation)
         }
+//        else
+//        {
+//            print("MVC - Location services are not enabled 2")
+//            // Show the popup message instructing the user to change the phone location settings for the app
+//           let alertController = UIAlertController(title: "Is Your Location Authorized?", message: "Harveytown is having trouble determining your current location, which is needed to provide all app features.  Please check your phone settings to allow access.", preferredStyle: UIAlertControllerStyle.alert)
+//            let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default)
+//            { (result : UIAlertAction) -> Void in
+//                print("MVC - POPUP CLOSE")
+//            }
+//            alertController.addAction(okAction)
+//            alertController.show()
+//        }
         
         // Set the menu features that rely on global settings
         if Constants.Settings.menuMapTraffic == Constants.MenuMapTraffic.yes
@@ -1601,7 +1648,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
         // if low enough, remove the markers (or don't add them)
         
         // Ensure that the zoom is low enough (far enough away), and add the markers (if not already visible)
-        if mapView.camera.zoom < Constants.Settings.mapViewAngledZoom && !spotMarkersVisible
+        if mapView.camera.zoom < Constants.Settings.mapViewAngledZoom && !spotMarkersVisible && Constants.Settings.menuMapSpot == Constants.MenuMapSpot.yes
         {
             for spot in Constants.Data.allSpot
             {
@@ -1834,6 +1881,34 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                 marker.userData = structure
                 marker.icon = UIImage(named: Constants.Strings.markerIconStructure)
                 marker.map = self.mapView
+                
+                // Check whether the structure's repairs match any of the users skills - use the appropriate icon
+                var structureSkillMatch = false
+                for repair in Constants.Data.repairs
+                {
+                    print("MVC - REPAIR: \(repair.title), STAGE: \(repair.stage)")
+                    if repair.structureID == structure.structureID && repair.stage.rawValue > 0 && repair.stage.rawValue != 3
+                    {
+                        for skillNeeded in repair.skillsNeeded
+                        {
+                            for userSkill in Constants.Data.skills
+                            {
+                                if userSkill.skill == skillNeeded && userSkill.level.rawValue > 0
+                                {
+                                    marker.icon = UIImage(named: Constants.Strings.markerIconStructureSkillMatch)
+                                    structureSkillMatch = true
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Show the structure-skill match notification box, if needed
+                if structureSkillMatch
+                {
+                    mapContainer.addSubview(structureSkillMatchView)
+                }
+                
                 Constants.Data.structureMarkers.append(marker)
             }
         }
@@ -1994,18 +2069,37 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
                 // Process the return data based on the method used
                 switch objectType
                 {
+                case _ as AWSSkillQuery:
+                    if success
+                    {
+                        print("MVC - AWS SKILLS QUERY - SUCCESS")
+                        self.reloadData()
+                    }
+                    else
+                    {
+                        print("MVC - AWS SKILLS QUERY - FAILURE")
+                        // Show the error message
+                        let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+                        alert.show()
+                    }
                 case _ as AWSStructureUserQuery:
                     if success
                     {
                         print("MVC - AWS STRUCTURE-USER QUERY - SUCCESS")
-                        // Request the structure data for all structures associated with this user
+//                        // NOTE (12/9/17 - NOT SURE WHY ONLY CURRENT USER STRUCTURES WERE REQUESTED
+//                        // Request the structure data for all structures associated with this user
+//                        for structureUser in Constants.Data.structureUsers
+//                        {
+//                            if structureUser.userID == Constants.Data.currentUser.userID
+//                            {
+//                                // Record the number of structures that should be returned - to know when all of them have returned a response
+//                                AWSPrepRequest(requestToCall: AWSStructureQuery(structureID: structureUser.structureID), delegate: self as AWSRequestDelegate).prepRequest()
+//                            }
+//                        }
+                        // Request the structure data for all structures
                         for structureUser in Constants.Data.structureUsers
                         {
-                            if structureUser.userID == Constants.Data.currentUser.userID
-                            {
-                                // Record the number of structures that should be returned - to know when all of them have returned a response
-                                AWSPrepRequest(requestToCall: AWSStructureQuery(structureID: structureUser.structureID), delegate: self as AWSRequestDelegate).prepRequest()
-                            }
+                            AWSPrepRequest(requestToCall: AWSStructureQuery(structureID: structureUser.structureID), delegate: self as AWSRequestDelegate).prepRequest()
                         }
                     }
                     else
@@ -2263,34 +2357,42 @@ class MapViewController: UIViewController, GMSMapViewDelegate, XMLParserDelegate
     func holeViewRemoved(removingViewAtPosition: Int)
     {
         // Give a short tutorial for new users
+        let arrowView = UITextView(frame: CGRect(x: viewContainer.frame.width - 60, y: 5, width: 50, height: 50))
+        arrowView.font = UIFont(name: Constants.Strings.fontAltLight, size: 40)
+        arrowView.backgroundColor = UIColor.clear
+        arrowView.textAlignment = .center
+        arrowView.isScrollEnabled = false
+        arrowView.isEditable = false
+        arrowView.isSelectable = false
+        arrowView.isUserInteractionEnabled = false
+        arrowView.textColor = UIColor.white
+        arrowView.text = "\u{2191}"
         
         switch removingViewAtPosition
         {
         case 1:
-            // Show users how to add photo requests (SpotRequests)
-            print("MVC-CHECK TUTORIAL 1")
-            let holeView = HoleView(holeViewPosition: 2, frame: viewContainer.bounds, circleOffsetX: viewContainer.frame.width - 38, circleOffsetY: viewContainer.frame.height - 170, circleRadius: 40, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 50, textWidth: 260, textFontSize: 24, text: "Add a pin to the map to request a photo at any location.\n\nUse this feature to request environmental and weather condition updates at other locations.")
+            print("MVC-CHECK TUTORIAL 2")
+            let holeView = HoleView(holeViewPosition: 2, frame: viewContainer.bounds, circleOffsetX: 0, circleOffsetY: 0, circleRadius: 0, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 50, textWidth: 260, textFontSize: 24, text: "Create a volunteer profile to find homes needing repairs that match your skill set.\n\nAdd an entry for a house needing repairs.\n\nSign in using your Facebook profile.  Harveytown will never post to Facebook without your approval.")
             holeView.holeViewDelegate = self
+            holeView.addSubview(arrowView)
             viewContainer.addSubview(holeView)
             
         case 2:
-            // Show users how to add photo requests (SpotRequests)
-            print("MVC-CHECK TUTORIAL 2")
-            let holeView = HoleView(holeViewPosition: 3, frame: viewContainer.bounds, circleOffsetX: viewContainer.frame.width - 38, circleOffsetY: viewContainer.frame.height - 170, circleRadius: 40, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 50, textWidth: 260, textFontSize: 24, text: "Add a hazard marker to warn others of potentially dangerous areas.\n\nRemember to contact the proper authorities if you observe any safety issues.")
+            print("MVC-CHECK TUTORIAL 3")
+            arrowView.removeFromSuperview()
+            let holeView = HoleView(holeViewPosition: 3, frame: viewContainer.bounds, circleOffsetX: viewContainer.frame.width - 38, circleOffsetY: viewContainer.frame.height - 170, circleRadius: 40, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 50, textWidth: 260, textFontSize: 24, text: "Add a pin to the map to request a photo at any location.\n\nUse this feature to request environmental and weather condition updates at other locations.")
             holeView.holeViewDelegate = self
             viewContainer.addSubview(holeView)
             
         case 3:
-            // Show users how to add photos to fulfill requests
-            print("MVC-CHECK TUTORIAL 3")
-            let holeView = HoleView(holeViewPosition: 4, frame: viewContainer.bounds, circleOffsetX: viewContainer.frame.width - 38, circleOffsetY: viewContainer.frame.height - 105, circleRadius: 40, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 100, textWidth: 260, textFontSize: 24, text: "Add a photo when you are near a photo request location to automatically fulfill the request.")
+            print("MVC-CHECK TUTORIAL 4")
+            let holeView = HoleView(holeViewPosition: 4, frame: viewContainer.bounds, circleOffsetX: viewContainer.frame.width - 38, circleOffsetY: viewContainer.frame.height - 170, circleRadius: 40, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 50, textWidth: 260, textFontSize: 24, text: "Add a hazard marker to warn others of potentially dangerous areas.\n\nRemember to contact the proper authorities if you observe any safety issues.")
             holeView.holeViewDelegate = self
             viewContainer.addSubview(holeView)
         
         case 4:
-            // Conclude the tutorial
-            print("MVC-CHECK TUTORIAL 4")
-            let holeView = HoleView(holeViewPosition: 5, frame: viewContainer.bounds, circleOffsetX: 0, circleOffsetY: 0, circleRadius: 0, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: (viewContainer.bounds.height / 2) - 130, textWidth: 260, textFontSize: 24, text: "Check out other map pins for additional data.\n\nMore features and data are in development.")
+            print("MVC-CHECK TUTORIAL 5")
+            let holeView = HoleView(holeViewPosition: 5, frame: viewContainer.bounds, circleOffsetX: viewContainer.frame.width - 38, circleOffsetY: viewContainer.frame.height - 105, circleRadius: 40, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 100, textWidth: 260, textFontSize: 24, text: "Add a photo when you are near a photo request location to automatically fulfill the request.")
             holeView.holeViewDelegate = self
             viewContainer.addSubview(holeView)
             

@@ -81,6 +81,71 @@
 		B86BCC871F64A29E003C667D /* UserCD+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BCC831F64A29E003C667D /* UserCD+CoreDataProperties.swift */; };
 		B86BCC881F64A29E003C667D /* CurrentUser+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BCC841F64A29E003C667D /* CurrentUser+CoreDataClass.swift */; };
 		B86BCC891F64A29E003C667D /* CurrentUser+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BCC851F64A29E003C667D /* CurrentUser+CoreDataProperties.swift */; };
+		B873D08D1FD0FDBD00622CFC /* marker_icon_structure_skill_match@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D08A1FD0FDB600622CFC /* marker_icon_structure_skill_match@3x.png */; };
+		B873D08E1FD0FDBD00622CFC /* marker_icon_structure_skill_match.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D08B1FD0FDBA00622CFC /* marker_icon_structure_skill_match.png */; };
+		B873D08F1FD0FDBD00622CFC /* marker_icon_structure_skill_match@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D08C1FD0FDBD00622CFC /* marker_icon_structure_skill_match@2x.png */; };
+		B873D0A61FD3275700622CFC /* tab_tools@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0A01FD3273D00622CFC /* tab_tools@3x.png */; };
+		B873D0A71FD3275700622CFC /* tab_tools.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0A11FD3274100622CFC /* tab_tools.png */; };
+		B873D0A81FD3275700622CFC /* tab_house@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0A21FD3274900622CFC /* tab_house@2x.png */; };
+		B873D0A91FD3275700622CFC /* tab_house@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0A31FD3274D00622CFC /* tab_house@3x.png */; };
+		B873D0AA1FD3275700622CFC /* tab_house.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0A41FD3275100622CFC /* tab_house.png */; };
+		B873D0AB1FD3275700622CFC /* tab_tools@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0A51FD3275700622CFC /* tab_tools@2x.png */; };
+		B873D0AE1FD3297D00622CFC /* TutorialView+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B873D0AC1FD3297D00622CFC /* TutorialView+CoreDataClass.swift */; };
+		B873D0AF1FD3297D00622CFC /* TutorialView+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B873D0AD1FD3297D00622CFC /* TutorialView+CoreDataProperties.swift */; };
+		B873D0E61FD42D7D00622CFC /* fixture.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0B01FD42CC800622CFC /* fixture.png */; };
+		B873D0E71FD42D7D00622CFC /* fence.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0B11FD42CCC00622CFC /* fence.png */; };
+		B873D0E81FD42D7D00622CFC /* mucking.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0B21FD42CCF00622CFC /* mucking.png */; };
+		B873D0E91FD42D7D00622CFC /* framing.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0B31FD42CD200622CFC /* framing.png */; };
+		B873D0EA1FD42D7D00622CFC /* tools@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0B41FD42CD600622CFC /* tools@3x.png */; };
+		B873D0EB1FD42D7D00622CFC /* electrical@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0B51FD42CD900622CFC /* electrical@2x.png */; };
+		B873D0EC1FD42D7D00622CFC /* landscaping@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0B61FD42CDC00622CFC /* landscaping@2x.png */; };
+		B873D0ED1FD42D7D00622CFC /* sheetrock@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0B71FD42CE000622CFC /* sheetrock@3x.png */; };
+		B873D0EE1FD42D7D00622CFC /* roof@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0B81FD42CE400622CFC /* roof@3x.png */; };
+		B873D0EF1FD42D7D00622CFC /* appliance@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0B91FD42CE700622CFC /* appliance@2x.png */; };
+		B873D0F01FD42D7D00622CFC /* tile@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0BA1FD42CEB00622CFC /* tile@2x.png */; };
+		B873D0F11FD42D7D00622CFC /* sheetrock.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0BB1FD42CEE00622CFC /* sheetrock.png */; };
+		B873D0F21FD42D7D00622CFC /* mucking@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0BC1FD42CF100622CFC /* mucking@3x.png */; };
+		B873D0F31FD42D7D00622CFC /* window.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0BD1FD42CF500622CFC /* window.png */; };
+		B873D0F41FD42D7D00622CFC /* house.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0BE1FD42CF800622CFC /* house.png */; };
+		B873D0F51FD42D7D00622CFC /* concrete.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0BF1FD42CFD00622CFC /* concrete.png */; };
+		B873D0F61FD42D7D00622CFC /* house@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0C01FD42D0100622CFC /* house@3x.png */; };
+		B873D0F71FD42D7D00622CFC /* appliance.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0C11FD42D0500622CFC /* appliance.png */; };
+		B873D0F81FD42D7D00622CFC /* sheetrock@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0C21FD42D0800622CFC /* sheetrock@2x.png */; };
+		B873D0F91FD42D7D00622CFC /* house@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0C31FD42D0D00622CFC /* house@2x.png */; };
+		B873D0FA1FD42D7D00622CFC /* cabinetry@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0C41FD42D1000622CFC /* cabinetry@2x.png */; };
+		B873D0FB1FD42D7D00622CFC /* landscaping@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0C51FD42D1400622CFC /* landscaping@3x.png */; };
+		B873D0FC1FD42D7D00622CFC /* framing@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0C61FD42D1800622CFC /* framing@2x.png */; };
+		B873D0FD1FD42D7D00622CFC /* plumbing.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0C71FD42D1C00622CFC /* plumbing.png */; };
+		B873D0FE1FD42D7D00622CFC /* tile@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0C81FD42D1F00622CFC /* tile@3x.png */; };
+		B873D0FF1FD42D7D00622CFC /* plumbing@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0C91FD42D2200622CFC /* plumbing@3x.png */; };
+		B873D1001FD42D7D00622CFC /* window@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0CA1FD42D2500622CFC /* window@2x.png */; };
+		B873D1011FD42D7D00622CFC /* cabinetry@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0CB1FD42D2800622CFC /* cabinetry@3x.png */; };
+		B873D1021FD42D7D00622CFC /* concrete@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0CC1FD42D2C00622CFC /* concrete@3x.png */; };
+		B873D1031FD42D7D00622CFC /* fixture@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0CD1FD42D2E00622CFC /* fixture@3x.png */; };
+		B873D1041FD42D7D00622CFC /* electrical@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0CE1FD42D3200622CFC /* electrical@3x.png */; };
+		B873D1051FD42D7D00622CFC /* concrete@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0CF1FD42D3500622CFC /* concrete@2x.png */; };
+		B873D1061FD42D7D00622CFC /* roof.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0D01FD42D3700622CFC /* roof.png */; };
+		B873D1071FD42D7D00622CFC /* texturing@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0D11FD42D3B00622CFC /* texturing@2x.png */; };
+		B873D1081FD42D7D00622CFC /* mucking@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0D21FD42D3E00622CFC /* mucking@2x.png */; };
+		B873D1091FD42D7D00622CFC /* painting.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0D31FD42D4100622CFC /* painting.png */; };
+		B873D10A1FD42D7D00622CFC /* window@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0D41FD42D4500622CFC /* window@3x.png */; };
+		B873D10B1FD42D7D00622CFC /* framing@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0D51FD42D4800622CFC /* framing@3x.png */; };
+		B873D10C1FD42D7D00622CFC /* painting@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0D61FD42D4C00622CFC /* painting@3x.png */; };
+		B873D10D1FD42D7D00622CFC /* roof@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0D71FD42D4F00622CFC /* roof@2x.png */; };
+		B873D10E1FD42D7D00622CFC /* tools.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0D81FD42D5300622CFC /* tools.png */; };
+		B873D10F1FD42D7D00622CFC /* appliance@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0D91FD42D5600622CFC /* appliance@3x.png */; };
+		B873D1101FD42D7D00622CFC /* landscaping.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0DA1FD42D5900622CFC /* landscaping.png */; };
+		B873D1111FD42D7D00622CFC /* electrical.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0DB1FD42D5D00622CFC /* electrical.png */; };
+		B873D1121FD42D7D00622CFC /* tile.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0DC1FD42D6000622CFC /* tile.png */; };
+		B873D1131FD42D7D00622CFC /* fence@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0DD1FD42D6300622CFC /* fence@3x.png */; };
+		B873D1141FD42D7D00622CFC /* tools@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0DE1FD42D6700622CFC /* tools@2x.png */; };
+		B873D1151FD42D7D00622CFC /* plumbing@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0DF1FD42D6A00622CFC /* plumbing@2x.png */; };
+		B873D1161FD42D7D00622CFC /* texturing@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0E01FD42D6D00622CFC /* texturing@3x.png */; };
+		B873D1171FD42D7D00622CFC /* fixture@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0E11FD42D7100622CFC /* fixture@2x.png */; };
+		B873D1181FD42D7D00622CFC /* painting@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0E21FD42D7300622CFC /* painting@2x.png */; };
+		B873D1191FD42D7D00622CFC /* texturing.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0E31FD42D7700622CFC /* texturing.png */; };
+		B873D11A1FD42D7D00622CFC /* cabinetry.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0E41FD42D7A00622CFC /* cabinetry.png */; };
+		B873D11B1FD42D7D00622CFC /* fence@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B873D0E51FD42D7D00622CFC /* fence@2x.png */; };
 		B87421751F54BD4F00E0981A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B87421741F54BD4F00E0981A /* AppDelegate.swift */; };
 		B87421771F54BD4F00E0981A /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B87421761F54BD4F00E0981A /* MapViewController.swift */; };
 		B874217D1F54BD4F00E0981A /* Harvey.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B874217B1F54BD4F00E0981A /* Harvey.xcdatamodeld */; };
@@ -159,59 +224,9 @@
 		B8D05F4F1F58865600D3CFAF /* SpotTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D05F4E1F58865600D3CFAF /* SpotTableViewController.swift */; };
 		B8D05F511F5887D400D3CFAF /* SpotTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D05F501F5887D400D3CFAF /* SpotTableViewCell.swift */; };
 		B8D97E1A1F56A166006D9782 /* DataHydro.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D97E191F56A166006D9782 /* DataHydro.swift */; };
-		B8DD5CB41F93C86500EC15A4 /* appliance.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0691F925CF100A20148 /* appliance.png */; };
-		B8DD5CB51F93C86500EC15A4 /* appliance@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0621F925CF000A20148 /* appliance@2x.png */; };
-		B8DD5CB61F93C86500EC15A4 /* appliance@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0901F925CFE00A20148 /* appliance@3x.png */; };
-		B8DD5CB71F93C86500EC15A4 /* cabinetry.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0741F925CF400A20148 /* cabinetry.png */; };
-		B8DD5CB81F93C86500EC15A4 /* cabinetry@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D07D1F925CF700A20148 /* cabinetry@2x.png */; };
-		B8DD5CB91F93C86500EC15A4 /* cabinetry@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0861F925CFB00A20148 /* cabinetry@3x.png */; };
-		B8DD5CBA1F93C86500EC15A4 /* concrete.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0731F925CF400A20148 /* concrete.png */; };
-		B8DD5CBB1F93C86500EC15A4 /* concrete@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0671F925CF100A20148 /* concrete@2x.png */; };
-		B8DD5CBC1F93C86500EC15A4 /* concrete@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D06C1F925CF200A20148 /* concrete@3x.png */; };
-		B8DD5CBD1F93C86500EC15A4 /* electrical.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0751F925CF400A20148 /* electrical.png */; };
-		B8DD5CBE1F93C86500EC15A4 /* electrical@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D07B1F925CF600A20148 /* electrical@2x.png */; };
-		B8DD5CBF1F93C86500EC15A4 /* electrical@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0771F925CF500A20148 /* electrical@3x.png */; };
-		B8DD5CC01F93C86500EC15A4 /* fence.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0701F925CF300A20148 /* fence.png */; };
-		B8DD5CC11F93C86500EC15A4 /* fence@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0631F925CF000A20148 /* fence@2x.png */; };
-		B8DD5CC21F93C86500EC15A4 /* fence@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0681F925CF100A20148 /* fence@3x.png */; };
-		B8DD5CC31F93C86500EC15A4 /* fixture.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0781F925CF500A20148 /* fixture.png */; };
-		B8DD5CC41F93C86500EC15A4 /* fixture@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D08C1F925CFD00A20148 /* fixture@2x.png */; };
-		B8DD5CC51F93C86500EC15A4 /* fixture@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0881F925CFB00A20148 /* fixture@3x.png */; };
-		B8DD5CC61F93C86500EC15A4 /* framing.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0871F925CFB00A20148 /* framing.png */; };
-		B8DD5CC71F93C86500EC15A4 /* framing@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D06F1F925CF300A20148 /* framing@2x.png */; };
-		B8DD5CC81F93C86500EC15A4 /* framing@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0711F925CF300A20148 /* framing@3x.png */; };
-		B8DD5CC91F93C86500EC15A4 /* landscaping.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0851F925CFA00A20148 /* landscaping.png */; };
-		B8DD5CCA1F93C86500EC15A4 /* landscaping@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0641F925CF000A20148 /* landscaping@2x.png */; };
-		B8DD5CCB1F93C86500EC15A4 /* landscaping@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0911F925CFF00A20148 /* landscaping@3x.png */; };
-		B8DD5CCC1F93C86500EC15A4 /* mucking.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0801F925CF800A20148 /* mucking.png */; };
-		B8DD5CCD1F93C86500EC15A4 /* mucking@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D06A1F925CF100A20148 /* mucking@2x.png */; };
-		B8DD5CCE1F93C86500EC15A4 /* mucking@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D07F1F925CF800A20148 /* mucking@3x.png */; };
-		B8DD5CCF1F93C86500EC15A4 /* painting.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D07C1F925CF700A20148 /* painting.png */; };
-		B8DD5CD01F93C86500EC15A4 /* painting@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D07E1F925CF800A20148 /* painting@2x.png */; };
-		B8DD5CD11F93C86500EC15A4 /* painting@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0791F925CF500A20148 /* painting@3x.png */; };
-		B8DD5CD21F93C86500EC15A4 /* plumbing.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D06D1F925CF200A20148 /* plumbing.png */; };
-		B8DD5CD31F93C86500EC15A4 /* plumbing@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D08D1F925CFD00A20148 /* plumbing@2x.png */; };
-		B8DD5CD41F93C86500EC15A4 /* plumbing@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D08F1F925CFE00A20148 /* plumbing@3x.png */; };
-		B8DD5CD51F93C86500EC15A4 /* roof.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D06E1F925CF200A20148 /* roof.png */; };
-		B8DD5CD61F93C86500EC15A4 /* roof@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0811F925CF900A20148 /* roof@2x.png */; };
-		B8DD5CD71F93C86500EC15A4 /* roof@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0821F925CF900A20148 /* roof@3x.png */; };
-		B8DD5CD81F93C86500EC15A4 /* sheetrock.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D08B1F925CFD00A20148 /* sheetrock.png */; };
-		B8DD5CD91F93C86500EC15A4 /* sheetrock@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0651F925CF000A20148 /* sheetrock@2x.png */; };
-		B8DD5CDA1F93C86500EC15A4 /* sheetrock@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0891F925CFC00A20148 /* sheetrock@3x.png */; };
-		B8DD5CDB1F93C86500EC15A4 /* texturing.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D08E1F925CFE00A20148 /* texturing.png */; };
-		B8DD5CDC1F93C86500EC15A4 /* texturing@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0721F925CF300A20148 /* texturing@2x.png */; };
-		B8DD5CDD1F93C86500EC15A4 /* texturing@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0831F925CFA00A20148 /* texturing@3x.png */; };
-		B8DD5CDE1F93C86500EC15A4 /* tile.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0761F925CF400A20148 /* tile.png */; };
-		B8DD5CDF1F93C86500EC15A4 /* tile@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D07A1F925CF500A20148 /* tile@2x.png */; };
-		B8DD5CE01F93C86500EC15A4 /* tile@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0661F925CF100A20148 /* tile@3x.png */; };
-		B8DD5CE11F93C86500EC15A4 /* window.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D06B1F925CF200A20148 /* window.png */; };
-		B8DD5CE21F93C86500EC15A4 /* window@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D0841F925CFA00A20148 /* window@2x.png */; };
-		B8DD5CE31F93C86500EC15A4 /* window@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B858D08A1F925CFC00A20148 /* window@3x.png */; };
 		B8DDEB131F5AD2EE00F0A623 /* HoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB121F5AD2EE00F0A623 /* HoleView.swift */; };
 		B8DDEB171F5ADE5400F0A623 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB161F5ADE5400F0A623 /* DataController.swift */; };
 		B8DDEB1A1F5ADE8300F0A623 /* CoreDataFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB191F5ADE8300F0A623 /* CoreDataFunctions.swift */; };
-		B8DDEB231F5AE21000F0A623 /* TutorialView+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB1B1F5AE21000F0A623 /* TutorialView+CoreDataClass.swift */; };
-		B8DDEB241F5AE21000F0A623 /* TutorialView+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB1C1F5AE21000F0A623 /* TutorialView+CoreDataProperties.swift */; };
 		B8DDEB271F5AE21000F0A623 /* LogError+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB1F1F5AE21000F0A623 /* LogError+CoreDataClass.swift */; };
 		B8DDEB281F5AE21000F0A623 /* LogError+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB201F5AE21000F0A623 /* LogError+CoreDataProperties.swift */; };
 		B8DDEB291F5AE21000F0A623 /* LogUserflow+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DDEB211F5AE21000F0A623 /* LogUserflow+CoreDataClass.swift */; };
@@ -305,54 +320,6 @@
 		B8568D951F885FE6005F44FC /* RepairImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepairImage.swift; sourceTree = "<group>"; };
 		B8568D971F8931F9005F44FC /* RepairImageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepairImageTableViewCell.swift; sourceTree = "<group>"; };
 		B8568D991F893273005F44FC /* RepairImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepairImageViewController.swift; sourceTree = "<group>"; };
-		B858D0621F925CF000A20148 /* appliance@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appliance@2x.png"; sourceTree = "<group>"; };
-		B858D0631F925CF000A20148 /* fence@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fence@2x.png"; sourceTree = "<group>"; };
-		B858D0641F925CF000A20148 /* landscaping@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "landscaping@2x.png"; sourceTree = "<group>"; };
-		B858D0651F925CF000A20148 /* sheetrock@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sheetrock@2x.png"; sourceTree = "<group>"; };
-		B858D0661F925CF100A20148 /* tile@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile@3x.png"; sourceTree = "<group>"; };
-		B858D0671F925CF100A20148 /* concrete@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "concrete@2x.png"; sourceTree = "<group>"; };
-		B858D0681F925CF100A20148 /* fence@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fence@3x.png"; sourceTree = "<group>"; };
-		B858D0691F925CF100A20148 /* appliance.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = appliance.png; sourceTree = "<group>"; };
-		B858D06A1F925CF100A20148 /* mucking@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mucking@2x.png"; sourceTree = "<group>"; };
-		B858D06B1F925CF200A20148 /* window.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = window.png; sourceTree = "<group>"; };
-		B858D06C1F925CF200A20148 /* concrete@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "concrete@3x.png"; sourceTree = "<group>"; };
-		B858D06D1F925CF200A20148 /* plumbing.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plumbing.png; sourceTree = "<group>"; };
-		B858D06E1F925CF200A20148 /* roof.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = roof.png; sourceTree = "<group>"; };
-		B858D06F1F925CF300A20148 /* framing@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "framing@2x.png"; sourceTree = "<group>"; };
-		B858D0701F925CF300A20148 /* fence.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fence.png; sourceTree = "<group>"; };
-		B858D0711F925CF300A20148 /* framing@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "framing@3x.png"; sourceTree = "<group>"; };
-		B858D0721F925CF300A20148 /* texturing@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "texturing@2x.png"; sourceTree = "<group>"; };
-		B858D0731F925CF400A20148 /* concrete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = concrete.png; sourceTree = "<group>"; };
-		B858D0741F925CF400A20148 /* cabinetry.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cabinetry.png; sourceTree = "<group>"; };
-		B858D0751F925CF400A20148 /* electrical.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = electrical.png; sourceTree = "<group>"; };
-		B858D0761F925CF400A20148 /* tile.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tile.png; sourceTree = "<group>"; };
-		B858D0771F925CF500A20148 /* electrical@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "electrical@3x.png"; sourceTree = "<group>"; };
-		B858D0781F925CF500A20148 /* fixture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fixture.png; sourceTree = "<group>"; };
-		B858D0791F925CF500A20148 /* painting@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "painting@3x.png"; sourceTree = "<group>"; };
-		B858D07A1F925CF500A20148 /* tile@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile@2x.png"; sourceTree = "<group>"; };
-		B858D07B1F925CF600A20148 /* electrical@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "electrical@2x.png"; sourceTree = "<group>"; };
-		B858D07C1F925CF700A20148 /* painting.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = painting.png; sourceTree = "<group>"; };
-		B858D07D1F925CF700A20148 /* cabinetry@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cabinetry@2x.png"; sourceTree = "<group>"; };
-		B858D07E1F925CF800A20148 /* painting@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "painting@2x.png"; sourceTree = "<group>"; };
-		B858D07F1F925CF800A20148 /* mucking@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mucking@3x.png"; sourceTree = "<group>"; };
-		B858D0801F925CF800A20148 /* mucking.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mucking.png; sourceTree = "<group>"; };
-		B858D0811F925CF900A20148 /* roof@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "roof@2x.png"; sourceTree = "<group>"; };
-		B858D0821F925CF900A20148 /* roof@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "roof@3x.png"; sourceTree = "<group>"; };
-		B858D0831F925CFA00A20148 /* texturing@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "texturing@3x.png"; sourceTree = "<group>"; };
-		B858D0841F925CFA00A20148 /* window@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "window@2x.png"; sourceTree = "<group>"; };
-		B858D0851F925CFA00A20148 /* landscaping.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = landscaping.png; sourceTree = "<group>"; };
-		B858D0861F925CFB00A20148 /* cabinetry@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cabinetry@3x.png"; sourceTree = "<group>"; };
-		B858D0871F925CFB00A20148 /* framing.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = framing.png; sourceTree = "<group>"; };
-		B858D0881F925CFB00A20148 /* fixture@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fixture@3x.png"; sourceTree = "<group>"; };
-		B858D0891F925CFC00A20148 /* sheetrock@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sheetrock@3x.png"; sourceTree = "<group>"; };
-		B858D08A1F925CFC00A20148 /* window@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "window@3x.png"; sourceTree = "<group>"; };
-		B858D08B1F925CFD00A20148 /* sheetrock.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sheetrock.png; sourceTree = "<group>"; };
-		B858D08C1F925CFD00A20148 /* fixture@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fixture@2x.png"; sourceTree = "<group>"; };
-		B858D08D1F925CFD00A20148 /* plumbing@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plumbing@2x.png"; sourceTree = "<group>"; };
-		B858D08E1F925CFE00A20148 /* texturing.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = texturing.png; sourceTree = "<group>"; };
-		B858D08F1F925CFE00A20148 /* plumbing@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plumbing@3x.png"; sourceTree = "<group>"; };
-		B858D0901F925CFE00A20148 /* appliance@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appliance@3x.png"; sourceTree = "<group>"; };
-		B858D0911F925CFF00A20148 /* landscaping@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "landscaping@3x.png"; sourceTree = "<group>"; };
 		B85991361F825B4600ACD252 /* ProfileRepairViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileRepairViewController.swift; sourceTree = "<group>"; };
 		B85991381F82D24000ACD252 /* ProfileRepairTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileRepairTableViewCell.swift; sourceTree = "<group>"; };
 		B866B1021F6F3D8F00321116 /* SkillCD+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SkillCD+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -364,6 +331,71 @@
 		B86BCC831F64A29E003C667D /* UserCD+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UserCD+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B86BCC841F64A29E003C667D /* CurrentUser+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CurrentUser+CoreDataClass.swift"; sourceTree = "<group>"; };
 		B86BCC851F64A29E003C667D /* CurrentUser+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CurrentUser+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B873D08A1FD0FDB600622CFC /* marker_icon_structure_skill_match@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "marker_icon_structure_skill_match@3x.png"; sourceTree = "<group>"; };
+		B873D08B1FD0FDBA00622CFC /* marker_icon_structure_skill_match.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = marker_icon_structure_skill_match.png; sourceTree = "<group>"; };
+		B873D08C1FD0FDBD00622CFC /* marker_icon_structure_skill_match@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "marker_icon_structure_skill_match@2x.png"; sourceTree = "<group>"; };
+		B873D0A01FD3273D00622CFC /* tab_tools@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tab_tools@3x.png"; sourceTree = "<group>"; };
+		B873D0A11FD3274100622CFC /* tab_tools.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tab_tools.png; sourceTree = "<group>"; };
+		B873D0A21FD3274900622CFC /* tab_house@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tab_house@2x.png"; sourceTree = "<group>"; };
+		B873D0A31FD3274D00622CFC /* tab_house@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tab_house@3x.png"; sourceTree = "<group>"; };
+		B873D0A41FD3275100622CFC /* tab_house.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tab_house.png; sourceTree = "<group>"; };
+		B873D0A51FD3275700622CFC /* tab_tools@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tab_tools@2x.png"; sourceTree = "<group>"; };
+		B873D0AC1FD3297D00622CFC /* TutorialView+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TutorialView+CoreDataClass.swift"; sourceTree = "<group>"; };
+		B873D0AD1FD3297D00622CFC /* TutorialView+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TutorialView+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B873D0B01FD42CC800622CFC /* fixture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fixture.png; sourceTree = "<group>"; };
+		B873D0B11FD42CCC00622CFC /* fence.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fence.png; sourceTree = "<group>"; };
+		B873D0B21FD42CCF00622CFC /* mucking.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mucking.png; sourceTree = "<group>"; };
+		B873D0B31FD42CD200622CFC /* framing.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = framing.png; sourceTree = "<group>"; };
+		B873D0B41FD42CD600622CFC /* tools@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tools@3x.png"; sourceTree = "<group>"; };
+		B873D0B51FD42CD900622CFC /* electrical@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "electrical@2x.png"; sourceTree = "<group>"; };
+		B873D0B61FD42CDC00622CFC /* landscaping@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "landscaping@2x.png"; sourceTree = "<group>"; };
+		B873D0B71FD42CE000622CFC /* sheetrock@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sheetrock@3x.png"; sourceTree = "<group>"; };
+		B873D0B81FD42CE400622CFC /* roof@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "roof@3x.png"; sourceTree = "<group>"; };
+		B873D0B91FD42CE700622CFC /* appliance@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appliance@2x.png"; sourceTree = "<group>"; };
+		B873D0BA1FD42CEB00622CFC /* tile@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile@2x.png"; sourceTree = "<group>"; };
+		B873D0BB1FD42CEE00622CFC /* sheetrock.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sheetrock.png; sourceTree = "<group>"; };
+		B873D0BC1FD42CF100622CFC /* mucking@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mucking@3x.png"; sourceTree = "<group>"; };
+		B873D0BD1FD42CF500622CFC /* window.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = window.png; sourceTree = "<group>"; };
+		B873D0BE1FD42CF800622CFC /* house.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = house.png; sourceTree = "<group>"; };
+		B873D0BF1FD42CFD00622CFC /* concrete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = concrete.png; sourceTree = "<group>"; };
+		B873D0C01FD42D0100622CFC /* house@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "house@3x.png"; sourceTree = "<group>"; };
+		B873D0C11FD42D0500622CFC /* appliance.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = appliance.png; sourceTree = "<group>"; };
+		B873D0C21FD42D0800622CFC /* sheetrock@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sheetrock@2x.png"; sourceTree = "<group>"; };
+		B873D0C31FD42D0D00622CFC /* house@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "house@2x.png"; sourceTree = "<group>"; };
+		B873D0C41FD42D1000622CFC /* cabinetry@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cabinetry@2x.png"; sourceTree = "<group>"; };
+		B873D0C51FD42D1400622CFC /* landscaping@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "landscaping@3x.png"; sourceTree = "<group>"; };
+		B873D0C61FD42D1800622CFC /* framing@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "framing@2x.png"; sourceTree = "<group>"; };
+		B873D0C71FD42D1C00622CFC /* plumbing.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plumbing.png; sourceTree = "<group>"; };
+		B873D0C81FD42D1F00622CFC /* tile@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile@3x.png"; sourceTree = "<group>"; };
+		B873D0C91FD42D2200622CFC /* plumbing@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plumbing@3x.png"; sourceTree = "<group>"; };
+		B873D0CA1FD42D2500622CFC /* window@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "window@2x.png"; sourceTree = "<group>"; };
+		B873D0CB1FD42D2800622CFC /* cabinetry@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cabinetry@3x.png"; sourceTree = "<group>"; };
+		B873D0CC1FD42D2C00622CFC /* concrete@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "concrete@3x.png"; sourceTree = "<group>"; };
+		B873D0CD1FD42D2E00622CFC /* fixture@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fixture@3x.png"; sourceTree = "<group>"; };
+		B873D0CE1FD42D3200622CFC /* electrical@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "electrical@3x.png"; sourceTree = "<group>"; };
+		B873D0CF1FD42D3500622CFC /* concrete@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "concrete@2x.png"; sourceTree = "<group>"; };
+		B873D0D01FD42D3700622CFC /* roof.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = roof.png; sourceTree = "<group>"; };
+		B873D0D11FD42D3B00622CFC /* texturing@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "texturing@2x.png"; sourceTree = "<group>"; };
+		B873D0D21FD42D3E00622CFC /* mucking@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mucking@2x.png"; sourceTree = "<group>"; };
+		B873D0D31FD42D4100622CFC /* painting.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = painting.png; sourceTree = "<group>"; };
+		B873D0D41FD42D4500622CFC /* window@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "window@3x.png"; sourceTree = "<group>"; };
+		B873D0D51FD42D4800622CFC /* framing@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "framing@3x.png"; sourceTree = "<group>"; };
+		B873D0D61FD42D4C00622CFC /* painting@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "painting@3x.png"; sourceTree = "<group>"; };
+		B873D0D71FD42D4F00622CFC /* roof@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "roof@2x.png"; sourceTree = "<group>"; };
+		B873D0D81FD42D5300622CFC /* tools.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tools.png; sourceTree = "<group>"; };
+		B873D0D91FD42D5600622CFC /* appliance@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appliance@3x.png"; sourceTree = "<group>"; };
+		B873D0DA1FD42D5900622CFC /* landscaping.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = landscaping.png; sourceTree = "<group>"; };
+		B873D0DB1FD42D5D00622CFC /* electrical.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = electrical.png; sourceTree = "<group>"; };
+		B873D0DC1FD42D6000622CFC /* tile.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tile.png; sourceTree = "<group>"; };
+		B873D0DD1FD42D6300622CFC /* fence@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fence@3x.png"; sourceTree = "<group>"; };
+		B873D0DE1FD42D6700622CFC /* tools@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tools@2x.png"; sourceTree = "<group>"; };
+		B873D0DF1FD42D6A00622CFC /* plumbing@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plumbing@2x.png"; sourceTree = "<group>"; };
+		B873D0E01FD42D6D00622CFC /* texturing@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "texturing@3x.png"; sourceTree = "<group>"; };
+		B873D0E11FD42D7100622CFC /* fixture@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fixture@2x.png"; sourceTree = "<group>"; };
+		B873D0E21FD42D7300622CFC /* painting@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "painting@2x.png"; sourceTree = "<group>"; };
+		B873D0E31FD42D7700622CFC /* texturing.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = texturing.png; sourceTree = "<group>"; };
+		B873D0E41FD42D7A00622CFC /* cabinetry.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cabinetry.png; sourceTree = "<group>"; };
+		B873D0E51FD42D7D00622CFC /* fence@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fence@2x.png"; sourceTree = "<group>"; };
 		B87421711F54BD4F00E0981A /* Harvey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Harvey.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B87421741F54BD4F00E0981A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B87421761F54BD4F00E0981A /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -452,8 +484,6 @@
 		B8DDEB121F5AD2EE00F0A623 /* HoleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoleView.swift; sourceTree = "<group>"; };
 		B8DDEB161F5ADE5400F0A623 /* DataController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		B8DDEB191F5ADE8300F0A623 /* CoreDataFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataFunctions.swift; sourceTree = "<group>"; };
-		B8DDEB1B1F5AE21000F0A623 /* TutorialView+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TutorialView+CoreDataClass.swift"; sourceTree = "<group>"; };
-		B8DDEB1C1F5AE21000F0A623 /* TutorialView+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TutorialView+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B8DDEB1F1F5AE21000F0A623 /* LogError+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LogError+CoreDataClass.swift"; sourceTree = "<group>"; };
 		B8DDEB201F5AE21000F0A623 /* LogError+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LogError+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B8DDEB211F5AE21000F0A623 /* LogUserflow+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LogUserflow+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -627,6 +657,9 @@
 				B895C6091F5A068E002D369E /* marker_icon_camera_orange@2x.png */,
 				B895C60A1F5A068E002D369E /* marker_icon_camera_orange@3x.png */,
 				B895C6021F5A068E002D369E /* marker_icon_camera_temp_orange.png */,
+				B873D08B1FD0FDBA00622CFC /* marker_icon_structure_skill_match.png */,
+				B873D08C1FD0FDBD00622CFC /* marker_icon_structure_skill_match@2x.png */,
+				B873D08A1FD0FDB600622CFC /* marker_icon_structure_skill_match@3x.png */,
 				B895C6031F5A068E002D369E /* marker_icon_camera_temp_orange@2x.png */,
 				B895C6041F5A068E002D369E /* marker_icon_camera_temp_orange@3x.png */,
 				B895C5EA1F5A0666002D369E /* marker_icon_camera_temp_yellow.png */,
@@ -661,54 +694,60 @@
 		B858D0611F925CA100A20148 /* RepairIcons */ = {
 			isa = PBXGroup;
 			children = (
-				B858D0691F925CF100A20148 /* appliance.png */,
-				B858D0621F925CF000A20148 /* appliance@2x.png */,
-				B858D0901F925CFE00A20148 /* appliance@3x.png */,
-				B858D0741F925CF400A20148 /* cabinetry.png */,
-				B858D07D1F925CF700A20148 /* cabinetry@2x.png */,
-				B858D0861F925CFB00A20148 /* cabinetry@3x.png */,
-				B858D0731F925CF400A20148 /* concrete.png */,
-				B858D0671F925CF100A20148 /* concrete@2x.png */,
-				B858D06C1F925CF200A20148 /* concrete@3x.png */,
-				B858D0751F925CF400A20148 /* electrical.png */,
-				B858D07B1F925CF600A20148 /* electrical@2x.png */,
-				B858D0771F925CF500A20148 /* electrical@3x.png */,
-				B858D0701F925CF300A20148 /* fence.png */,
-				B858D0631F925CF000A20148 /* fence@2x.png */,
-				B858D0681F925CF100A20148 /* fence@3x.png */,
-				B858D0781F925CF500A20148 /* fixture.png */,
-				B858D08C1F925CFD00A20148 /* fixture@2x.png */,
-				B858D0881F925CFB00A20148 /* fixture@3x.png */,
-				B858D0871F925CFB00A20148 /* framing.png */,
-				B858D06F1F925CF300A20148 /* framing@2x.png */,
-				B858D0711F925CF300A20148 /* framing@3x.png */,
-				B858D0851F925CFA00A20148 /* landscaping.png */,
-				B858D0641F925CF000A20148 /* landscaping@2x.png */,
-				B858D0911F925CFF00A20148 /* landscaping@3x.png */,
-				B858D0801F925CF800A20148 /* mucking.png */,
-				B858D06A1F925CF100A20148 /* mucking@2x.png */,
-				B858D07F1F925CF800A20148 /* mucking@3x.png */,
-				B858D07C1F925CF700A20148 /* painting.png */,
-				B858D07E1F925CF800A20148 /* painting@2x.png */,
-				B858D0791F925CF500A20148 /* painting@3x.png */,
-				B858D06D1F925CF200A20148 /* plumbing.png */,
-				B858D08D1F925CFD00A20148 /* plumbing@2x.png */,
-				B858D08F1F925CFE00A20148 /* plumbing@3x.png */,
-				B858D06E1F925CF200A20148 /* roof.png */,
-				B858D0811F925CF900A20148 /* roof@2x.png */,
-				B858D0821F925CF900A20148 /* roof@3x.png */,
-				B858D08B1F925CFD00A20148 /* sheetrock.png */,
-				B858D0651F925CF000A20148 /* sheetrock@2x.png */,
-				B858D0891F925CFC00A20148 /* sheetrock@3x.png */,
-				B858D08E1F925CFE00A20148 /* texturing.png */,
-				B858D0721F925CF300A20148 /* texturing@2x.png */,
-				B858D0831F925CFA00A20148 /* texturing@3x.png */,
-				B858D0761F925CF400A20148 /* tile.png */,
-				B858D07A1F925CF500A20148 /* tile@2x.png */,
-				B858D0661F925CF100A20148 /* tile@3x.png */,
-				B858D06B1F925CF200A20148 /* window.png */,
-				B858D0841F925CFA00A20148 /* window@2x.png */,
-				B858D08A1F925CFC00A20148 /* window@3x.png */,
+				B873D0C11FD42D0500622CFC /* appliance.png */,
+				B873D0B91FD42CE700622CFC /* appliance@2x.png */,
+				B873D0D91FD42D5600622CFC /* appliance@3x.png */,
+				B873D0E41FD42D7A00622CFC /* cabinetry.png */,
+				B873D0C41FD42D1000622CFC /* cabinetry@2x.png */,
+				B873D0CB1FD42D2800622CFC /* cabinetry@3x.png */,
+				B873D0BF1FD42CFD00622CFC /* concrete.png */,
+				B873D0CF1FD42D3500622CFC /* concrete@2x.png */,
+				B873D0CC1FD42D2C00622CFC /* concrete@3x.png */,
+				B873D0DB1FD42D5D00622CFC /* electrical.png */,
+				B873D0B51FD42CD900622CFC /* electrical@2x.png */,
+				B873D0CE1FD42D3200622CFC /* electrical@3x.png */,
+				B873D0B11FD42CCC00622CFC /* fence.png */,
+				B873D0E51FD42D7D00622CFC /* fence@2x.png */,
+				B873D0DD1FD42D6300622CFC /* fence@3x.png */,
+				B873D0B01FD42CC800622CFC /* fixture.png */,
+				B873D0E11FD42D7100622CFC /* fixture@2x.png */,
+				B873D0CD1FD42D2E00622CFC /* fixture@3x.png */,
+				B873D0B31FD42CD200622CFC /* framing.png */,
+				B873D0C61FD42D1800622CFC /* framing@2x.png */,
+				B873D0D51FD42D4800622CFC /* framing@3x.png */,
+				B873D0BE1FD42CF800622CFC /* house.png */,
+				B873D0C31FD42D0D00622CFC /* house@2x.png */,
+				B873D0C01FD42D0100622CFC /* house@3x.png */,
+				B873D0DA1FD42D5900622CFC /* landscaping.png */,
+				B873D0B61FD42CDC00622CFC /* landscaping@2x.png */,
+				B873D0C51FD42D1400622CFC /* landscaping@3x.png */,
+				B873D0B21FD42CCF00622CFC /* mucking.png */,
+				B873D0D21FD42D3E00622CFC /* mucking@2x.png */,
+				B873D0BC1FD42CF100622CFC /* mucking@3x.png */,
+				B873D0D31FD42D4100622CFC /* painting.png */,
+				B873D0E21FD42D7300622CFC /* painting@2x.png */,
+				B873D0D61FD42D4C00622CFC /* painting@3x.png */,
+				B873D0C71FD42D1C00622CFC /* plumbing.png */,
+				B873D0DF1FD42D6A00622CFC /* plumbing@2x.png */,
+				B873D0C91FD42D2200622CFC /* plumbing@3x.png */,
+				B873D0D01FD42D3700622CFC /* roof.png */,
+				B873D0D71FD42D4F00622CFC /* roof@2x.png */,
+				B873D0B81FD42CE400622CFC /* roof@3x.png */,
+				B873D0BB1FD42CEE00622CFC /* sheetrock.png */,
+				B873D0C21FD42D0800622CFC /* sheetrock@2x.png */,
+				B873D0B71FD42CE000622CFC /* sheetrock@3x.png */,
+				B873D0E31FD42D7700622CFC /* texturing.png */,
+				B873D0D11FD42D3B00622CFC /* texturing@2x.png */,
+				B873D0E01FD42D6D00622CFC /* texturing@3x.png */,
+				B873D0DC1FD42D6000622CFC /* tile.png */,
+				B873D0BA1FD42CEB00622CFC /* tile@2x.png */,
+				B873D0C81FD42D1F00622CFC /* tile@3x.png */,
+				B873D0D81FD42D5300622CFC /* tools.png */,
+				B873D0DE1FD42D6700622CFC /* tools@2x.png */,
+				B873D0B41FD42CD600622CFC /* tools@3x.png */,
+				B873D0BD1FD42CF500622CFC /* window.png */,
+				B873D0CA1FD42D2500622CFC /* window@2x.png */,
+				B873D0D41FD42D4500622CFC /* window@3x.png */,
 			);
 			name = RepairIcons;
 			sourceTree = "<group>";
@@ -788,6 +827,12 @@
 				B895C5441F590018002D369E /* FB.png */,
 				B895C5D41F593C2B002D369E /* Harvey.png */,
 				B80B9C821F626A63006583CE /* PROFILE_DEFAULT.png */,
+				B873D0A41FD3275100622CFC /* tab_house.png */,
+				B873D0A21FD3274900622CFC /* tab_house@2x.png */,
+				B873D0A31FD3274D00622CFC /* tab_house@3x.png */,
+				B873D0A11FD3274100622CFC /* tab_tools.png */,
+				B873D0A51FD3275700622CFC /* tab_tools@2x.png */,
+				B873D0A01FD3273D00622CFC /* tab_tools@3x.png */,
 				B874217E1F54BD4F00E0981A /* Assets.xcassets */,
 				B895C5DA1F59E378002D369E /* Images.xcassets */,
 			);
@@ -824,8 +869,8 @@
 				B8E045471F8BDC4C006B0267 /* StructureCD+CoreDataProperties.swift */,
 				B834D42B1F804B9B009F28DD /* StructureUserCD+CoreDataClass.swift */,
 				B834D42C1F804B9B009F28DD /* StructureUserCD+CoreDataProperties.swift */,
-				B8DDEB1B1F5AE21000F0A623 /* TutorialView+CoreDataClass.swift */,
-				B8DDEB1C1F5AE21000F0A623 /* TutorialView+CoreDataProperties.swift */,
+				B873D0AC1FD3297D00622CFC /* TutorialView+CoreDataClass.swift */,
+				B873D0AD1FD3297D00622CFC /* TutorialView+CoreDataProperties.swift */,
 				B86BCC821F64A29E003C667D /* UserCD+CoreDataClass.swift */,
 				B86BCC831F64A29E003C667D /* UserCD+CoreDataProperties.swift */,
 			);
@@ -897,27 +942,29 @@
 			files = (
 				B895C60F1F5A068E002D369E /* icon_close_orange@2x.png in Resources */,
 				B8B4CA5C1F619C46001CD74D /* privacy.txt in Resources */,
+				B873D0AB1FD3275700622CFC /* tab_tools@2x.png in Resources */,
+				B873D10B1FD42D7D00622CFC /* framing@3x.png in Resources */,
 				B850602D1F66CF3D00BE25ED /* icon_hazard@2x.png in Resources */,
-				B8DD5CB61F93C86500EC15A4 /* appliance@3x.png in Resources */,
-				B8DD5CC81F93C86500EC15A4 /* framing@3x.png in Resources */,
-				B8DD5CDC1F93C86500EC15A4 /* texturing@2x.png in Resources */,
 				B895C6121F5A068E002D369E /* marker_icon_camera_temp_orange@2x.png in Resources */,
-				B8DD5CC91F93C86500EC15A4 /* landscaping.png in Resources */,
-				B8DD5CBD1F93C86500EC15A4 /* electrical.png in Resources */,
+				B873D08F1FD0FDBD00622CFC /* marker_icon_structure_skill_match@2x.png in Resources */,
+				B873D0F61FD42D7D00622CFC /* house@3x.png in Resources */,
+				B873D1041FD42D7D00622CFC /* electrical@3x.png in Resources */,
+				B873D0AA1FD3275700622CFC /* tab_house.png in Resources */,
+				B873D1031FD42D7D00622CFC /* fixture@3x.png in Resources */,
 				B85060391F675AD900BE25ED /* icon_check_yellow_pin@2x.png in Resources */,
-				B8DD5CC41F93C86500EC15A4 /* fixture@2x.png in Resources */,
 				B895C5551F590018002D369E /* icon_account_white.png in Resources */,
 				B80B9C761F624126006583CE /* marker_icon_gauge_blue_opaque.png in Resources */,
-				B8DD5CB41F93C86500EC15A4 /* appliance.png in Resources */,
+				B873D0E81FD42D7D00622CFC /* mucking.png in Resources */,
+				B873D0F91FD42D7D00622CFC /* house@2x.png in Resources */,
 				B8DDEB371F5B1D0300F0A623 /* icon_share_arrow.png in Resources */,
-				B8DD5CD21F93C86500EC15A4 /* plumbing.png in Resources */,
 				B80B9C6A1F624126006583CE /* marker_icon_boat.png in Resources */,
-				B8DD5CE21F93C86500EC15A4 /* window@2x.png in Resources */,
+				B873D0FE1FD42D7D00622CFC /* tile@3x.png in Resources */,
+				B873D0FF1FD42D7D00622CFC /* plumbing@3x.png in Resources */,
 				B850603B1F675AD900BE25ED /* icon_close_dark.png in Resources */,
+				B873D0F01FD42D7D00622CFC /* tile@2x.png in Resources */,
 				B850603C1F675AD900BE25ED /* icon_close_dark@2x.png in Resources */,
 				B895C54E1F590018002D369E /* FB.png in Resources */,
 				B895C6111F5A068E002D369E /* marker_icon_camera_temp_orange.png in Resources */,
-				B8DD5CBC1F93C86500EC15A4 /* concrete@3x.png in Resources */,
 				B895C5DB1F59E378002D369E /* Images.xcassets in Resources */,
 				B80B9C6C1F624126006583CE /* marker_icon_boat@3x.png in Resources */,
 				B80B9C7F1F6242AB006583CE /* marker_icon_shelter@2x.png in Resources */,
@@ -926,24 +973,24 @@
 				B85060381F675AD900BE25ED /* icon_check_yellow_pin.png in Resources */,
 				B850603D1F675AD900BE25ED /* icon_close_dark@3x.png in Resources */,
 				B895C5F51F5A0666002D369E /* icon_close_yellow@3x.png in Resources */,
+				B873D0EC1FD42D7D00622CFC /* landscaping@2x.png in Resources */,
 				B895C5F81F5A0666002D369E /* marker_icon_camera_temp_yellow@3x.png in Resources */,
+				B873D1021FD42D7D00622CFC /* concrete@3x.png in Resources */,
 				B895C5F41F5A0666002D369E /* icon_close_yellow@2x.png in Resources */,
-				B8DD5CD41F93C86500EC15A4 /* plumbing@3x.png in Resources */,
+				B873D1011FD42D7D00622CFC /* cabinetry@3x.png in Resources */,
 				B895C5541F590018002D369E /* icon_account_gray@3x.png in Resources */,
-				B8DD5CCA1F93C86500EC15A4 /* landscaping@2x.png in Resources */,
-				B8DD5CC71F93C86500EC15A4 /* framing@2x.png in Resources */,
+				B873D0A61FD3275700622CFC /* tab_tools@3x.png in Resources */,
+				B873D0FB1FD42D7D00622CFC /* landscaping@3x.png in Resources */,
+				B873D1121FD42D7D00622CFC /* tile.png in Resources */,
 				B850603A1F675AD900BE25ED /* icon_check_yellow_pin@3x.png in Resources */,
 				B895C5BE1F5917CD002D369E /* icon_camera@3x.png in Resources */,
 				B895C5D51F593C2B002D369E /* Harvey.png in Resources */,
-				B8DD5CD81F93C86500EC15A4 /* sheetrock.png in Resources */,
+				B873D10F1FD42D7D00622CFC /* appliance@3x.png in Resources */,
+				B873D10A1FD42D7D00622CFC /* window@3x.png in Resources */,
 				B80B9C771F624126006583CE /* marker_icon_gauge_blue_opaque@2x.png in Resources */,
 				B895C5C81F5917CD002D369E /* icon_traffic@2x.png in Resources */,
-				B8DD5CC31F93C86500EC15A4 /* fixture.png in Resources */,
-				B8DD5CD51F93C86500EC15A4 /* roof.png in Resources */,
 				B80B9C7A1F624126006583CE /* marker_icon_structure@2x.png in Resources */,
-				B8DD5CCB1F93C86500EC15A4 /* landscaping@3x.png in Resources */,
 				B895C6171F5A068E002D369E /* marker_icon_camera_orange.png in Resources */,
-				B8DD5CBF1F93C86500EC15A4 /* electrical@3x.png in Resources */,
 				B8E48C021F6A1F7D00F23F51 /* icon_pins_multi2.png in Resources */,
 				B85060401F675AD900BE25ED /* icon_pins_multi@3x.png in Resources */,
 				B895C60C1F5A068E002D369E /* icon_check_orange@2x.png in Resources */,
@@ -951,63 +998,74 @@
 				B895C5D01F5917CE002D369E /* icon_traffic.png in Resources */,
 				B895C56B1F59046A002D369E /* Default-568h@2x.png in Resources */,
 				B80B9C781F624126006583CE /* marker_icon_gauge_blue_opaque@3x.png in Resources */,
-				B8DD5CDE1F93C86500EC15A4 /* tile.png in Resources */,
 				B895C6191F5A068E002D369E /* marker_icon_camera_orange@3x.png in Resources */,
-				B8DD5CBE1F93C86500EC15A4 /* electrical@2x.png in Resources */,
-				B8DD5CE01F93C86500EC15A4 /* tile@3x.png in Resources */,
 				B895C5BC1F5917CD002D369E /* icon_camera.png in Resources */,
 				B80B9C7B1F624126006583CE /* marker_icon_structure@3x.png in Resources */,
 				B895C5561F590018002D369E /* icon_account_white@2x.png in Resources */,
 				B850602E1F66CF3D00BE25ED /* icon_hazard@3x.png in Resources */,
-				B8DD5CB81F93C86500EC15A4 /* cabinetry@2x.png in Resources */,
-				B8DD5CE31F93C86500EC15A4 /* window@3x.png in Resources */,
-				B8DD5CCD1F93C86500EC15A4 /* mucking@2x.png in Resources */,
 				B874217F1F54BD4F00E0981A /* Assets.xcassets in Resources */,
-				B8DD5CC01F93C86500EC15A4 /* fence.png in Resources */,
-				B8DD5CB91F93C86500EC15A4 /* cabinetry@3x.png in Resources */,
+				B873D0E71FD42D7D00622CFC /* fence.png in Resources */,
+				B873D0F11FD42D7D00622CFC /* sheetrock.png in Resources */,
 				B895C5FA1F5A0666002D369E /* marker_icon_gauge_blue@2x.png in Resources */,
 				B895C6181F5A068E002D369E /* marker_icon_camera_orange@2x.png in Resources */,
 				B895C54F1F590018002D369E /* icon_menu.png in Resources */,
 				B80B9C751F624126006583CE /* marker_icon_flag_red@3x.png in Resources */,
 				B895C60B1F5A068E002D369E /* icon_check_orange.png in Resources */,
-				B8DD5CC11F93C86500EC15A4 /* fence@2x.png in Resources */,
 				B80B9C711F624126006583CE /* marker_icon_donation@2x.png in Resources */,
-				B8DD5CD61F93C86500EC15A4 /* roof@2x.png in Resources */,
 				B80B9C671F624126006583CE /* marker_icon_shelter@2x.png in Resources */,
+				B873D10C1FD42D7D00622CFC /* painting@3x.png in Resources */,
+				B873D0FA1FD42D7D00622CFC /* cabinetry@2x.png in Resources */,
 				B8E48C051F6A1F7D00F23F51 /* icon_check_hazard.png in Resources */,
 				B8D05F4B1F587A5700D3CFAF /* Houston-Downtown2.gpx in Resources */,
-				B8DD5CD11F93C86500EC15A4 /* painting@3x.png in Resources */,
+				B873D0EF1FD42D7D00622CFC /* appliance@2x.png in Resources */,
+				B873D0EA1FD42D7D00622CFC /* tools@3x.png in Resources */,
 				B850602C1F66CF3D00BE25ED /* icon_hazard.png in Resources */,
+				B873D08E1FD0FDBD00622CFC /* marker_icon_structure_skill_match.png in Resources */,
 				B80B9C801F6242AB006583CE /* marker_icon_shelter@3x.png in Resources */,
 				B895C5FB1F5A0666002D369E /* marker_icon_gauge_blue@3x.png in Resources */,
 				B895C5611F59004F002D369E /* icon_search.png in Resources */,
 				B895C5C71F5917CD002D369E /* icon_profile@3x.png in Resources */,
+				B873D1191FD42D7D00622CFC /* texturing.png in Resources */,
 				B80B9C831F626A63006583CE /* PROFILE_DEFAULT.png in Resources */,
+				B873D1141FD42D7D00622CFC /* tools@2x.png in Resources */,
 				B8D05F4D1F587A5700D3CFAF /* Sugar_Land-Trailbrook_Front.gpx in Resources */,
+				B873D1161FD42D7D00622CFC /* texturing@3x.png in Resources */,
 				B895C5511F590018002D369E /* icon_menu@3x.png in Resources */,
 				B80B9C6B1F624126006583CE /* marker_icon_boat@2x.png in Resources */,
 				B895C5C61F5917CD002D369E /* icon_profile@2x.png in Resources */,
+				B873D0A81FD3275700622CFC /* tab_house@2x.png in Resources */,
+				B873D0E61FD42D7D00622CFC /* fixture.png in Resources */,
+				B873D0E91FD42D7D00622CFC /* framing.png in Resources */,
 				B895C5F31F5A0666002D369E /* icon_close_yellow.png in Resources */,
 				B895C60D1F5A068E002D369E /* icon_check_orange@3x.png in Resources */,
+				B873D0ED1FD42D7D00622CFC /* sheetrock@3x.png in Resources */,
 				B80B9C6E1F624126006583CE /* marker_icon_camera_yellow@2x.png in Resources */,
+				B873D0F41FD42D7D00622CFC /* house.png in Resources */,
+				B873D0A71FD3275700622CFC /* tab_tools.png in Resources */,
 				B895C5C91F5917CD002D369E /* icon_traffic@3x.png in Resources */,
 				B80B9C701F624126006583CE /* marker_icon_donation.png in Resources */,
+				B873D1171FD42D7D00622CFC /* fixture@2x.png in Resources */,
 				B895C6101F5A068E002D369E /* icon_close_orange@3x.png in Resources */,
-				B8DD5CB51F93C86500EC15A4 /* appliance@2x.png in Resources */,
-				B8DD5CCE1F93C86500EC15A4 /* mucking@3x.png in Resources */,
-				B8DD5CDD1F93C86500EC15A4 /* texturing@3x.png in Resources */,
+				B873D0A91FD3275700622CFC /* tab_house@3x.png in Resources */,
+				B873D10E1FD42D7D00622CFC /* tools.png in Resources */,
 				B895C55E1F59004F002D369E /* icon_check2.png in Resources */,
 				B8E48C031F6A1F7D00F23F51 /* icon_pins_multi2@2x.png in Resources */,
 				B895C5521F590018002D369E /* icon_account_gray.png in Resources */,
+				B873D0F21FD42D7D00622CFC /* mucking@3x.png in Resources */,
 				B8E48C061F6A1F7D00F23F51 /* icon_check_hazard@2x.png in Resources */,
+				B873D11A1FD42D7D00622CFC /* cabinetry.png in Resources */,
 				B80B9C6D1F624126006583CE /* marker_icon_camera_yellow.png in Resources */,
+				B873D1051FD42D7D00622CFC /* concrete@2x.png in Resources */,
 				B80B9C511F624011006583CE /* marker_icon_shelter.png in Resources */,
-				B8DD5CD91F93C86500EC15A4 /* sheetrock@2x.png in Resources */,
 				B895C5531F590018002D369E /* icon_account_gray@2x.png in Resources */,
+				B873D0EE1FD42D7D00622CFC /* roof@3x.png in Resources */,
+				B873D0F51FD42D7D00622CFC /* concrete.png in Resources */,
+				B873D08D1FD0FDBD00622CFC /* marker_icon_structure_skill_match@3x.png in Resources */,
 				B80B9C501F624011006583CE /* marker_icon_shelter@3x.png in Resources */,
+				B873D0F71FD42D7D00622CFC /* appliance.png in Resources */,
 				B80B9C6F1F624126006583CE /* marker_icon_camera_yellow@3x.png in Resources */,
+				B873D0F31FD42D7D00622CFC /* window.png in Resources */,
 				B895C5BD1F5917CD002D369E /* icon_camera@2x.png in Resources */,
-				B8DD5CDB1F93C86500EC15A4 /* texturing.png in Resources */,
 				B895C5F91F5A0666002D369E /* marker_icon_gauge_blue.png in Resources */,
 				B895C5501F590018002D369E /* icon_menu@2x.png in Resources */,
 				B8E48C041F6A1F7D00F23F51 /* icon_pins_multi2@3x.png in Resources */,
@@ -1015,40 +1073,42 @@
 				B895C5601F59004F002D369E /* icon_location.png in Resources */,
 				B825BE0C1F551F7400C12722 /* style.json in Resources */,
 				B895C5571F590018002D369E /* icon_account_white@3x.png in Resources */,
+				B873D1071FD42D7D00622CFC /* texturing@2x.png in Resources */,
+				B873D1151FD42D7D00622CFC /* plumbing@2x.png in Resources */,
 				B8D05F4C1F587A5700D3CFAF /* Sugar_Land-Trailbrook_Back.gpx in Resources */,
 				B891DB571F6C5889000B1CB5 /* icon_settings@3x.png in Resources */,
 				B80B9C731F624126006583CE /* marker_icon_flag_red.png in Resources */,
+				B873D1061FD42D7D00622CFC /* roof.png in Resources */,
 				B80B9C721F624126006583CE /* marker_icon_donation@3x.png in Resources */,
 				B895C5C51F5917CD002D369E /* icon_profile.png in Resources */,
-				B8DD5CDF1F93C86500EC15A4 /* tile@2x.png in Resources */,
-				B8DD5CCC1F93C86500EC15A4 /* mucking.png in Resources */,
-				B8DD5CC61F93C86500EC15A4 /* framing.png in Resources */,
+				B873D1081FD42D7D00622CFC /* mucking@2x.png in Resources */,
 				B895C60E1F5A068E002D369E /* icon_close_orange.png in Resources */,
-				B8DD5CB71F93C86500EC15A4 /* cabinetry.png in Resources */,
-				B8DD5CCF1F93C86500EC15A4 /* painting.png in Resources */,
+				B873D1111FD42D7D00622CFC /* electrical.png in Resources */,
+				B873D0EB1FD42D7D00622CFC /* electrical@2x.png in Resources */,
 				B895C6131F5A068E002D369E /* marker_icon_camera_temp_orange@3x.png in Resources */,
-				B8DD5CC21F93C86500EC15A4 /* fence@3x.png in Resources */,
-				B8DD5CD71F93C86500EC15A4 /* roof@3x.png in Resources */,
 				B895C5F11F5A0666002D369E /* icon_check_yellow@2x.png in Resources */,
 				B891DB551F6C5889000B1CB5 /* icon_settings.png in Resources */,
-				B8DD5CDA1F93C86500EC15A4 /* sheetrock@3x.png in Resources */,
-				B8DD5CBB1F93C86500EC15A4 /* concrete@2x.png in Resources */,
-				B8DD5CC51F93C86500EC15A4 /* fixture@3x.png in Resources */,
 				B895C5F61F5A0666002D369E /* marker_icon_camera_temp_yellow.png in Resources */,
+				B873D1001FD42D7D00622CFC /* window@2x.png in Resources */,
+				B873D10D1FD42D7D00622CFC /* roof@2x.png in Resources */,
 				B8B4CA5B1F619C46001CD74D /* eula.txt in Resources */,
 				B850603E1F675AD900BE25ED /* icon_pins_multi.png in Resources */,
+				B873D0FD1FD42D7D00622CFC /* plumbing.png in Resources */,
+				B873D1101FD42D7D00622CFC /* landscaping.png in Resources */,
 				B80B9C791F624126006583CE /* marker_icon_structure.png in Resources */,
-				B8DD5CE11F93C86500EC15A4 /* window.png in Resources */,
+				B873D1091FD42D7D00622CFC /* painting.png in Resources */,
 				B895C5F01F5A0666002D369E /* icon_check_yellow.png in Resources */,
 				B8D05F4A1F587A5700D3CFAF /* Houston-Downtown.gpx in Resources */,
-				B8DD5CD31F93C86500EC15A4 /* plumbing@2x.png in Resources */,
+				B873D0FC1FD42D7D00622CFC /* framing@2x.png in Resources */,
 				B8E48C071F6A1F7D00F23F51 /* icon_check_hazard@3x.png in Resources */,
 				B891DB561F6C5889000B1CB5 /* icon_settings@2x.png in Resources */,
+				B873D1181FD42D7D00622CFC /* painting@2x.png in Resources */,
 				B80B9C811F6242AB006583CE /* marker_icon_shelter.png in Resources */,
-				B8DD5CBA1F93C86500EC15A4 /* concrete.png in Resources */,
+				B873D0F81FD42D7D00622CFC /* sheetrock@2x.png in Resources */,
 				B895C5F21F5A0666002D369E /* icon_check_yellow@3x.png in Resources */,
-				B8DD5CD01F93C86500EC15A4 /* painting@2x.png in Resources */,
+				B873D1131FD42D7D00622CFC /* fence@3x.png in Resources */,
 				B850603F1F675AD900BE25ED /* icon_pins_multi@2x.png in Resources */,
+				B873D11B1FD42D7D00622CFC /* fence@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1138,6 +1198,7 @@
 				B834D42D1F804B9B009F28DD /* StructureUserCD+CoreDataClass.swift in Sources */,
 				B821A4671F69485E00997EE1 /* ActivityViewController.swift in Sources */,
 				B891DB5B1F6C60E2000B1CB5 /* ProfileTabStructureViewController.swift in Sources */,
+				B873D0AF1FD3297D00622CFC /* TutorialView+CoreDataProperties.swift in Sources */,
 				B87421771F54BD4F00E0981A /* MapViewController.swift in Sources */,
 				B891DB5D1F6C757D000B1CB5 /* ProfileTabSkillTableViewCell.swift in Sources */,
 				B80B9C931F645252006583CE /* UserTableViewController.swift in Sources */,
@@ -1146,7 +1207,6 @@
 				B86BCC871F64A29E003C667D /* UserCD+CoreDataProperties.swift in Sources */,
 				B825BE161F55A48E00C12722 /* Extensions.swift in Sources */,
 				B8B4CA481F615519001CD74D /* AgreementViewController.swift in Sources */,
-				B8DDEB241F5AE21000F0A623 /* TutorialView+CoreDataProperties.swift in Sources */,
 				B8D05F511F5887D400D3CFAF /* SpotTableViewCell.swift in Sources */,
 				B8D97E1A1F56A166006D9782 /* DataHydro.swift in Sources */,
 				B87421751F54BD4F00E0981A /* AppDelegate.swift in Sources */,
@@ -1157,10 +1217,10 @@
 				B8DDEB271F5AE21000F0A623 /* LogError+CoreDataClass.swift in Sources */,
 				B8568D961F885FE6005F44FC /* RepairImage.swift in Sources */,
 				B834D42E1F804B9B009F28DD /* StructureUserCD+CoreDataProperties.swift in Sources */,
+				B873D0AE1FD3297D00622CFC /* TutorialView+CoreDataClass.swift in Sources */,
 				B825BE181F55F55800C12722 /* CustomIdentityProvider.swift in Sources */,
 				B8D05F4F1F58865600D3CFAF /* SpotTableViewController.swift in Sources */,
 				B8B4CA5E1F61AEF1001CD74D /* InfoWindowAgreement.swift in Sources */,
-				B8DDEB231F5AE21000F0A623 /* TutorialView+CoreDataClass.swift in Sources */,
 				B891DB611F6E0200000B1CB5 /* Skill.swift in Sources */,
 				B85991371F825B4600ACD252 /* ProfileRepairViewController.swift in Sources */,
 				B8FC56A71F5E43300020A871 /* InfoWindowShelter.swift in Sources */,

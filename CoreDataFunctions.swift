@@ -16,6 +16,9 @@ class CoreDataFunctions: AWSRequestDelegate
     // MARK: TUTORIAL VIEWS
     func tutorialViewSave(tutorialView: TutorialView)
     {
+//        print("CD-TVS: CHECK A: \(String(describing: tutorialView.tutorialMapViewDatetime))")
+//        print("CD-TVS: CHECK B: \(String(describing: tutorialView.tutorialProfileViewDatetime))")
+//        print("CD-TVS: CHECK C: \(String(describing: tutorialView.tutorialStructureViewDatetime))")
         // Try to retrieve the Tutorial Views data from Core Data
         var tutorialViewArray = [TutorialView]()
         let moc = DataController().managedObjectContext
@@ -40,6 +43,14 @@ class CoreDataFunctions: AWSRequestDelegate
             {
                 entity.setValue(tutorialMapViewDatetime, forKey: "tutorialMapViewDatetime")
             }
+            if let tutorialProfileViewDatetime = tutorialView.tutorialProfileViewDatetime
+            {
+                entity.setValue(tutorialProfileViewDatetime, forKey: "tutorialProfileViewDatetime")
+            }
+            if let tutorialStructureViewDatetime = tutorialView.tutorialStructureViewDatetime
+            {
+                entity.setValue(tutorialStructureViewDatetime, forKey: "tutorialStructureViewDatetime")
+            }
         }
         else
         {
@@ -47,6 +58,14 @@ class CoreDataFunctions: AWSRequestDelegate
             if let tutorialMapViewDatetime = tutorialView.tutorialMapViewDatetime
             {
                 tutorialViewArray[0].tutorialMapViewDatetime = tutorialMapViewDatetime
+            }
+            if let tutorialProfileViewDatetime = tutorialView.tutorialProfileViewDatetime
+            {
+                tutorialViewArray[0].tutorialProfileViewDatetime = tutorialProfileViewDatetime
+            }
+            if let tutorialStructureViewDatetime = tutorialView.tutorialStructureViewDatetime
+            {
+                tutorialViewArray[0].tutorialStructureViewDatetime = tutorialStructureViewDatetime
             }
         }
         // Save the Entity
@@ -103,8 +122,18 @@ class CoreDataFunctions: AWSRequestDelegate
             {
                 tutorialView.setValue(tutorialMapViewDatetime, forKey: "tutorialMapViewDatetime")
             }
+            if let tutorialProfileViewDatetime = tutorialViewsArray[tutorialViewArrayIndexUse].tutorialProfileViewDatetime
+            {
+                tutorialView.setValue(tutorialProfileViewDatetime, forKey: "tutorialProfileViewDatetime")
+            }
+            if let tutorialStructureViewDatetime = tutorialViewsArray[tutorialViewArrayIndexUse].tutorialStructureViewDatetime
+            {
+                tutorialView.setValue(tutorialStructureViewDatetime, forKey: "tutorialStructureViewDatetime")
+            }
         }
-        print("CD-TVR: CHECK A: \(String(describing: tutorialView.tutorialMapViewDatetime))")
+//        print("CD-TVR: CHECK A: \(String(describing: tutorialView.tutorialMapViewDatetime))")
+//        print("CD-TVR: CHECK B: \(String(describing: tutorialView.tutorialProfileViewDatetime))")
+//        print("CD-TVR: CHECK C: \(String(describing: tutorialView.tutorialStructureViewDatetime))")
         return tutorialView
     }
     
@@ -112,7 +141,7 @@ class CoreDataFunctions: AWSRequestDelegate
     // MARK: CURRENT USER
     func currentUserSave(user: User)
     {
-        print("CD-CUS - USER NAME: \(String(describing: user.name))")
+//        print("CD-CUS - USER NAME: \(String(describing: user.name))")
         let moc = DataController().managedObjectContext
         moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
         // Try to retrieve the Current User data from Core Data
@@ -121,7 +150,7 @@ class CoreDataFunctions: AWSRequestDelegate
         do
         {
             currentUserArray = try moc.fetch(currentUserFetch)
-            print("CD-CUS - currentUserArray: \(currentUserArray)")
+//            print("CD-CUS - currentUserArray: \(currentUserArray)")
         }
         catch
         {
@@ -130,7 +159,7 @@ class CoreDataFunctions: AWSRequestDelegate
         // If the return has no content, no current User have been saved
         if currentUserArray.count == 0
         {
-            print("CD-CUS - NEW")
+//            print("CD-CUS - NEW")
             // Save the Current User data in Core Data
             let entity = NSEntityDescription.insertNewObject(forEntityName: "CurrentUser", into: moc) as! CurrentUser
             entity.setValue(user.userID, forKey: "userID")
@@ -154,7 +183,7 @@ class CoreDataFunctions: AWSRequestDelegate
         }
         else
         {
-            print("CD-CUS - EXISTS")
+//            print("CD-CUS - EXISTS")
             // Replace the Current User data to ensure that the latest data is used
             currentUserArray[0].userID = user.userID
             currentUserArray[0].facebookID = user.facebookID
@@ -331,7 +360,7 @@ class CoreDataFunctions: AWSRequestDelegate
         // If the user does not exist, add a new entity
         if !userExists
         {
-            print("CD-US - NOT EXIST: \(user.userID)")
+//            print("CD-US - NOT EXIST: \(user.userID)")
             let newUser = NSEntityDescription.insertNewObject(forEntityName: "UserCD", into: moc) as! UserCD
             newUser.setValue(user.userID, forKey: "userID")
             newUser.setValue(user.facebookID, forKey: "facebookID")
@@ -456,7 +485,7 @@ class CoreDataFunctions: AWSRequestDelegate
         // If the skill does not exist, add a new entity
         if !skillExists
         {
-            print("CD-SSK - NOT EXIST: \(skill.skillID)")
+//            print("CD-SSK - NOT EXIST: \(skill.skillID)")
             let newSkill = NSEntityDescription.insertNewObject(forEntityName: "SkillCD", into: moc) as! SkillCD
             newSkill.setValue(skill.skillID, forKey: "skillID")
             newSkill.setValue(skill.skill, forKey: "skill")
@@ -541,7 +570,7 @@ class CoreDataFunctions: AWSRequestDelegate
                     repairArray[rIndex].repairID = repair.repairID
                     repairArray[rIndex].structureID = repair.structureID
                     repairArray[rIndex].repair = repair.repair
-                    repairArray[rIndex].datetime = repair.datetime as! NSDate
+                    repairArray[rIndex].datetime = repair.datetime! as NSDate
                     repairArray[rIndex].stage = Int32(repair.stage.rawValue)
                     repairArray[rIndex].order = Int32(repair.order)
                     
@@ -552,7 +581,7 @@ class CoreDataFunctions: AWSRequestDelegate
         // If the repair does not exist, add a new entity
         if !repairExists
         {
-            print("CD-RS - NOT EXIST: \(repair.repairID)")
+//            print("CD-RS - NOT EXIST: \(repair.repairID)")
             let newRepair = NSEntityDescription.insertNewObject(forEntityName: "RepairCD", into: moc) as! RepairCD
             newRepair.setValue(repair.repairID, forKey: "repairID")
             newRepair.setValue(repair.structureID, forKey: "structureID")
@@ -600,7 +629,7 @@ class CoreDataFunctions: AWSRequestDelegate
             repair.repairID = repairObj.repairID
             repair.structureID = repairObj.structureID
             repair.repair = repairObj.repair
-            repair.datetime = repairObj.datetime as! Date
+            repair.datetime = repairObj.datetime! as Date
             repair.stage = Constants().repairStage(Int(repairObj.stage))
             repair.order = Int(repairObj.order)
             repairs.append(repair)
@@ -636,7 +665,7 @@ class CoreDataFunctions: AWSRequestDelegate
                     // The structure exists, so update the Core Data
                     structureExists = true
                     // Replace the Structure data to ensure that the latest data is used
-                    print("CD-STS - EXISTS: \(structure.structureID)")
+//                    print("CD-STS - EXISTS: \(structure.structureID)")
                     structureArray[sIndex].structureID = structure.structureID
                     structureArray[sIndex].lat = structure.lat
                     structureArray[sIndex].lng = structure.lng
@@ -659,7 +688,7 @@ class CoreDataFunctions: AWSRequestDelegate
         // If the structure does not exist, add a new entity
         if !structureExists
         {
-            print("CD-STS - EXISTS (NO): \(structure.structureID)")
+//            print("CD-STS - EXISTS (NO): \(structure.structureID)")
             let newStructure = NSEntityDescription.insertNewObject(forEntityName: "StructureCD", into: moc) as! StructureCD
             newStructure.setValue(structure.structureID, forKey: "structureID")
             newStructure.setValue(structure.lat, forKey: "lat")
@@ -689,6 +718,45 @@ class CoreDataFunctions: AWSRequestDelegate
         }
     }
     
+    func structureDelete(structureID: String)
+    {
+        // Try to retrieve the Structure data from Core Data
+        var structureArray = [StructureCD]()
+        let moc = DataController().managedObjectContext
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        let structureFetch: NSFetchRequest<StructureCD> = StructureCD.fetchRequest()
+        // Create an empty Structure list in case the Core Data request fails
+        do
+        {
+            structureArray = try moc.fetch(structureFetch)
+        }
+        catch
+        {
+            fatalError("CD-STD - Failed to fetch entity: \(error)")
+        }
+        // Find the structure in the array and delete the entity
+        structureLoop: for (sIndex, structureCheck) in structureArray.enumerated()
+        {
+            if let checkStructureID = structureCheck.structureID
+            {
+                if checkStructureID == structureID
+                {
+                    structureArray.remove(at: sIndex)
+                    break structureLoop
+                }
+            }
+        }
+        // Save the Entity
+        do
+        {
+            try moc.save()
+        }
+        catch
+        {
+            fatalError("CD-STD - Failure to save context: \(error)")
+        }
+    }
+    
     func structureRetrieveAll() -> [Structure]
     {
         // Access Core Data
@@ -715,7 +783,7 @@ class CoreDataFunctions: AWSRequestDelegate
             structure.structureID = structureObj.structureID
             structure.lat = structureObj.lat
             structure.lng = structureObj.lng
-            structure.datetime = structureObj.datetime as! Date
+            structure.datetime = structureObj.datetime! as Date
             structure.type = Constants().structureType(Int(structureObj.type))
             structure.stage = Constants().structureStage(Int(structureObj.stage))
             structure.repairs = repairRetrieveForStructure(structureID: structureObj.structureID)
@@ -771,7 +839,7 @@ class CoreDataFunctions: AWSRequestDelegate
         // If the structure does not exist, add a new entity
         if !structureUserExists
         {
-            print("CD-STUS - NOT EXIST: \(structureUser.structureID)")
+//            print("CD-STUS - NOT EXIST: \(structureUser.structureID)")
             let newStructureUser = NSEntityDescription.insertNewObject(forEntityName: "StructureUserCD", into: moc) as! StructureUserCD
             newStructureUser.setValue(structureUser.structureID, forKey: "structureID")
             newStructureUser.setValue(structureUser.userID, forKey: "userID")
@@ -785,6 +853,45 @@ class CoreDataFunctions: AWSRequestDelegate
         catch
         {
             fatalError("CD-STUS - Failure to save context: \(error)")
+        }
+    }
+    
+    func structureUserDelete(structureID: String)
+    {
+        // Try to retrieve the Structure data from Core Data
+        var structureUserArray = [StructureUserCD]()
+        let moc = DataController().managedObjectContext
+        moc.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        let structureUserFetch: NSFetchRequest<StructureUserCD> = StructureUserCD.fetchRequest()
+        // Create an empty StructureUser list in case the Core Data request fails
+        do
+        {
+            structureUserArray = try moc.fetch(structureUserFetch)
+        }
+        catch
+        {
+            fatalError("CD-STUD - Failed to fetch entity: \(error)")
+        }
+        // Find the StructureUser in the array and delete the entity
+        structureUserLoop: for (sIndex, structureUserCheck) in structureUserArray.enumerated()
+        {
+            if let checkStructureID = structureUserCheck.structureID
+            {
+                if checkStructureID == structureID
+                {
+                    structureUserArray.remove(at: sIndex)
+                    break structureUserLoop
+                }
+            }
+        }
+        // Save the Entity
+        do
+        {
+            try moc.save()
+        }
+        catch
+        {
+            fatalError("CD-STUD - Failure to save context: \(error)")
         }
     }
     
@@ -822,11 +929,11 @@ class CoreDataFunctions: AWSRequestDelegate
     // MARK: MAP SETTINGS
     func mapSettingSaveFromGlobalSettings()
     {
-        print("CD: SAVE MAP SETTING TRAFFIC: \(Constants.Settings.menuMapTraffic)")
-        print("CD: SAVE MAP SETTING SPOT: \(Constants.Settings.menuMapSpot)")
-        print("CD: SAVE MAP SETTING HYDRO: \(Constants.Settings.menuMapHydro)")
-        print("CD: SAVE MAP SETTING SHELTER: \(Constants.Settings.menuMapShelter)")
-        print("CD: SAVE MAP SETTING TIME: \(Constants.Settings.menuMapTimeFilter)")
+//        print("CD: SAVE MAP SETTING TRAFFIC: \(Constants.Settings.menuMapTraffic)")
+//        print("CD: SAVE MAP SETTING SPOT: \(Constants.Settings.menuMapSpot)")
+//        print("CD: SAVE MAP SETTING HYDRO: \(Constants.Settings.menuMapHydro)")
+//        print("CD: SAVE MAP SETTING SHELTER: \(Constants.Settings.menuMapShelter)")
+//        print("CD: SAVE MAP SETTING TIME: \(Constants.Settings.menuMapTimeFilter)")
         // Try to retrieve the Map Settings data from Core Data
         var mapSettingArray = [MapSetting]()
         let moc = DataController().managedObjectContext

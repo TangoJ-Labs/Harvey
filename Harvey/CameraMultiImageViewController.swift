@@ -1192,8 +1192,7 @@ class CameraMultiImageViewController: UIViewController, AVCaptureFileOutputRecor
                             }
                             else if self.forRepair
                             {
-                                let repairPut = AWSRepairPut(repair: self.repair)
-                                repairPut.updatedImages = 1
+                                let repairPut = AWSRepairPut(repair: self.repair, newImages: true)
                                 AWSPrepRequest(requestToCall: repairPut, delegate: self as AWSRequestDelegate).prepRequest()
                             }
                         }

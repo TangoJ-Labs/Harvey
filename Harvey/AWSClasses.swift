@@ -73,7 +73,7 @@ class AWSPrepRequest
                 // Assign the Facebook Token to the AWSRequestObject
                 self.requestToCall.facebookToken = facebookToken
                 
-                print("AC-PREP - COGNITO ID: \(String(describing: Constants.credentialsProvider.identityId))")
+//                print("AC-PREP - COGNITO ID: \(String(describing: Constants.credentialsProvider.identityId))")
                 // Ensure that the Cognito ID is still valid and is not older than an hour (AWS will invalidate if older)
                 if Constants.credentialsProvider.identityId != nil && Constants.Data.lastCredentials - NSDate().timeIntervalSinceNow < 3600
                 {
@@ -122,7 +122,7 @@ class AWSPrepRequest
     // Once the Facebook token is gained, request a Cognito Identity ID
     func getCognitoID()
     {
-        print("AC-PREP - IN GET COGNITO ID: \(String(describing: requestToCall.facebookToken?.tokenString))")
+//        print("AC-PREP - IN GET COGNITO ID: \(String(describing: requestToCall.facebookToken?.tokenString))")
         if let token = requestToCall.facebookToken
         {
 //            print("AC - GETTING COGNITO ID: \(String(describing: Constants.credentialsProvider.identityId))")
@@ -157,7 +157,7 @@ class AWSPrepRequest
                     {
                         // the task result will contain the identity id
                         let cognitoId = task.result
-                        print("AC - AWS COGNITO GET IDENTITY ID - AWS COGNITO ID: \(String(describing: cognitoId))")
+//                        print("AC - AWS COGNITO GET IDENTITY ID - AWS COGNITO ID: \(String(describing: cognitoId))")
 //                        print("AC - AWS COGNITO GET IDENTITY ID - CHECK IDENTITY ID: \(String(describing: Constants.credentialsProvider.identityId))")
                         
                         // Save the current time to mark when the last CognitoID was saved
@@ -166,7 +166,7 @@ class AWSPrepRequest
                         // Request extra facebook data for the user ON THE MAIN THREAD
                         DispatchQueue.main.async(execute:
                             {
-                                print("AC - GOT COGNITO ID - GETTING NEW AWS ID")
+//                                print("AC - GOT COGNITO ID - GETTING NEW AWS ID")
                                 self.getHarveyID(cognitoID: cognitoId! as String, facebookToken: token)
                         });
                     }
@@ -178,11 +178,11 @@ class AWSPrepRequest
     // After ensuring that the Cognito ID is valid, so check for a Harvey ID and then make the request
     func getHarveyID(cognitoID: String!, facebookToken: FBSDKAccessToken!)
     {
-        print("AC-PREP - GET HARVEY ID")
+//        print("AC-PREP - GET HARVEY ID")
         // If the Identity ID is still valid, ensure that the current userID is not nil
         if Constants.Data.currentUser.userID != nil
         {
-            print("AC-PREP - CURRENT USER ID: \(String(describing: Constants.Data.currentUser.userID))")
+//            print("AC-PREP - CURRENT USER ID: \(String(describing: Constants.Data.currentUser.userID))")
             // The user is already logged in so go ahead and register for notifications
 //            UtilityFunctions().registerPushNotifications()
             
@@ -193,7 +193,7 @@ class AWSPrepRequest
         }
         else
         {
-            print("AC-PREP - FB TOKEN: \(String(describing: facebookToken.tokenString))")
+//            print("AC-PREP - FB TOKEN: \(String(describing: facebookToken.tokenString))")
             // The current ID is nil, so request it from AWS, but store the previous request and call it when the user is logged in
             let awsLoginUser = AWSLoginUser(secondaryAwsRequestObject: self.requestToCall)
             awsLoginUser.awsRequestDelegate = self.awsRequestDelegate
@@ -248,12 +248,8 @@ class AWSLoginUser : AWSRequestObject, RequestDelegate
     // Log in the user or create a new user
     func loginUser(_ facebookName: String, facebookThumbnailUrl: String)
     {
-        print("AC-L - FACEBOOK TOKEN: \(String(describing: self.facebookToken))")
-        print("AC-L - COGNITO ID: \(String(describing: Constants.credentialsProvider.identityId))")
         if let fbToken = facebookToken
         {
-            print("AC-L: FIRING LOGIN USER")
-            
             var json = [String: Any]()
             json["app_version"] = Constants.Settings.appVersion
             json["identity_id"] = Constants.credentialsProvider.identityId
@@ -276,21 +272,18 @@ class AWSLoginUser : AWSRequestObject, RequestDelegate
                 }
                 else if let res = response as? HTTPURLResponse
                 {
-                    print("AC-L - RESPONSE CODE: \(res.statusCode)")
+                    print("AC-LU - RESPONSE CODE: \(res.statusCode)")
                     if let data = responseData
                     {
                         do
                         {
                             let jsonData = try JSONSerialization.jsonObject(with: data, options: [JSONSerialization.ReadingOptions.allowFragments])
-                            print("AC-L - JSON DATA: \(json)")
                             // Convert the data to JSON with keys and AnyObject values
                             if let json = jsonData as? [String: AnyObject]
                             {
-                                print("AC-L - JSON: \(json)")
                                 // EXTRACT THE RESPONSE STRING
                                 if let response = json["response"] as? String
                                 {
-                                    print("AC-L - RESPONSE: \(response)")
                                     if response == "success"
                                     {
                                         // Convert the response to JSON with keys and AnyObject values
@@ -298,7 +291,6 @@ class AWSLoginUser : AWSRequestObject, RequestDelegate
                                         {
                                             if let status = responseJson["status"] as? String
                                             {
-                                                print("AC-L - loginUser - status: \(status)")
                                                 if status == "banned"
                                                 {
                                                     self.banned = true
@@ -313,7 +305,6 @@ class AWSLoginUser : AWSRequestObject, RequestDelegate
                                                 {
                                                     if let userID = responseJson["user_id"] as? String
                                                     {
-                                                        print("AC-L -LOGIN: \(responseJson)")
                                                         // Create a user object to save the data - all data should be available in the response
                                                         let currentUser = User()
                                                         currentUser.userID = userID
@@ -368,12 +359,12 @@ class AWSLoginUser : AWSRequestObject, RequestDelegate
                                                         // pass the login response to the parent view controller since it did not explicitly call the login request
                                                         if let secondaryAwsRequestObject = self.secondaryAwsRequestObject
                                                         {
-                                                            print("AC-L -loginUser - secondary fire")
+//                                                            print("AC-L -loginUser - secondary fire")
                                                             AWSPrepRequest(requestToCall: secondaryAwsRequestObject, delegate: self.awsRequestDelegate!).prepRequest()
                                                         }
                                                         else
                                                         {
-                                                            print("AC-L -loginUser - else")
+//                                                            print("AC-L -loginUser - else")
                                                             // Notify the parent view that the AWS Login call completed successfully
                                                             if let parentVC = self.awsRequestDelegate
                                                             {
@@ -381,7 +372,7 @@ class AWSLoginUser : AWSRequestObject, RequestDelegate
                                                             }
                                                         }
                                                         
-                                                        print("AC-L -loginUser - call RC-FBI FOR USER: \(self.facebookToken!.userID)")
+//                                                        print("AC-L -loginUser - call RC-FBI FOR USER: \(self.facebookToken!.userID)")
                                                         // Go ahead and download the user image and make available
                                                         RequestPrep(requestToCall: FBDownloadUserImage(facebookID: self.facebookToken!.userID, largeImage: true), delegate: self as RequestDelegate).prepRequest()
                                                     }
@@ -526,15 +517,15 @@ class AWSCreateRandomID : AWSRequestObject
                     do
                     {
                         let jsonData = try JSONSerialization.jsonObject(with: data, options: [JSONSerialization.ReadingOptions.allowFragments])
-                        print("AC-CRI - JSON DATA: \(json)")
+//                        print("AC-CRI - JSON DATA: \(json)")
                         // Convert the data to JSON with keys and AnyObject values
                         if let json = jsonData as? [String: AnyObject]
                         {
-                            print("AC-CRI - JSON: \(json)")
+//                            print("AC-CRI - JSON: \(json)")
                             // EXTRACT THE RESPONSE STRING
                             if let response = json["response"] as? String
                             {
-                                print("AC-CRI - RESPONSE: \(response)")
+//                                print("AC-CRI - RESPONSE: \(response)")
                                 if response == "success"
                                 {
                                     // Convert the response to a String
@@ -630,15 +621,15 @@ class AWSSettings : AWSRequestObject
                     do
                     {
                         let json = try JSONSerialization.jsonObject(with: data, options: [JSONSerialization.ReadingOptions.allowFragments])
-                        print("AC-STGS - JSON: \(json)")
+//                        print("AC-STGS - JSON: \(json)")
                         // Convert the data to JSON with keys and AnyObject values
                         if let allData = json as? [String: AnyObject]
                         {
-                            print("AC-STGS - ALL DATA: \(allData)")
+//                            print("AC-STGS - ALL DATA: \(allData)")
                             // EXTRACT THE RESPONSE STRING
                             if let response = allData["response"] as? String
                             {
-                                print("AC-STGS - RESPONSE: \(response)")
+//                                print("AC-STGS - RESPONSE: \(response)")
                                 if response == "success"
                                 {
                                     // Convert the response to an array of AnyObjects
@@ -650,7 +641,7 @@ class AWSSettings : AWSRequestObject
                                         // Notify the parent view that the AWS call completed successfully
                                         if let parentVC = self.awsRequestDelegate
                                         {
-                                            print("AC-STGS - CALLED PARENT")
+//                                            print("AC-STGS - CALLED PARENT")
                                             parentVC.processAwsReturn(self, success: true)
                                         }
                                     }
@@ -757,21 +748,21 @@ class AWSUserCheckFbId : AWSRequestObject
                         do
                         {
                             let json = try JSONSerialization.jsonObject(with: data, options: [JSONSerialization.ReadingOptions.allowFragments])
-                            print("AC-UCFB - JSON: \(json)")
+//                            print("AC-UCFB - JSON: \(json)")
                             // Convert the data to JSON with keys and AnyObject values
                             if let allData = json as? [String: AnyObject]
                             {
-                                print("AC-UCFB - ALL DATA: \(allData)")
+//                                print("AC-UCFB - ALL DATA: \(allData)")
                                 // EXTRACT THE RESPONSE STRING
                                 if let response = allData["response"] as? String
                                 {
-                                    print("AC-UCFB - RESPONSE: \(response)")
+//                                    print("AC-UCFB - RESPONSE: \(response)")
                                     if response == "success"
                                     {
                                         // Convert the response to an Integer
                                         if let userExistsInt = allData["user_exists"] as? Int
                                         {
-                                            print("AC-UCFB - USER EXISTS INT: \(userExistsInt)")
+//                                            print("AC-UCFB - USER EXISTS INT: \(userExistsInt)")
                                             if userExistsInt == 1
                                             {
                                                 self.newUser = false
@@ -780,7 +771,7 @@ class AWSUserCheckFbId : AWSRequestObject
                                             // Notify the parent view that the AWS call completed successfully
                                             if let parentVC = self.awsRequestDelegate
                                             {
-                                                print("AC-UCFB - CALLED PARENT")
+//                                                print("AC-UCFB - CALLED PARENT")
                                                 parentVC.processAwsReturn(self, success: true)
                                             }
                                         }
@@ -903,15 +894,15 @@ class AWSUserUpdate : AWSRequestObject
                         do
                         {
                             let json = try JSONSerialization.jsonObject(with: data, options: [JSONSerialization.ReadingOptions.allowFragments])
-                            print("AC-UU - JSON: \(json)")
+//                            print("AC-UU - JSON: \(json)")
                             // Convert the data to JSON with keys and AnyObject values
                             if let allData = json as? [String: AnyObject]
                             {
-                                print("AC-UU - ALL DATA: \(allData)")
+//                                print("AC-UU - ALL DATA: \(allData)")
                                 // EXTRACT THE RESPONSE STRING
                                 if let response = allData["response"] as? String
                                 {
-                                    print("AC-UU - RESPONSE: \(response)")
+//                                    print("AC-UU - RESPONSE: \(response)")
                                     if response == "success"
                                     {
                                         // Update the user in the global data and in Core Data
@@ -963,7 +954,7 @@ class AWSUserUpdate : AWSRequestObject
                                         // Notify the parent view that the AWS call completed successfully
                                         if let parentVC = self.awsRequestDelegate
                                         {
-                                            print("AC-UU - CALLED PARENT")
+//                                            print("AC-UU - CALLED PARENT")
                                             parentVC.processAwsReturn(self, success: true)
                                         }
                                     }
@@ -1540,11 +1531,12 @@ class AWSSkillQuery : AWSRequestObject
                                         {
                                             // Unwrap the general list of skills that should exist - use these to set default values since the user
                                             // might not have a saved history of all of these skills - default to 'no experience' (0)
-                                            if let skillSettings = skillJson["skill_settings"] as? [String: AnyObject]
+                                            if let skillSettings = skillJson["skill_types"] as? [String: AnyObject]
                                             {
                                                 // Unwrap the settings' sibling json block - this will hold the user's saved skill settings
                                                 if let skillLevels = skillJson["skill_levels"] as? [AnyObject]
                                                 {
+                                                    print("AC-SKQ - SKILL LEVELS: \(skillLevels)")
                                                     // FIRST, loop through all saved skill settings and add the user's saved skill
                                                     // This skill list only includes the skill type and this user's level - the settings list will have the 'order' property
                                                     var skillObjects = [Skill]()
@@ -1559,6 +1551,7 @@ class AWSSkillQuery : AWSRequestObject
                                                             
                                                             print("AC-SKQ - skillType: \(skillType)")
                                                             // Default the order to 0 and icon to nil if they do not exist in the settings list
+                                                            var title: String = ""
                                                             var order: Int = 0
                                                             var icon: UIImage?
                                                             // Find the skill needed
@@ -1567,6 +1560,11 @@ class AWSSkillQuery : AWSRequestObject
                                                                 // Create a json object
                                                                 if let skillSettingJson = skillSettingObj as? [String: AnyObject]
                                                                 {
+                                                                    if let skillTitleSetting = skillSettingJson["title"] as? String
+                                                                    {
+                                                                        print("AC-SKQ - skill title: \(skillTitleSetting)")
+                                                                        title = skillTitleSetting
+                                                                    }
                                                                     if let skillOrderSetting = skillSettingJson["order"] as? Int
                                                                     {
                                                                         print("AC-SKQ - skill order: \(skillOrderSetting)")
@@ -1582,6 +1580,7 @@ class AWSSkillQuery : AWSRequestObject
                                                             
                                                             // Create the Skill object
                                                             let addSkill = Skill(skillID: skillID, skill: skillType, userID: Constants.Data.currentUser.userID)
+                                                            addSkill.title = title
                                                             addSkill.order = order
                                                             addSkill.level = Constants().experience(skillLevel)
                                                             if let iconImage = icon
@@ -1595,38 +1594,55 @@ class AWSSkillQuery : AWSRequestObject
                                                         }
                                                     }
                                                     
+                                                    print("AC-SKQ - CHECKING SKILL SETTINGS")
                                                     // Now check the reverse - loop through the settings and ensure that all passed settings are saved
                                                     // If not, save the missing setting with the default setting of 'no experience' (0)
                                                     for skillSetting in skillSettings
                                                     {
-                                                        var skillExists = false
-                                                        userSkillLoop: for userSkill in skillObjects
+                                                        print("AC-SKQ - SKILL SETTING: \(skillSetting)")
+                                                        print("AC-SKQ - SKILL SETTING KEY: \(skillSetting.key)")
+                                                        if let skillSettingJson = skillSetting.value as? [String: AnyObject]
                                                         {
-                                                            if userSkill.skill == skillSetting.key
+                                                            print("AC-SKQ - SKILL SETTING JSON: \(skillSettingJson)")
+                                                            var skillExists = false
+                                                            userSkillLoop: for userSkill in skillObjects
                                                             {
-                                                                skillExists = true
-                                                                break userSkillLoop
+                                                                if userSkill.skill == skillSetting.key
+                                                                {
+                                                                    skillExists = true
+                                                                    break userSkillLoop
+                                                                }
                                                             }
-                                                        }
-                                                        if !skillExists
-                                                        {
-                                                            // Cast the skill Setting value to Int - this is the skill order value
-                                                            // Then create a skill Object using the default level value (0)
-                                                            // The skillID is created using the userID and the skill type concatenated with a "-"
-                                                            let skillType = skillSetting.key
-                                                            let skillID = Constants.Data.currentUser.userID + "-" + skillType
-                                                            let addSkill = Skill(skillID: skillID, skill: skillType, userID: Constants.Data.currentUser.userID)
-                                                            addSkill.level = Constants().experience(0)
-                                                            if let skillOrder = skillSetting.value as? Int
+                                                            if !skillExists
                                                             {
-                                                                addSkill.order = skillOrder
+                                                                print("AC-SKQ - SKILL DOES NOT EXIST")
+                                                                // Cast the skill Setting value to Int - this is the skill order value
+                                                                // Then create a skill Object using the default level value (0)
+                                                                // The skillID is created using the userID and the skill type concatenated with a "-"
+                                                                let skillType = skillSetting.key
+                                                                let skillID = Constants.Data.currentUser.userID + "-" + skillType
+                                                                let addSkill = Skill(skillID: skillID, skill: skillType, userID: Constants.Data.currentUser.userID)
+                                                                if let skillTitle = skillSettingJson["title"] as? String
+                                                                {
+                                                                    addSkill.title = skillTitle
+                                                                }
+                                                                if let skillOrder = skillSettingJson["order"] as? Int
+                                                                {
+                                                                    addSkill.order = skillOrder
+                                                                }
+                                                                if let skillIconFilename = skillSettingJson["image"] as? String
+                                                                {
+                                                                    addSkill.icon = UIImage(named: skillIconFilename)
+                                                                }
+                                                                addSkill.level = Constants().experience(0)
+                                                                skillObjects.append(addSkill)
+                                                                
+                                                                // Save the updated / new skill to Core Data
+                                                                CoreDataFunctions().skillSave(skill: addSkill)
                                                             }
-                                                            skillObjects.append(addSkill)
-                                                            
-                                                            // Save the updated / new skill to Core Data
-                                                            CoreDataFunctions().skillSave(skill: addSkill)
                                                         }
                                                     }
+                                                    print("AC-SKQ - SAVING SKILLS GLOBALLY")
                                                     // Now replace the global skill list with the updated version
                                                     Constants.Data.skills = skillObjects
                                                 }
@@ -1874,6 +1890,20 @@ class AWSStructureQuery : AWSRequestObject
                                     print("AC-STRQ - RESPONSE: \(response)")
                                     if response == "success"
                                     {
+                                        // Create an empty json to hold the repair settings
+                                        var repairSettingTypes = [String: AnyObject]()
+                                        var repairSettingStages = [String: AnyObject]()
+                                        if let repairSettingsJson = json["repair_settings"] as? [String: AnyObject]
+                                        {
+                                            if let repairSettingTypesJson = repairSettingsJson["types"] as? [String: AnyObject]
+                                            {
+                                                repairSettingTypes = repairSettingTypesJson
+                                            }
+                                            if let repairSettingStagesJson = repairSettingsJson["stages"] as? [String: AnyObject]
+                                            {
+                                                repairSettingStages = repairSettingStagesJson
+                                            }
+                                        }
                                         print("AC-STRQ - QUERY SUCCESS")
                                         if let structureData = json["structures"] as? [AnyObject]
                                         {
@@ -1971,11 +2001,107 @@ class AWSStructureQuery : AWSRequestObject
                                                     {
                                                         self.recordError(stage: "structureID", error: nil)
                                                     }
+                                                    
+                                                    if let repairData = structureJson["repairs"] as? [AnyObject]
+                                                    {
+                                                        print("AC-STRQ-RQ - CHECK 1")
+                                                        // Create a local array to hold the new entities
+                                                        var newRepairs = [Repair]()
+                                                        for repairObject in repairData
+                                                        {
+                                                            print("AC-STRQ-RQ - CHECK 2")
+                                                            if let repairJson = repairObject as? [String: AnyObject]
+                                                            {
+                                                                print("AC-STRQ-RQ - CHECK 3: \(repairJson)")
+                                                                // Run a check on one json item to see if the data type is correct
+                                                                if let repairID = repairJson["repair_id"] as? String
+                                                                {
+                                                                    print("AC-STRQ-RQ - CHECK 4: \(repairID), \(self.structureID)")
+                                                                    
+                                                                    let newRepair = Repair()
+                                                                    newRepair.repairID = repairID
+                                                                    newRepair.structureID = self.structureID
+                                                                    newRepair.repair = repairJson["repair"] as! String
+                                                                    newRepair.datetime = Date(timeIntervalSince1970: repairJson["timestamp"] as! Double)
+                                                                    newRepair.stage = Constants().repairStage(repairJson["stage"] as! Int)
+                                                                    if let repairImages = repairJson["repair_images"] as? [AnyObject]
+                                                                    {
+                                                                        var repairImagesObjects = [RepairImage]()
+                                                                        for repairImageObject in repairImages
+                                                                        {
+                                                                            if let repairImageJson = repairImageObject as? [String: AnyObject]
+                                                                            {
+                                                                                let newRepairImage = RepairImage()
+                                                                                newRepairImage.imageID = repairImageJson["image_id"] as! String
+                                                                                newRepairImage.repairID = repairID
+                                                                                newRepairImage.datetime = newRepair.datetime
+                                                                                repairImagesObjects.append(newRepairImage)
+                                                                            }
+                                                                        }
+                                                                        newRepair.repairImages = repairImagesObjects
+                                                                    }
+                                                                    // Try to find the repair in the settings list and assign the order and add the image
+                                                                    if let repairSetting = repairSettingTypes[newRepair.repair]
+                                                                    {
+                                                                        if let repairSettingJson = repairSetting as? [String: AnyObject]
+                                                                        {
+                                                                            newRepair.title = repairSettingJson["title"] as! String
+                                                                            newRepair.order = repairSettingJson["order"] as! Int
+                                                                            print("AC-STRQ-RQ - ADDED REPAIR ORDER: \(newRepair.repair): Title: \(newRepair.title) Order: \(newRepair.order)")
+                                                                            
+                                                                            if let repairSettingSkills = repairSettingJson["skills"] as? [String]
+                                                                            {
+                                                                                newRepair.skillsNeeded = repairSettingSkills
+                                                                            }
+                                                                            
+                                                                            let repairIconFilename = repairSettingJson["image"] as! String
+                                                                            newRepair.icon = UIImage(named: repairIconFilename)
+                                                                            print("AC-STRQ-RQ - ADDED REPAIR ICON: \(newRepair.icon) FROM IMAGE: \(repairIconFilename)")
+                                                                        }
+                                                                    }
+                                                                    newRepairs.append(newRepair)
+                                                                    
+                                                                    // Save the repair data to the global array
+                                                                    UtilityFunctions().repairAddToGlobalList(repair: newRepair)
+                                                                    
+                                                                    // Save the current user data to Core Data
+                                                                    CoreDataFunctions().repairSave(repair: newRepair)
+                                                                }
+                                                                else
+                                                                {
+                                                                    self.recordError(stage: "structureID", error: nil)
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                self.recordError(stage: "json", error: nil)
+                                                            }
+                                                        }
+                                                        
+                                                        // Save the repair to the appropriate global structure object
+                                                        structureLoop: for structure in Constants.Data.structures
+                                                        {
+                                                            if structure.structureID == self.structureID
+                                                            {
+                                                                structure.repairs = newRepairs
+                                                                break structureLoop
+                                                            }
+                                                        }
+                                                        
+                                                        // Notify the parent view that the AWS call completed successfully
+                                                        if let parentVC = self.awsRequestDelegate
+                                                        {
+                                                            print("AC-RQ - CALLED PARENT")
+                                                            parentVC.processAwsReturn(self, success: true)
+                                                        }
+                                                    } // END OF REPAIR LOOP
+                                                    
                                                 }
                                                 else
                                                 {
                                                     self.recordError(stage: "json", error: nil)
                                                 }
+                                                
                                             }
                                             
                                             // Notify the parent view that the AWS call completed successfully
@@ -1985,6 +2111,7 @@ class AWSStructureQuery : AWSRequestObject
                                                 parentVC.processAwsReturn(self, success: true)
                                             }
                                         }
+                                        
                                     }
                                     else
                                     {
@@ -2041,10 +2168,15 @@ class AWSStructurePut : AWSRequestObject
 {
     let url = URL(string: Constants.Strings.urlStructurePut)
     
+    var newStruct = 0
     var structure: Structure!
-    required init(structure: Structure!)
+    required init(structure: Structure!, new: Bool!)
     {
         self.structure = structure
+        if new == true
+        {
+            self.newStruct = 1
+        }
     }
     
     override func makeRequest()
@@ -2059,6 +2191,7 @@ class AWSStructurePut : AWSRequestObject
             json["identity_id"] = Constants.credentialsProvider.identityId
             json["login_provider"] = "graph.facebook.com"
             json["login_token"] = facebookToken.tokenString
+            json["new_structure"] = String(newStruct)
             json["structure_id"] = structure.structureID
             json["user_id"] = Constants.Data.currentUser.userID
             json["lat"] = String(structure.lat)
@@ -2157,12 +2290,156 @@ class AWSStructurePut : AWSRequestObject
     }
 }
 
+// Upload a change to the Structure status
+class AWSStructureDelete : AWSRequestObject
+{
+    let url = URL(string: Constants.Strings.urlStructureDelete)
+    
+    var structure: Structure!
+    required init(structure: Structure!)
+    {
+        self.structure = structure
+    }
+    
+    override func makeRequest()
+    {
+        print("AC-STRD: STRUCTURE DELETE")
+        
+        if let facebookToken = FBSDKAccessToken.current()
+        {
+            // Create some JSON to send the Structure data
+            var json = [String: Any]()
+            json["app_version"] = Constants.Settings.appVersion
+            json["identity_id"] = Constants.credentialsProvider.identityId
+            json["login_provider"] = "graph.facebook.com"
+            json["login_token"] = facebookToken.tokenString
+            json["new_structure"] = String(0)
+            json["structure_id"] = structure.structureID
+            json["user_id"] = Constants.Data.currentUser.userID
+            json["lat"] = String(structure.lat)
+            json["lng"] = String(structure.lng)
+            json["timestamp"] = String(structure.datetime.timeIntervalSince1970)
+            json["type"] = String(structure.type.rawValue)
+            json["image_id"] = structure.imageID
+            json["stage"] = String(structure.stage.rawValue)
+            json["status"] = "deleted"
+            let jsonData = try? JSONSerialization.data(withJSONObject: json)
+            
+            var request = URLRequest(url: url!)
+            request.httpMethod = "POST"
+            request.timeoutInterval = Constants.Settings.requestTimeout
+            request.httpBody = jsonData
+            request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+            let session = URLSession(configuration: .default)
+            let dataTask = session.dataTask(with: request)
+            { (responseData, response, error) in
+                if let err = error
+                {
+                    self.recordError(stage: "URLRequest", error: err as? String)
+                }
+                else if let res = response as? HTTPURLResponse
+                {
+                    print("AC-STRD - RESPONSE CODE: \(res.statusCode)")
+                    if let data = responseData
+                    {
+                        do
+                        {
+                            let jsonData = try JSONSerialization.jsonObject(with: data, options: [JSONSerialization.ReadingOptions.allowFragments])
+                            print("AC-STRD - JSON DATA: \(json)")
+                            // Convert the data to JSON with keys and AnyObject values
+                            if let json = jsonData as? [String: AnyObject]
+                            {
+                                print("AC-STRD - JSON: \(json)")
+                                // EXTRACT THE RESPONSE STRING
+                                if let response = json["response"] as? String
+                                {
+                                    print("AC-STRD - RESPONSE: \(response)")
+                                    if response == "success"
+                                    {
+                                        print("AC-STRD - UPLOAD SUCCESS")
+                                        // Delete the structure from the global arrays
+                                        structLoop: for (sIndex, structr) in Constants.Data.structures.enumerated()
+                                        {
+                                            if structr.structureID == self.structure.structureID
+                                            {
+                                                Constants.Data.structures.remove(at: sIndex)
+                                                break structLoop
+                                            }
+                                        }
+                                        CoreDataFunctions().structureDelete(structureID: self.structure.structureID)
+                                        for (suIndex, structUser) in Constants.Data.structureUsers.enumerated()
+                                        {
+                                            if structUser.structureID == self.structure.structureID
+                                            {
+                                                Constants.Data.structureUsers.remove(at: suIndex)
+                                            }
+                                        }
+                                        CoreDataFunctions().structureUserDelete(structureID: self.structure.structureID)
+                                        
+                                        // Notify the parent view that the AWS call completed successfully
+                                        if let parentVC = self.awsRequestDelegate
+                                        {
+                                            parentVC.processAwsReturn(self, success: true)
+                                        }
+                                    }
+                                    else
+                                    {
+                                        self.recordError(stage: "response - fail", error: response)
+                                    }
+                                }
+                                else
+                                {
+                                    self.recordError(stage: "response", error: nil)
+                                }
+                            }
+                            else
+                            {
+                                self.recordError(stage: "JSON", error: nil)
+                            }
+                        }
+                        catch let error as NSError
+                        {
+                            self.recordError(stage: "JSONSerlialization", error: error.description)
+                        }
+                    }
+                    else
+                    {
+                        self.recordError(stage: "Response Data - else", error: nil)
+                    }
+                }
+                else
+                {
+                    self.recordError(stage: "URLRequest - else", error: nil)
+                }
+            }
+            dataTask.resume()
+        }
+    }
+    
+    func recordError(stage: String!, error: String?)
+    {
+        print("AC-STRD: GET DATA ERROR AT STAGE: \(stage), ERROR: \(String(describing: error))")
+//        CoreDataFunctions().logErrorSave(function: NSStringFromClass(type(of: self)), errorString: err.debugDescription)
+        
+        // Record the server request attempt
+        Constants.Data.serverTries += 1
+        
+        // Notify the parent view that the AWS call completed with an error
+        if let parentVC = self.awsRequestDelegate
+        {
+            parentVC.processAwsReturn(self, success: false)
+        }
+    }
+}
+
 
 // MARK: STRUCTURE-USER
 // Return all structureIDs connected to the current user
 class AWSStructureUserQuery : AWSRequestObject
 {
     let url = URL(string: Constants.Strings.urlStructureUserQuery)
+    var structureID: String?
+    var userID: String?
     
     override func makeRequest()
     {
@@ -2176,7 +2453,14 @@ class AWSStructureUserQuery : AWSRequestObject
             json["identity_id"] = Constants.credentialsProvider.identityId
             json["login_provider"] = "graph.facebook.com"
             json["login_token"] = facebookToken.tokenString
-            json["user_id"] = Constants.Data.currentUser.userID
+            if let uID = self.userID
+            {
+                json["user_id"] = uID
+            }
+            if let sID = self.structureID
+            {
+                json["structure_id"] = sID
+            }
             let jsonData = try? JSONSerialization.data(withJSONObject: json)
             
             var request = URLRequest(url: url!)
@@ -2199,7 +2483,7 @@ class AWSStructureUserQuery : AWSRequestObject
                         do
                         {
                             let jsonData = try JSONSerialization.jsonObject(with: data, options: [JSONSerialization.ReadingOptions.allowFragments])
-                            print("AC-STRUQ - JSON DATA: \(json)")
+                            print("AC-STRUQ - JSON DATA: \(jsonData)")
                             // Convert the data to JSON with keys and AnyObject values
                             if let json = jsonData as? [String: AnyObject]
                             {
@@ -2348,7 +2632,7 @@ class AWSStructureUserPut : AWSRequestObject
             json["identity_id"] = Constants.credentialsProvider.identityId
             json["login_provider"] = "graph.facebook.com"
             json["login_token"] = facebookToken.tokenString
-            json["structure_user_id"] = structureID + "-" + userID
+//            json["structure_user_id"] = structureID + "-" + userID
             json["structure_id"] = structureID
             json["user_id"] = userID
             json["timestamp"] = String(timestamp)
@@ -2505,10 +2789,18 @@ class AWSRepairQuery : AWSRequestObject
                                     {
                                         print("AC-RQ - QUERY SUCCESS")
                                         // Create an empty json to hold the repair settings
-                                        var repairSettings = [String: AnyObject]()
+                                        var repairSettingTypes = [String: AnyObject]()
+                                        var repairSettingStages = [String: AnyObject]()
                                         if let repairSettingsJson = json["repair_settings"] as? [String: AnyObject]
                                         {
-                                            repairSettings = repairSettingsJson
+                                            if let repairSettingTypesJson = repairSettingsJson["types"] as? [String: AnyObject]
+                                            {
+                                                repairSettingTypes = repairSettingTypesJson
+                                            }
+                                            if let repairSettingStagesJson = repairSettingsJson["stages"] as? [String: AnyObject]
+                                            {
+                                                repairSettingStages = repairSettingStagesJson
+                                            }
                                         }
                                         if let repairData = json["repairs"] as? [AnyObject]
                                         {
@@ -2549,12 +2841,18 @@ class AWSRepairQuery : AWSRequestObject
                                                             newRepair.repairImages = repairImagesObjects
                                                         }
                                                         // Try to find the repair in the settings list and assign the order and add the image
-                                                        if let repairSetting = repairSettings[newRepair.repair]
+                                                        if let repairSetting = repairSettingTypes[newRepair.repair]
                                                         {
                                                             if let repairSettingJson = repairSetting as? [String: AnyObject]
                                                             {
+                                                                newRepair.title = repairSettingJson["title"] as! String
                                                                 newRepair.order = repairSettingJson["order"] as! Int
-                                                                print("AC-RQ - ADDED REPAIR ORDER: \(newRepair.repair): \(newRepair.order)")
+                                                                print("AC-RQ - ADDED REPAIR ORDER: \(newRepair.repair): Title: \(newRepair.title) Order: \(newRepair.order)")
+                                                                
+                                                                if let repairSettingSkills = repairSettingJson["skills"] as? [String]
+                                                                {
+                                                                    newRepair.skillsNeeded = repairSettingSkills
+                                                                }
                                                                 
                                                                 let repairIconFilename = repairSettingJson["image"] as! String
                                                                 newRepair.icon = UIImage(named: repairIconFilename)
@@ -2565,6 +2863,9 @@ class AWSRepairQuery : AWSRequestObject
                                                         
                                                         // Save the downloaded repair data to the local array to pass to the parent VC
                                                         self.repairs.append(newRepair)
+                                                        
+                                                        // Save the repair data to the global array
+                                                        UtilityFunctions().repairAddToGlobalList(repair: newRepair)
                                                         
                                                         // Save the current user data to Core Data
                                                         CoreDataFunctions().repairSave(repair: newRepair)
@@ -2654,9 +2955,13 @@ class AWSRepairPut : AWSRequestObject
     
     var repair: Repair!
     var updatedImages: Int = 0 // 0=False, 1=True
-    required init(repair: Repair!)
+    required init(repair: Repair!, newImages: Bool!)
     {
         self.repair = repair
+        if newImages
+        {
+            updatedImages = 1
+        }
     }
     
     override func makeRequest()

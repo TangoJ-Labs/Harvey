@@ -2,8 +2,9 @@
 //  TutorialView+CoreDataProperties.swift
 //  Harvey
 //
-//  Created by Sean Hart on 9/2/17.
+//  Created by Sean Hart on 12/2/17.
 //  Copyright © 2017 TangoJ Labs, LLC. All rights reserved.
+//
 //
 
 import Foundation
@@ -17,5 +18,7 @@ extension TutorialView {
     }
 
     @NSManaged public var tutorialMapViewDatetime: NSDate?
+    @NSManaged public var tutorialProfileViewDatetime: NSDate?
+    @NSManaged public var tutorialStructureViewDatetime: NSDate?
 
 }

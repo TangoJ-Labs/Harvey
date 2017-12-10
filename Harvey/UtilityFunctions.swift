@@ -116,6 +116,24 @@ class UtilityFunctions: AWSRequestDelegate
         Constants.Data.allSpot = nonBlockedSpots
     }
     
+    func repairAddToGlobalList(repair: Repair)
+    {
+        // Ensure the same repair does not already exist - if so, replace it with the newer version
+        var repairExists = false
+        for (eIndex, existingRepair) in Constants.Data.repairs.enumerated()
+        {
+            if existingRepair.structureID == repair.structureID && existingRepair.repair == repair.repair
+            {
+                Constants.Data.repairs[eIndex] = repair
+                repairExists = true
+            }
+        }
+        if !repairExists
+        {
+            Constants.Data.repairs.append(repair)
+        }
+    }
+    
     
     // MARK: AWS DELEGATE METHODS
     

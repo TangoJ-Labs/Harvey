@@ -25,7 +25,7 @@ class HoleView: UIView
     // Indicate the order of the Hole Views (start at 1)
     var holeViewPosition: Int!
     
-    var viewFrame : CGRect!
+//    var viewFrame : CGRect!
     var circleOffsetX: CGFloat!
     var circleOffsetY: CGFloat!
     var circleRadius: CGFloat!
@@ -45,7 +45,7 @@ class HoleView: UIView
     required init(holeViewPosition: Int, frame : CGRect, circleOffsetX: CGFloat, circleOffsetY: CGFloat, circleRadius: CGFloat, textOffsetX: CGFloat, textOffsetY: CGFloat, textWidth: CGFloat, textFontSize: CGFloat, text: String)
     {
         self.holeViewPosition = holeViewPosition
-        self.viewFrame = frame
+//        self.viewFrame = frame
         self.circleOffsetX = circleOffsetX
         self.circleOffsetY = circleOffsetY
         self.circleRadius = circleRadius
@@ -69,6 +69,7 @@ class HoleView: UIView
     
     func createView()
     {
+        print("HV-FRAME: \(frame)")
         let overlayView = UIView(frame: frame)
         overlayView.alpha = 0.8
         overlayView.backgroundColor = UIColor.black
@@ -96,25 +97,30 @@ class HoleView: UIView
         overlayTextView.textAlignment = .center
         overlayTextView.textColor = UIColor.white
         overlayTextView.text = text
+        overlayTextView.isUserInteractionEnabled = false
         overlayView.addSubview(overlayTextView)
         
-        let okViewBackground = UIView(frame: CGRect(x: 0, y: overlayView.frame.height - 150, width: overlayView.frame.width, height: 50))
-        okViewBackground.backgroundColor = UIColor.darkGray
-        okViewBackground.alpha = 0.8
-        overlayView.addSubview(okViewBackground)
+        let overlayViewTap = UITapGestureRecognizer(target: self, action: #selector(HoleView.okViewTapGesture(_:)))
+        overlayViewTap.numberOfTapsRequired = 1  // add single tap
+        overlayView.addGestureRecognizer(overlayViewTap)
         
-        let okViewLabel = UILabel(frame: CGRect(x: 0, y: 0, width: okViewBackground.frame.width, height: okViewBackground.frame.height))
-        okViewLabel.font = UIFont(name: Constants.Strings.fontAlt, size: 22)
-        okViewLabel.textColor = UIColor.white
-        okViewLabel.textAlignment = NSTextAlignment.center
-        okViewLabel.numberOfLines = 1
-        okViewLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
-        okViewLabel.text = "Got it."
-        okViewBackground.addSubview(okViewLabel)
-        
-        let okViewTap = UITapGestureRecognizer(target: self, action: #selector(HoleView.okViewTapGesture(_:)))
-        okViewTap.numberOfTapsRequired = 1  // add single tap
-        okViewBackground.addGestureRecognizer(okViewTap)
+//        let okViewBackground = UIView(frame: CGRect(x: 0, y: overlayView.frame.height - 150, width: overlayView.frame.width, height: 50))
+//        okViewBackground.backgroundColor = UIColor.darkGray
+//        okViewBackground.alpha = 0.8
+////        overlayView.addSubview(okViewBackground)
+//
+//        let okViewLabel = UILabel(frame: CGRect(x: 0, y: 0, width: okViewBackground.frame.width, height: okViewBackground.frame.height))
+//        okViewLabel.font = UIFont(name: Constants.Strings.fontAlt, size: 22)
+//        okViewLabel.textColor = UIColor.white
+//        okViewLabel.textAlignment = NSTextAlignment.center
+//        okViewLabel.numberOfLines = 1
+//        okViewLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
+//        okViewLabel.text = "Got it."
+//        okViewBackground.addSubview(okViewLabel)
+//
+//        let okViewTap = UITapGestureRecognizer(target: self, action: #selector(HoleView.okViewTapGesture(_:)))
+//        okViewTap.numberOfTapsRequired = 1  // add single tap
+//        okViewBackground.addGestureRecognizer(okViewTap)
     }
     
     override func layoutSubviews () {
@@ -125,6 +131,7 @@ class HoleView: UIView
     // MARK: GESTURE RECOGNIZERS
     func okViewTapGesture(_ sender: UITapGestureRecognizer)
     {
+//        print("HV-TAP: \(sender.location(in: overlayView))")
         print("HV-TAP")
         self.removeFromSuperview()
         

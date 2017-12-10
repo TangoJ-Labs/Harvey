@@ -294,6 +294,7 @@ class ProfileRepairViewController: UIViewController, UIGestureRecognizerDelegate
                             let cameraVC = CameraMultiImageViewController()
                             cameraVC.cameraDelegate = self
                             cameraVC.forRepair = true
+                            cameraVC.repairRow = indexPath.row
                             cameraVC.repair = self.structure.repairs[indexPath.row]
                             navCon.pushViewController(cameraVC, animated: true)
                         }
@@ -368,14 +369,14 @@ class ProfileRepairViewController: UIViewController, UIGestureRecognizerDelegate
         cell.repairTitle.font = UIFont(name: Constants.Strings.fontAltLight, size: 20)
         cell.repairTitle.textColor = Constants.Colors.colorTextDark
         cell.repairTitle.textAlignment = .left
-        cell.repairTitle.text = structure.repairs[indexPath.row].repair
+        cell.repairTitle.text = structure.repairs[indexPath.row].title
         cell.repairTitle.numberOfLines = 2
         cell.repairTitle.lineBreakMode = NSLineBreakMode.byWordWrapping
         cell.cellContainer.addSubview(cell.repairTitle)
         
         cell.repairStage = UILabel(frame: CGRect(x: cell.cellContainer.frame.width - 130, y: 0, width: 80, height: cell.cellContainer.frame.height))
         cell.repairStage.font = UIFont(name: Constants.Strings.fontAltLight, size: 16)
-        cell.repairStage.textColor = Constants.Colors.colorTextDark
+        cell.repairStage.textColor = Constants.Colors.colorTextLight
         cell.repairStage.textAlignment = .center
         cell.repairStage.numberOfLines = 2
         cell.repairStage.lineBreakMode = NSLineBreakMode.byWordWrapping
@@ -500,7 +501,7 @@ class ProfileRepairViewController: UIViewController, UIGestureRecognizerDelegate
             }
         }
         // Upload the changes
-        AWSPrepRequest(requestToCall: AWSRepairPut(repair: structure.repairs[row]), delegate: self as AWSRequestDelegate).prepRequest()
+        AWSPrepRequest(requestToCall: AWSRepairPut(repair: structure.repairs[row], newImages: false), delegate: self as AWSRequestDelegate).prepRequest()
     }
     
     

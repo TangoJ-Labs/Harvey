@@ -15,7 +15,7 @@ class Structure
     var lng: Double!
     var datetime: Date!
     var type: Constants.StructureType = Constants.StructureType.other // Defaults to 'other'
-    var stage: Constants.StructureStage = Constants.StructureStage.waiting // Defaults to 'waiting'
+    var stage: Constants.StructureStage = Constants.StructureStage.needhelp // Defaults to 'waiting'
     
 //    var userIDs: [String]? // Should have at least one userID (String) - this data comes from a separate table, both in db and in Core Data
     var imageID: String?

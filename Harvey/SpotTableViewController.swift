@@ -560,6 +560,17 @@ class SpotTableViewController: UIViewController, UITableViewDataSource, UITableV
                                 if let fbShareResponse = try? shareDialog.show()
                                 {
                                     print("STVC - FB SHARE RESPONSE: \(fbShareResponse)")
+                                    if !fbShareResponse
+                                    {
+                                        // Sharing is not allowed without the app - show a popup to explain
+                                        let alertController = UIAlertController(title: "Facebook App Not Installed", message: "We're sorry, you need the Facebook app installed to share photos.", preferredStyle: UIAlertControllerStyle.alert)
+                                        let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default)
+                                        { (result : UIAlertAction) -> Void in
+                                            print("STVC - POPUP CLOSE")
+                                        }
+                                        alertController.addAction(okAction)
+                                        alertController.show()
+                                    }
                                 }
                             }
                         }

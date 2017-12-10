@@ -26,7 +26,7 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
         }
         self.spotRequests = spotRequestsSort
         
-        print("ATVC - SPOT REQUESTS COUNT: \(spotRequestsSort.count)")
+//        print("ATVC - SPOT REQUESTS COUNT: \(spotRequestsSort.count)")
         if spotRequests.count > 0
         {
             contentExists = true
@@ -46,7 +46,7 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
         }
         self.hazards = hazardsSort
         
-        print("ATVC - HAZARDS COUNT: \(hazardsSort.count)")
+//        print("ATVC - HAZARDS COUNT: \(hazardsSort.count)")
         if hazards.count > 0
         {
             contentExists = true
@@ -312,7 +312,7 @@ class ActivityViewController: UIViewController, UIGestureRecognizerDelegate, GMS
         {
             if requests.count > 0
             {
-                print("AVC - DELETE SPOT REQUEST: \(String(describing: requests[currentIndex].requestID))")
+//                print("AVC - DELETE SPOT REQUEST: \(String(describing: requests[currentIndex].requestID))")
                 // Ensure the user wants to delete the content
                 let alertController = UIAlertController(title: "DELETE PHOTO REQUEST", message: "Are you sure you want to delete this photo request?", preferredStyle: UIAlertControllerStyle.alert)
                 let deleteAction = UIAlertAction(title: "Delete", style: UIAlertActionStyle.default)

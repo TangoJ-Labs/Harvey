@@ -6,6 +6,8 @@
 //  Copyright © 2017 TangoJ Labs, LLC. All rights reserved.
 //
 
+import CoreData
+import MobileCoreServices
 import UIKit
 
 
@@ -13,6 +15,8 @@ class StructureViewController: UIViewController, UIGestureRecognizerDelegate, UI
 {
     var structure: Structure!
     var primaryUser: User?
+    
+    var showedTutorial = false
     
     convenience init(structure: Structure!)
     {
@@ -336,7 +340,7 @@ class StructureViewController: UIViewController, UIGestureRecognizerDelegate, UI
         cell.addSubview(cell.cellContainer)
         
         cell.iconImageView = UIImageView(frame: CGRect(x: 0, y: (cell.cellContainer.frame.height - iconSize) / 2, width: iconSize, height: iconSize))
-        cell.iconImageView.backgroundColor = UIColor.gray
+//        cell.iconImageView.backgroundColor = UIColor.gray
         cell.iconImageView.contentMode = UIViewContentMode.scaleAspectFit
         cell.iconImageView.clipsToBounds = true
         cell.cellContainer.addSubview(cell.iconImageView)
@@ -356,14 +360,14 @@ class StructureViewController: UIViewController, UIGestureRecognizerDelegate, UI
         cell.repairTitle.font = UIFont(name: Constants.Strings.fontAltLight, size: 20)
         cell.repairTitle.textColor = Constants.Colors.colorTextDark
         cell.repairTitle.textAlignment = .left
-        cell.repairTitle.text = activeRepairs[indexPath.row].repair
+        cell.repairTitle.text = activeRepairs[indexPath.row].title
         cell.repairTitle.numberOfLines = 2
         cell.repairTitle.lineBreakMode = NSLineBreakMode.byWordWrapping
         cell.cellContainer.addSubview(cell.repairTitle)
         
         cell.repairStage = UILabel(frame: CGRect(x: cell.cellContainer.frame.width - 130, y: 0, width: 80, height: cell.cellContainer.frame.height))
-        cell.repairStage.font = UIFont(name: Constants.Strings.fontAltLight, size: 16)
-        cell.repairStage.textColor = Constants.Colors.colorTextDark
+        cell.repairStage.font = UIFont(name: Constants.Strings.fontAltLight, size: 14)
+        cell.repairStage.textColor = Constants.Colors.colorTextLight
         cell.repairStage.textAlignment = .center
         cell.repairStage.numberOfLines = 2
         cell.repairStage.lineBreakMode = NSLineBreakMode.byWordWrapping
@@ -435,10 +439,14 @@ class StructureViewController: UIViewController, UIGestureRecognizerDelegate, UI
             $0.order < $1.order
         }
         self.structure.repairs = repairListSort
+        // Clear the table repair list
+        activeRepairs = [Repair]()
         // Now filter the repairs for only those needed or in progress
         for repair in self.structure.repairs
         {
-            if repair.stage == Constants.RepairStage.waiting || repair.stage == Constants.RepairStage.repairing
+            print("SVC: REPAIR: \(repair.repair), \(repair.stage)")
+//            if repair.stage == Constants.RepairStage.needhelp || repair.stage == Constants.RepairStage.repairing
+            if repair.stage != Constants.RepairStage.na
             {
                 self.activeRepairs.append(repair)
             }
@@ -455,15 +463,20 @@ class StructureViewController: UIViewController, UIGestureRecognizerDelegate, UI
             
             // Only show the tutorial view when the repairs are visible - otherwise it won't make sense
             // Recall the Tutorial Views data in Core Data.  If it is empty for the current ViewController's tutorial, it has not been seen by the curren user.
-//            let tutorialView = CoreDataFunctions().tutorialViewRetrieve()
-//            print("MVC: TUTORIAL VIEW STRUCTURE: \(String(describing: tutorialView.))")
-//            if tutorialView.tutorialMapViewDatetime == nil
-            if 2 == 2
+            let tutorialView = CoreDataFunctions().tutorialViewRetrieve()
+            print("SVC: TUTORIAL VIEW STRUCTURE: \(String(describing: tutorialView.tutorialStructureViewDatetime))")
+            if tutorialView.tutorialStructureViewDatetime == nil
+//            if 2 == 2
             {
-                print("SVC-CHECK 1")
-                let holeView = HoleView(holeViewPosition: 1, frame: viewContainer.bounds, circleOffsetX: 75, circleOffsetY: repairTableViewY + 70, circleRadius: 70, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 120, textWidth: 260, textFontSize: 24, text: "See which repairs require skills that you have.")
-                holeView.holeViewDelegate = self
-                viewContainer.addSubview(holeView)
+                // Double-check that the tutorial isn't already showing
+                if !showedTutorial
+                {
+                    showedTutorial = true
+                    print("SVC-CHECK 1")
+                    let holeView = HoleView(holeViewPosition: 1, frame: viewContainer.bounds, circleOffsetX: 65, circleOffsetY: repairTableViewY + 70, circleRadius: 60, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 120, textWidth: 260, textFontSize: 24, text: "See which repairs require skills that you have.")
+                    holeView.holeViewDelegate = self
+                    viewContainer.addSubview(holeView)
+                }
             }
         }
         
@@ -489,14 +502,18 @@ class StructureViewController: UIViewController, UIGestureRecognizerDelegate, UI
         }
         
         print("SVC - REPAIR COUNT: \(self.structure.repairs.count)")
-        // Request all repairs associated with this structure, if the list is empty
-        if self.structure.repairs.count == 0
-        {
-            print("SVC - REQUESTING REPAIR DATA")
-            AWSPrepRequest(requestToCall: AWSRepairQuery(structureID: self.structure.structureID), delegate: self as AWSRequestDelegate).prepRequest()
-        }
+        // Request all repairs associated with this structure
+        print("SVC - REQUESTING REPAIR DATA")
+        AWSPrepRequest(requestToCall: AWSRepairQuery(structureID: self.structure.structureID), delegate: self as AWSRequestDelegate).prepRequest()
+//        if self.structure.repairs.count == 0
+//        {
+//            print("SVC - REQUESTING REPAIR DATA")
+//            AWSPrepRequest(requestToCall: AWSRepairQuery(structureID: self.structure.structureID), delegate: self as AWSRequestDelegate).prepRequest()
+//        }
         
         // Find the primary user for this structure and assign the object to the local entity - add the fb image to the contact button
+//        var userFound = false
+        print("SVC - STRUCTURE USERS: \(Constants.Data.structureUsers.count)")
         structureUserCheckLoop: for structureUserCheck in Constants.Data.structureUsers
         {
             // Check using the structureID
@@ -507,6 +524,7 @@ class StructureViewController: UIViewController, UIGestureRecognizerDelegate, UI
                 {
                     if user.userID == structureUserCheck.userID
                     {
+//                        userFound = true
                         print("SVC - FOUND PRIMARY USER: \(user.userID)")
                         self.primaryUser = user
                         if let image = user.image
@@ -526,6 +544,13 @@ class StructureViewController: UIViewController, UIGestureRecognizerDelegate, UI
                 break structureUserCheckLoop
             }
         }
+//        // If the user was not found, the global lists may not have been downloaded (perhaps no location data access) - query individually
+//        if !userFound
+//        {
+//            let awsStructureUserQuery = AWSStructureUserQuery()
+//            awsStructureUserQuery.structureID = self.structure.structureID
+//            AWSPrepRequest(requestToCall: awsStructureUserQuery, delegate: self as AWSRequestDelegate).prepRequest()
+//        }
     }
     
     
@@ -605,6 +630,28 @@ class StructureViewController: UIViewController, UIGestureRecognizerDelegate, UI
                         let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
                         alert.show()
                     }
+//                case awsStructureUserQuery as AWSStructureUserQuery:
+//                    if success
+//                    {
+//                        print("SVC - AWS STRUCTURE-USER QUERY - SUCCESS")
+//                        self.primaryUser = awsStructureUserQuery
+//                        if let image = user.image
+//                        {
+//                            self.contactButtonImage.image = image
+//                        }
+//                        else
+//                        {
+//                            // Download the user image
+//                            RequestPrep(requestToCall: FBDownloadUserImage(facebookID: user.facebookID, largeImage: false), delegate: self as RequestDelegate).prepRequest()
+//                        }
+//                    }
+//                    else
+//                    {
+//                        print("SVC - AWS STRUCTURE-USER QUERY - FAILURE")
+//                        // Show the error message
+//                        let alert = UtilityFunctions().createAlertOkView("Network Error", message: "I'm sorry, you appear to be having network issues.  Please try again.")
+//                        alert.show()
+//                    }
                 default:
                     print("SVC-DEFAULT: THERE WAS AN ISSUE WITH THE DATA RETURNED FROM AWS")
                     
@@ -646,32 +693,32 @@ class StructureViewController: UIViewController, UIGestureRecognizerDelegate, UI
         {
         case 1:
             // Show users how to add photo requests (SpotRequests)
-            print("MVC-CHECK TUTORIAL 1")
-            let holeView = HoleView(holeViewPosition: 2, frame: viewContainer.bounds, circleOffsetX: viewContainer.frame.width - 90, circleOffsetY: repairTableViewY + 60, circleRadius: 60, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 120, textWidth: 260, textFontSize: 24, text: "Check the repair status.")
+            print("SVC-CHECK TUTORIAL 1")
+            let holeView = HoleView(holeViewPosition: 2, frame: viewContainer.bounds, circleOffsetX: viewContainer.frame.width - 80, circleOffsetY: repairTableViewY + 60, circleRadius: 55, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 120, textWidth: 260, textFontSize: 24, text: "Check the repair status.")
             holeView.holeViewDelegate = self
             viewContainer.addSubview(holeView)
             
         case 2:
             // Show users how to add photo requests (SpotRequests)
-            print("MVC-CHECK TUTORIAL 2")
+            print("SVC-CHECK TUTORIAL 2")
             let holeView = HoleView(holeViewPosition: 3, frame: viewContainer.bounds, circleOffsetX: viewContainer.frame.width - 25, circleOffsetY: repairTableViewY + 35, circleRadius: 35, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 120, textWidth: 260, textFontSize: 24, text: "View photos of the damage.")
             holeView.holeViewDelegate = self
             viewContainer.addSubview(holeView)
             
         case 3:
             // Show users how to add photos to fulfill requests
-            print("MVC-CHECK TUTORIAL 3")
-            let holeView = HoleView(holeViewPosition: 4, frame: viewContainer.bounds, circleOffsetX: viewContainer.frame.width - 60, circleOffsetY: 20, circleRadius: 60, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 120, textWidth: 260, textFontSize: 24, text: "Contact the homeowner through their Facebook page to schedule a time to help with repairs.")
+            print("SVC-CHECK TUTORIAL 3")
+            let holeView = HoleView(holeViewPosition: 4, frame: viewContainer.bounds, circleOffsetX: viewContainer.frame.width - 40, circleOffsetY: 40, circleRadius: 50, textOffsetX: (viewContainer.bounds.width / 2) - 130, textOffsetY: 120, textWidth: 260, textFontSize: 24, text: "Contact the homeowner through their Facebook page to schedule a time to help with repairs.")
             holeView.holeViewDelegate = self
             viewContainer.addSubview(holeView)
             
         default:
             // The tutorial has ended - Record the Tutorial View in Core Data
-            print("MVC-CHECK TUTORIAL 4")
-//            let moc = DataController().managedObjectContext
-//            let tutorialView = NSEntityDescription.insertNewObject(forEntityName: "TutorialView", into: moc) as! TutorialView
-//            tutorialView.setValue(NSDate(), forKey: "tutorialMapViewDatetime")
-//            CoreDataFunctions().tutorialViewSave(tutorialView: tutorialView)
+            print("SVC-CHECK TUTORIAL 4")
+            let moc = DataController().managedObjectContext
+            let tutorialView = NSEntityDescription.insertNewObject(forEntityName: "TutorialView", into: moc) as! TutorialView
+            tutorialView.setValue(NSDate(), forKey: "tutorialStructureViewDatetime")
+            CoreDataFunctions().tutorialViewSave(tutorialView: tutorialView)
         }
     }
 }

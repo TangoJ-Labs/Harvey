@@ -289,8 +289,8 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
             else if cancelButton.frame.contains(touch.location(in: imageReviewView))
             {
                 print("CSIVC - DELETE BUTTON TAPPED")
-                // Reset the structure and hide the popup
-                structure = Structure()
+                // Remove structure image and hide the popup
+                structure.image = nil
                 imageReviewView.removeFromSuperview()
             }
         }
@@ -391,10 +391,20 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
     
     func uploadStructure(structureID: String!)
     {
+        // Determine if the structure is new
+        var newStruct = true
+        structLoop: for structure in Constants.Data.structures
+        {
+            if structure.structureID == structureID
+            {
+                newStruct = false
+                break structLoop
+            }
+        }
         // Upload the Structure data
         if structure.imageID != nil && structure.lat != nil && structure.lng != nil && structure.datetime != nil
         {
-            AWSPrepRequest(requestToCall: AWSStructurePut(structure: structure), delegate: self as AWSRequestDelegate).prepRequest()
+            AWSPrepRequest(requestToCall: AWSStructurePut(structure: structure, new: newStruct), delegate: self as AWSRequestDelegate).prepRequest()
         }
     }
     
@@ -547,7 +557,7 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                                 // Remove the orientation of the image and save to the local image
                                 self.structure.image = imageRaw.imageByNormalizingOrientation()
                                 
-                                print("CSIVC - NEW IMAGE ORIENTATION: \(self.structure.image?.imageOrientation.hashValue)")
+                                print("CSIVC - NEW IMAGE ORIENTATION: \(String(describing: self.structure.image?.imageOrientation.hashValue))")
                                 
                                 // Show the image in the review popup
                                 self.imageReviewImage.image = self.structure.image
@@ -717,18 +727,21 @@ class CameraSingleImageViewController: UIViewController, AVCaptureFileOutputReco
                     {
                         print("CSIVC - AWSStructurePut SUCCESS")
                         // Add the Structure and StructureUser info to the global arrays, or replace, if it already exists
-                        var structExists = false
-                        structLoop: for (sIndex, structure) in Constants.Data.structures.enumerated()
+                        if awsStructurePut.newStruct == 0
                         {
-                            if structure.structureID == awsStructurePut.structure.structureID
+                            print("CSIVC - UPDATING STRUCTURE DATA")
+                            structLoop: for (sIndex, structure) in Constants.Data.structures.enumerated()
                             {
-                                structExists = true
-                                Constants.Data.structures[sIndex] = awsStructurePut.structure
-                                break structLoop
+                                if structure.structureID == awsStructurePut.structure.structureID
+                                {
+                                    Constants.Data.structures[sIndex] = awsStructurePut.structure
+                                    break structLoop
+                                }
                             }
                         }
-                        if !structExists
+                        else
                         {
+                            print("CSIVC - ADDING STRUCTURE & STRUCTURE USER")
                             Constants.Data.structures.append(awsStructurePut.structure)
                             // Since the structure is new, add the user to the structure's user list (otherwise it should already exist)
                             let newStructureUser = StructureUser(structureID: awsStructurePut.structure.structureID, userID: Constants.Data.currentUser.userID, datetime: awsStructurePut.structure.datetime)

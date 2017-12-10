@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Harvey/MapViewController.swift"
-            timestampString = "529789364.295641"
+            timestampString = "534568180.59695"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1856"
-            endingLineNumber = "1856"
+            startingLineNumber = "1931"
+            endingLineNumber = "1931"
             landmarkName = "addSpotMapFeatures()"
             landmarkType = "7">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Harvey/MapViewController.swift"
-            timestampString = "529789364.296503"
+            timestampString = "534568180.598707"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1408"
-            endingLineNumber = "1408"
+            startingLineNumber = "1447"
+            endingLineNumber = "1447"
             landmarkName = "requestMapData(userLocation:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -42,7 +42,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Harvey/UserTableViewController.swift"
-            timestampString = "529242082.787113"
+            timestampString = "534526982.963357"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "158"

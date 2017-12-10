@@ -16,8 +16,11 @@ class Repair
     var datetime: Date!
     var stage: Constants.RepairStage!
     
+    var title: String = ""
     var order: Int = 0 // For use when listing a structure's repair needs
     var icon: UIImage?
+    var skillsNeeded = [String]()
+    
     var repairImages = [RepairImage]() // Images of the damaged area - display on the preview view
     
     convenience init(repairID: String!, structureID: String!, repair: String!, datetime: Date!, stage: Constants.RepairStage!)
