@@ -9,7 +9,7 @@ https://itunes.apple.com/us/app/harveytown/id1278667479
 
 Harveytown brings together volunteers and homeowners needing repairs:
 * Volunteers can create a profile and specify their skill levels for various repair work.
-* Homeowners add their home with photos of the repair damage.
+* Homeowners add their home with photos of the damaged areas.
 * Harveytown highlights which homes need repairs matching a volunteer's skill set, and provides a Facebook link to contact the homeowner to schedule repair times.
 
 ### Disaster relief takes a community!
