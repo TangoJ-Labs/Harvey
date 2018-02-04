@@ -1,6 +1,6 @@
 # Harvey
 
-**UPDATE: As of February 2018, Harveytown is no longer actively running for either the website or iOS app.**
+**UPDATE: As of February 2018, Harveytown is no longer actively running on either the website or iOS app.**
 
 Harvey is the Swift package for the iOS app "Harveytown".
 
