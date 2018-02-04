@@ -1,8 +1,8 @@
 # Harvey
 
-Harvey is the Swift package for the iOS app "Harveytown", available on the app store:
+**As of February 2018, Harveytown is no longer actively running for either the website or iOS app.**
 
-https://itunes.apple.com/us/app/harveytown/id1278667479
+Harvey is the Swift package for the iOS app "Harveytown".
 
 
 **As of December 2017, Hundreds of Southeast Texas families are still displaced from their homes due to Hurricane Harvey.**
@@ -13,8 +13,6 @@ Harveytown brings together volunteers and homeowners needing repairs:
 * Harveytown highlights which homes need repairs matching a volunteer's skill set, and provides a Facebook link to contact the homeowner to schedule repair times.
 
 ### Disaster relief takes a community!
-
-Check out the website version here: https://www.harveytown.org/
 
 ________________________________________________________________________
 
