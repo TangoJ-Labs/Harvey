@@ -1,5 +1,7 @@
 # Harvey
 
+Sibling repo for the website: https://github.com/TangoJ-Labs/HT-EB-HOST
+
 **UPDATE: As of February 2018, Harveytown is no longer actively running on either the website or iOS app.**
 
 Harvey is the Swift package for the iOS app "Harveytown".
